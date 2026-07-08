@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@theme {
+  --font-outfit: "Outfit", sans-serif;
+  --color-primary: #f0f0f0;
+  --color-accent: #2563eb;
+  --color-charcoal: #1f2022;
+}
+
+body {
+  font-family: var(--font-outfit);
+  background-color: var(--color-primary);
+  color: var(--color-charcoal);
+  margin: 0;
+  overflow-x: hidden;
+}
+
+/* Background Grid Pattern (Razorpay style) */
+.bg-grid-pattern {
+  background-color: #fffcf4;
+  /*#f3f4f6*/
+  /*#EDE8D5*/
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  background-position: center center;
+}
+
+/* Heavy Grain / Noise Effect applied to specific brutalist shapes */
+.noise-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.noise-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.2;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.noise-bg>* {
+  position: relative;
+  z-index: 10;
+}
+
+/* Custom Irregular Shapes */
+.clip-triangle {
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.clip-house {
+  clip-path: polygon(50% 0%, 100% 35%, 100% 100%, 0% 100%, 0% 35%);
+}
+
+.clip-jagged {
+  /* Using a jagged stamp edge effect via repeating polygon or slight irregular polygon */
+  clip-path: polygon(2% 2%, 98% 0%, 100% 98%, 0% 100%);
+}
