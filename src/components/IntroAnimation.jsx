@@ -17,11 +17,6 @@ const IntroAnimation = ({ phase }) => {
         }}
         transition={{ duration: 3.5, ease: "easeInOut" }}
       >
-        <img
-          src="/flyer-banner.png"
-          alt="Startup Event Flyer"
-          className="w-full h-full object-fill"
-        />
       </motion.div>
 
       {/*
