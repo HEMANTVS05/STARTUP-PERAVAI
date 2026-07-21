@@ -75,7 +75,7 @@ const EventSlideshow = () => {
   return (
     <div className="w-full border-t-4 border-b-4 border-black py-6 md:py-8 my-10 md:my-16">
       {/* Section Header */}
-      <div className="flex items-end justify-between mb-8 md:mb-12 px-4 sm:px-6 lg:px-24">
+      <div className="flex items-end justify-between mb-15 md:mb-12 px-4 sm:px-6 lg:px-24">
         <div>
           <p className="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-gray-400 mb-2">Featured Events</p>
           <h2 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase text-black tracking-tighter leading-none">

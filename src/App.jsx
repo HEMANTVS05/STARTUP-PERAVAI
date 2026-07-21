@@ -1,11 +1,14 @@
 import React from 'react';
 import MainLayout from './components/MainLayout';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
-    <div className="relative w-full min-h-screen bg-grid-pattern overflow-x-hidden">
-      <MainLayout />
-    </div>
+    <AuthProvider>
+      <div className="relative w-full min-h-screen bg-grid-pattern overflow-x-hidden">
+        <MainLayout />
+      </div>
+    </AuthProvider>
   );
 }
 
