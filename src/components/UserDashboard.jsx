@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Ticket, QrCode, Calendar, MapPin, LogOut, User, Briefcase, GraduationCap, Building2 } from 'lucide-react';
+import QRCode from 'react-qr-code';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useAuth } from '../context/AuthContext';
@@ -145,13 +146,23 @@ const UserDashboard = ({ onClose }) => {
             </div>
           </div>
 
-          {/* QR placeholder */}
-          <div className={`flex flex-col items-center border-4 ${colors.border} p-6 gap-3`}>
-            <QrCode className="w-24 h-24 opacity-80" strokeWidth={1.5} />
-            <p className="font-black uppercase tracking-[0.2em] text-xs opacity-60 text-center">
-              Show this at the gate
-            </p>
-            <p className={`font-mono font-bold text-xs opacity-40`}>UID: {user?.uid?.slice(0, 12)}…</p>
+          {/* QR code */}
+          <div className={`flex flex-col items-center border-4 ${colors.border} p-6 gap-4 bg-white`}>
+            <div className="p-2 border-2 border-black bg-white">
+              <QRCode
+                value={user?.uid || 'invalid'}
+                size={120}
+                bgColor="#ffffff"
+                fgColor="#000000"
+                level="Q"
+              />
+            </div>
+            <div className="text-center">
+              <p className="font-black uppercase tracking-[0.2em] text-xs text-black mb-1">
+                Show this at the gate
+              </p>
+              <p className="font-mono font-bold text-xs text-black/40">UID: {user?.uid?.slice(0, 12)}…</p>
+            </div>
           </div>
 
           {/* Event details */}

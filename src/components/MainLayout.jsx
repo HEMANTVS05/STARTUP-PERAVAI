@@ -9,6 +9,10 @@ import { useAuth } from '../context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 
+import speaker1 from '../assets/MAMAAAA.jpeg';
+import speaker4 from '../assets/hiran.png';
+
+
 // ─── gradient presets ────────────────────────────────────────────────────────
 const redGrad = { background: 'linear-gradient(135deg,#a80d11,#d82221)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' };
 const blueGrad = { background: 'linear-gradient(135deg,#0b2140,#0f50e3)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' };
@@ -92,6 +96,177 @@ const PassCard = ({ name, icon: Icon, price, features, cta, style, textClass, bo
   </motion.div>
 );
 
+// ─── Guest Speakers Data & Component ─────────────────────────────────────────
+const speakers = [
+  {
+    name: 'Hemachaandra Na S',
+    company: 'ALL ROUNDER',
+    photo: speaker1,
+    linkedin: 'https://linkedin.com/'
+  },
+  {
+    name: 'SPEAKER 2',
+    company: 'COMPANY 2',
+    photo: '',
+    linkedin: 'https://linkedin.com/'
+  },
+  {
+    name: 'SPEAKER 3',
+    company: 'COMPANY 3',
+    photo: '',
+    linkedin: 'https://linkedin.com/'
+  },
+  {
+    name: 'SPEAKER 4',
+    company: 'COMPANY 4',
+    photo: '',
+    linkedin: 'https://linkedin.com/'
+  },
+  {
+    name: 'SPEAKER 5',
+    company: 'COMPANY 5',
+    photo: '',
+    linkedin: 'https://linkedin.com/'
+  },
+];
+
+const SpeakerCard = ({ speaker }) => (
+  <div className="group relative shrink-0 w-64 md:w-72 border-4 border-black bg-white shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all duration-300 mx-4 select-none">
+    <div className="relative h-64 md:h-72 border-b-4 border-black overflow-hidden bg-gray-200">
+      <img
+        src={speaker.photo}
+        alt={speaker.name}
+        draggable={false}
+        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 pointer-events-none"
+      />
+      <a href={speaker.linkedin} target="_blank" rel="noopener noreferrer"
+        className="absolute bottom-4 right-4 w-10 h-10 bg-[#1f2022] border-4 border-black flex items-center justify-center text-white hover:bg-black transition-colors shadow-[3px_3px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
+        onClick={e => e.stopPropagation()}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+          <rect width="4" height="12" x="2" y="9" />
+          <circle cx="4" cy="4" r="2" />
+        </svg>
+      </a>
+    </div>
+    <div className="p-4 md:p-5 text-left">
+      <h3 className="font-black uppercase text-lg md:text-xl tracking-tight leading-none mb-1">{speaker.name}</h3>
+      <p className="font-bold text-gray-500 text-xs uppercase tracking-widest">{speaker.company}</p>
+    </div>
+  </div>
+);
+
+// ─── Speakers Carousel (drag + arrows + auto-scroll) ─────────────────────────
+const SpeakersCarousel = () => {
+  const trackRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const dragStartX = useRef(0);
+  const scrollStartX = useRef(0);
+  const animFrameRef = useRef(null);
+  const speedRef = useRef(1.2); // px per frame
+
+  // Auto-scroll loop
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const step = () => {
+      if (!isPaused && !isDragging) {
+        track.scrollLeft += speedRef.current;
+        // Infinite loop: when we've scrolled half the total width, reset silently
+        if (track.scrollLeft >= track.scrollWidth / 2) {
+          track.scrollLeft = 0;
+        }
+      }
+      animFrameRef.current = requestAnimationFrame(step);
+    };
+
+    animFrameRef.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animFrameRef.current);
+  }, [isPaused, isDragging]);
+
+  const scroll = (dir) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const cardWidth = 300; // approximate card + margin
+    track.scrollBy({ left: dir * cardWidth * 2, behavior: 'smooth' });
+  };
+
+  // Mouse drag handlers
+  const onMouseDown = (e) => {
+    setIsDragging(true);
+    dragStartX.current = e.clientX;
+    scrollStartX.current = trackRef.current.scrollLeft;
+  };
+  const onMouseMove = (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartX.current;
+    trackRef.current.scrollLeft = scrollStartX.current - dx;
+  };
+  const onMouseUp = () => setIsDragging(false);
+
+  // Touch drag handlers
+  const onTouchStart = (e) => {
+    dragStartX.current = e.touches[0].clientX;
+    scrollStartX.current = trackRef.current.scrollLeft;
+  };
+  const onTouchMove = (e) => {
+    const dx = e.touches[0].clientX - dragStartX.current;
+    trackRef.current.scrollLeft = scrollStartX.current - dx;
+  };
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => { setIsPaused(false); setIsDragging(false); }}
+    >
+      {/* Arrow buttons */}
+      <div className="flex justify-end gap-3 px-4 sm:px-6 lg:px-24 mb-6">
+        <button
+          onClick={() => scroll(-1)}
+          className="w-12 h-12 border-4 border-black bg-white flex items-center justify-center font-black text-xl shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all duration-150"
+          aria-label="Previous speakers"
+        >
+          ←
+        </button>
+        <button
+          onClick={() => scroll(1)}
+          className="w-12 h-12 border-4 border-black bg-[#1f2022] text-white flex items-center justify-center font-black text-xl shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all duration-150"
+          aria-label="Next speakers"
+        >
+          →
+        </button>
+      </div>
+
+      {/* Gradient masks */}
+      <div className="absolute left-0 bottom-0 w-10 md:w-24 z-10 pointer-events-none" style={{ top: '4rem', background: 'linear-gradient(to right, #fffefa, transparent)' }} />
+      <div className="absolute right-0 bottom-0 w-10 md:w-24 z-10 pointer-events-none" style={{ top: '4rem', background: 'linear-gradient(to left, #fffefa, transparent)' }} />
+
+      {/* Scrollable track */}
+      <div
+        ref={trackRef}
+        className={`flex overflow-x-scroll pb-6 pt-2 scroll-smooth ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseUp}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+      >
+        {/* Duplicate speakers for infinite illusion */}
+        {[...Array(4)].map((_, i) =>
+          speakers.map((speaker, index) => (
+            <SpeakerCard key={`${i}-${index}`} speaker={speaker} />
+          ))
+        )}
+      </div>
+    </div>
+  );
+};
+
 // ─── Main Layout ─────────────────────────────────────────────────────────────
 const MainLayout = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -157,7 +332,7 @@ const MainLayout = () => {
   useEffect(() => {
     if (!user || authModal.open) return;
     if (!authModal.pass) return;
-    
+
     if (!registration) {
       setPendingPass(authModal.pass);
       setShowRegForm(true);
@@ -287,10 +462,10 @@ const MainLayout = () => {
 
           {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-6 xl:gap-10 text-sm font-black text-gray-500 uppercase tracking-widest">
-            {['Insights', 'Events', 'Passes'].map(item => (
+            {['Insights', 'Events', 'Passes', 'Speakers'].map(item => (
               <a key={item}
-                href={item === 'Insights' ? '#' : `#${item.toLowerCase()}`}
-                onClick={(e) => handleNavClick(e, item === 'Insights' ? '' : item.toLowerCase())}
+                href={`#${item === 'Insights' ? 'whats-happening' : item.toLowerCase()}`}
+                onClick={(e) => handleNavClick(e, item === 'Insights' ? 'whats-happening' : item.toLowerCase())}
                 className="relative group hover:text-black transition-colors py-1">
                 {item}
                 <div className="absolute bottom-0 left-0 w-full h-[3px] bg-blue-600 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
@@ -325,11 +500,11 @@ const MainLayout = () => {
                         </button>
                       )}
                       {registration && registration.paymentStatus === 'pending' && (
-                        <button onClick={() => { 
-                            setUserMenuOpen(false);
-                            const el = document.getElementById('passes');
-                            if (el) el.scrollIntoView({ behavior: 'smooth' });
-                          }}
+                        <button onClick={() => {
+                          setUserMenuOpen(false);
+                          const el = document.getElementById('passes');
+                          if (el) el.scrollIntoView({ behavior: 'smooth' });
+                        }}
                           className="w-full flex items-center gap-3 px-4 py-3 font-black uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-colors border-b-2 border-black">
                           <Ticket className="w-4 h-4" /> Choose Pass
                         </button>
@@ -374,10 +549,10 @@ const MainLayout = () => {
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}
               className="overflow-hidden lg:hidden border-4 border-black bg-white mb-10 shadow-[6px_6px_0px_rgba(0,0,0,1)]">
-              {['Insights', 'Events', 'Passes'].map((item) => (
+              {['Insights', 'Events', 'Passes', 'Speakers'].map((item) => (
                 <a key={item}
-                  href={item === 'Insights' ? '#' : `#${item.toLowerCase()}`}
-                  onClick={(e) => handleNavClick(e, item === 'Insights' ? '' : item.toLowerCase())}
+                  href={`#${item === 'Insights' ? 'whats-happening' : item.toLowerCase()}`}
+                  onClick={(e) => handleNavClick(e, item === 'Insights' ? 'whats-happening' : item.toLowerCase())}
                   className="block px-8 py-4 font-black uppercase tracking-widest text-gray-600 border-b-2 border-black last:border-b-0 hover:bg-black hover:text-white transition-colors">
                   {item}
                 </a>
@@ -389,11 +564,11 @@ const MainLayout = () => {
                 </button>
               )}
               {user && registration && registration.paymentStatus === 'pending' && (
-                <button onClick={() => { 
-                    setMenuOpen(false);
-                    const el = document.getElementById('passes');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }}
+                <button onClick={() => {
+                  setMenuOpen(false);
+                  const el = document.getElementById('passes');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
                   className="w-full flex items-center gap-3 px-8 py-4 font-black uppercase tracking-widest text-gray-600 border-b-2 border-black hover:bg-black hover:text-white transition-colors">
                   <Ticket className="w-5 h-5" /> Choose Pass
                 </button>
@@ -475,28 +650,11 @@ const MainLayout = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 1.5, ease: [0.22, 1, 0.36, 1] }}
           >
-            {[['HEMA', 'Participants'], ['HEMA', 'Speakers'], ['HEMA', 'Power Days']].map(([num, label], i) => (
+            {[['HIRAN', 'Participants'], ['SUNDAR', 'Speakers'], ['SAKTHI', 'Power Days']].map(([num, label], i) => (
               <div key={i} className={`py-5 px-4 text-center ${i < 2 ? 'border-r-4 border-[#1f2022]' : ''}`}>
                 <p className="font-black text-2xl md:text-3xl text-[#1f2022] leading-none">{num}</p>
                 <p className="font-bold text-xs uppercase tracking-[0.2em] text-gray-500 mt-1">{label}</p>
               </div>
-            ))}
-          </motion.div>
-        </div>
-
-        {/* ── Marquee Ticker ── */}
-        <div className="mt-16 md:mt-12 border-y-4 border-black bg-[#1f2022] overflow-hidden py-4">
-          <motion.div
-            className="flex gap-12 whitespace-nowrap"
-            animate={{ x: ['0%', '-50%'] }}
-            transition={{ duration: 22, repeat: Infinity, ease: 'linear' }}
-          >
-            {[...Array(2)].map((_, ri) => (
-              <span key={ri} className="flex gap-12 shrink-0">
-                {['Startup Peravai 2026', '\u2605 Oct 15 & 16', 'Easwari Engineering College', '\u2605 500+ Participants', 'Pitch \u00b7 Network \u00b7 Grow', '\u2605 Register Now', "Tamil Nadu's Biggest Student Summit", '\u2605 Limited Passes'].map((t, i) => (
-                  <span key={i} className="font-black uppercase tracking-[0.25em] text-sm text-white/80">{t}</span>
-                ))}
-              </span>
             ))}
           </motion.div>
         </div>
@@ -509,7 +667,9 @@ const MainLayout = () => {
         >
 
           {/* Events Slideshow */}
-          <EventSlideshow />
+          <div id="whats-happening">
+            <EventSlideshow />
+          </div>
 
           {/* ── Upcoming Events ── */}
           <div id="events" className="mt-24 md:mt-8 relative z-10 px-4 sm:px-6 lg:px-24">
@@ -524,7 +684,7 @@ const MainLayout = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
               <EventCard
-                title="Event peru"
+                title="Hackathon"
                 date="Oct 15 - 10:00 AM"
                 color="bg-blue-700"
                 textColor="text-white"
@@ -532,7 +692,7 @@ const MainLayout = () => {
                 rotate="-rotate-1"
               />
               <EventCard
-                title="Event peru"
+                title="Shark Tank"
                 date="Oct 16 - 02:00 PM"
                 color="bg-[#1f2022]"
                 textColor="text-white"
@@ -540,7 +700,7 @@ const MainLayout = () => {
                 rotate="rotate-2"
               />
               <EventCard
-                title="Event peru"
+                title="Phoenix Protocol"
                 date="Oct 17 - 09:00 AM"
                 color="bg-white"
                 textColor="text-black"
@@ -548,7 +708,7 @@ const MainLayout = () => {
                 rotate="-rotate-2"
               />
               <EventCard
-                title="Event peru"
+                title="Illogical Marketing"
                 date="Oct 18 - 07:00 PM"
                 color="bg-yellow-400"
                 textColor="text-black"
@@ -556,7 +716,7 @@ const MainLayout = () => {
                 rotate="rotate-2"
               />
               <EventCard
-                title="Event peru"
+                title="Junk to Genius"
                 date="Oct 15 - 10:00 AM"
                 color="bg-red-600"
                 textColor="text-white"
@@ -642,6 +802,43 @@ const MainLayout = () => {
             </motion.p>
           </div>
 
+        </motion.div>
+      </div>
+
+      {/* ── Guest Speakers Section ── */}
+      {/* Top gradient divider */}
+      <div className="mt-20 md:mt-24 mx-4 sm:mx-6 lg:mx-24 h-[3px]" style={{ background: 'linear-gradient(to right, transparent, #a80d11 20%, #1f2022 50%, #0f50e3 80%, transparent)' }} />
+
+      <div id="speakers" className="py-12 md:py-20 relative">
+        <div className="text-center mb-10 md:mb-14 relative z-10">
+          <p className="font-black uppercase tracking-[0.35em] text-gray-400 text-xs md:text-sm mb-4">
+            Hear from the best
+          </p>
+          <h2 className="text-5xl sm:text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none text-black">
+            Guest <br />
+            <span style={redGrad}>Speakers.</span>
+          </h2>
+        </div>
+        <SpeakersCarousel />
+      </div>
+
+      {/* Bottom gradient divider */}
+      <div className="mx-4 sm:mx-6 lg:mx-24 h-[3px]" style={{ background: 'linear-gradient(to right, transparent, #a80d11 20%, #1f2022 50%, #0f50e3 80%, transparent)' }} />
+
+      {/* ── Marquee Ticker ── */}
+      <div className="mt-16 md:mt-12 border-y-4 border-black bg-[#1f2022] overflow-hidden py-4">
+        <motion.div
+          className="flex gap-12 whitespace-nowrap"
+          animate={{ x: ['0%', '-50%'] }}
+          transition={{ duration: 22, repeat: Infinity, ease: 'linear' }}
+        >
+          {[...Array(2)].map((_, ri) => (
+            <span key={ri} className="flex gap-12 shrink-0">
+              {['Startup Peravai 2026', '\u2605 Oct 15 & 16', 'Easwari Engineering College', '\u2605 500+ Participants', 'Pitch \u00b7 Network \u00b7 Grow', '\u2605 Register Now', "Tamil Nadu's Biggest Student Summit", '\u2605 Limited Passes'].map((t, i) => (
+                <span key={i} className="font-black uppercase tracking-[0.25em] text-sm text-white/80">{t}</span>
+              ))}
+            </span>
+          ))}
         </motion.div>
       </div>
 
