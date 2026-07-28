@@ -289,7 +289,7 @@ const RegistrationForm = ({ passType, onSuccess, isPaymentOnly = false, onClose 
     if (err) { setError(err); return; }
     setError('');
     setSavingProfile(true);
-    
+
     try {
       await setDoc(doc(db, 'registrations', user.uid), {
         uid: user.uid,
@@ -302,7 +302,7 @@ const RegistrationForm = ({ passType, onSuccess, isPaymentOnly = false, onClose 
       }, { merge: true });
       await refreshRegistration();
       onSuccess();
-    } catch(err) {
+    } catch (err) {
       setError('Failed to save profile. Please try again.');
     }
     setSavingProfile(false);
@@ -415,17 +415,17 @@ const RegistrationForm = ({ passType, onSuccess, isPaymentOnly = false, onClose 
                 {/* Common: First / Last name */}
                 <div className="grid grid-cols-2 gap-3">
                   <Field id="reg-first" label="First Name" icon={User} type="text"
-                    placeholder="Hemant" value={role === 'student' ? student.firstName : startup.firstName}
+                    placeholder="Your Name" value={role === 'student' ? student.firstName : startup.firstName}
                     onChange={role === 'student' ? setS('firstName') : setSt('firstName')} required />
                   <Field id="reg-last" label="Last Name" icon={User} type="text"
-                    placeholder="VS" value={role === 'student' ? student.lastName : startup.lastName}
+                    placeholder="Your Last Name" value={role === 'student' ? student.lastName : startup.lastName}
                     onChange={role === 'student' ? setS('lastName') : setSt('lastName')} required />
                 </div>
                 <Field id="reg-email" label="Email" icon={Mail} type="email"
                   placeholder="you@example.com" value={role === 'student' ? student.email : startup.email}
                   onChange={role === 'student' ? setS('email') : setSt('email')} required />
                 <Field id="reg-phone" label="Contact Number" icon={Phone} type="tel"
-                  placeholder="+91 98765 43210" value={role === 'student' ? student.phone : startup.phone}
+                  placeholder="Your Contact Number" value={role === 'student' ? student.phone : startup.phone}
                   onChange={role === 'student' ? setS('phone') : setSt('phone')} required />
                 <Field id="reg-location" label="Location (City)" icon={MapPin} type="text"
                   placeholder="e.g. Chennai" value={role === 'student' ? student.location : startup.location}
@@ -462,7 +462,7 @@ const RegistrationForm = ({ passType, onSuccess, isPaymentOnly = false, onClose 
 
                 <button onClick={handleDetailsNext} disabled={savingProfile}
                   className="w-full flex items-center justify-center gap-3 py-4 border-4 border-black font-black uppercase tracking-[0.15em] text-sm bg-[#1f2022] text-white shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all disabled:opacity-50">
-                  {savingProfile ? <><Loader2 className="w-5 h-5 animate-spin"/> Saving...</> : <>Save Profile <ArrowRight className="w-5 h-5" /></>}
+                  {savingProfile ? <><Loader2 className="w-5 h-5 animate-spin" /> Saving...</> : <>Save Profile <ArrowRight className="w-5 h-5" /></>}
                 </button>
               </motion.div>
             )}

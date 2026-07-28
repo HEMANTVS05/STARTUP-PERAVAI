@@ -45,7 +45,7 @@ const events = [
   },
 ];
 
-const EventSlideshow = () => {
+const EventSlideshow = ({ onOpenHackathon }) => {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
 
@@ -174,10 +174,24 @@ const EventSlideshow = () => {
 
               {/* CTA */}
               <div className="flex items-center gap-6">
-                <button className={`${event.accent} text-white font-black uppercase tracking-widest text-sm px-8 py-4 border-4 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all duration-150`}>
+                <button
+                  onClick={() => {
+                    if (event.title.toLowerCase().includes('hackathon') && onOpenHackathon) {
+                      onOpenHackathon();
+                    }
+                  }}
+                  className={`${event.accent} text-white font-black uppercase tracking-widest text-sm px-8 py-4 border-4 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all duration-150`}
+                >
                   Register Now
                 </button>
-                <span className="font-black uppercase text-sm text-black underline decoration-4 underline-offset-4 cursor-pointer hover:text-blue-600 transition-colors">
+                <span
+                  onClick={() => {
+                    if (event.title.toLowerCase().includes('hackathon') && onOpenHackathon) {
+                      onOpenHackathon();
+                    }
+                  }}
+                  className="font-black uppercase text-sm text-black underline decoration-4 underline-offset-4 cursor-pointer hover:text-blue-600 transition-colors"
+                >
                   Learn More →
                 </span>
               </div>

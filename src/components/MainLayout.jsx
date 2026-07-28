@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Menu, X, Check, Zap, Crown, Ticket, MapPin, Clock, LogOut, QrCode, UserCircle, ChevronDown } from 'lucide-react';
+import { Star, Menu, X, Check, Zap, Crown, Ticket, MapPin, Clock, LogOut, QrCode, UserCircle, ChevronDown, Users } from 'lucide-react';
 import EventSlideshow from './EventSlideshow';
 import AuthModal from './AuthModal';
 import RegistrationForm from './RegistrationForm';
 import UserDashboard from './UserDashboard';
+import HackathonModal from './HackathonModal';
 import { useAuth } from '../context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
@@ -18,8 +19,9 @@ const redGrad = { background: 'linear-gradient(135deg,#a80d11,#d82221)', WebkitB
 const blueGrad = { background: 'linear-gradient(135deg,#0b2140,#0f50e3)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' };
 const blueGrad2 = { background: 'linear-gradient(130deg,#0b2140,#0f50e3)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' };
 
-const EventCard = ({ title, date, color, textColor, border, rotate }) => (
+const EventCard = ({ title, date, color, textColor, border, rotate, onClick }) => (
   <motion.div
+    onClick={onClick}
     whileHover={{ scale: 1.03, rotate: 0, y: -4 }}
     className={`p-6 md:p-8 ${color} ${textColor} ${border} flex flex-col justify-between h-48 md:h-56 transform ${rotate} cursor-pointer transition-all duration-300 shadow-[6px_6px_0px_rgba(0,0,0,1)] md:shadow-[10px_10px_0px_rgba(0,0,0,1)] hover:shadow-[14px_14px_0px_rgba(0,0,0,0.8)]`}
   >
@@ -276,8 +278,52 @@ const MainLayout = () => {
   const [showRegForm, setShowRegForm] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [pendingPass, setPendingPass] = useState('');
+
+  // Hackathon Modal state
+  const [showHackathonModal, setShowHackathonModal] = useState(false);
+  const [hackathonJoinCode, setHackathonJoinCode] = useState('');
+  const [profileWarning, setProfileWarning] = useState(false);
+
   const userMenuRef = useRef(null);
   const { user, registration, loadingAuth } = useAuth();
+
+  // Handle URL joinCode parameter on load
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('joinCode') || urlParams.get('code');
+    if (code) {
+      setHackathonJoinCode(code);
+      if (!user) {
+        setAuthModal({ open: true, pass: '', source: 'hackathon' });
+      } else if (!registration) {
+        // User logged in but profile incomplete — show warning + open registration form
+        setProfileWarning(true);
+        setTimeout(() => setProfileWarning(false), 5000);
+        setPendingPass('General Pass');
+        setShowRegForm(true);
+      } else {
+        setShowHackathonModal(true);
+      }
+    }
+  }, [user, registration]);
+
+  // Open Hackathon Modal Helper — gates on profile completion
+  const handleOpenHackathon = (code = '') => {
+    if (code) setHackathonJoinCode(code);
+    if (!user) {
+      // Not logged in → open auth modal, then come back to hackathon
+      setAuthModal({ open: true, pass: '', source: 'hackathon' });
+    } else if (!registration) {
+      // Logged in but profile not complete → show warning + open reg form
+      setProfileWarning(true);
+      setTimeout(() => setProfileWarning(false), 5000);
+      setPendingPass('General Pass');
+      setShowRegForm(true);
+    } else {
+      // All good → open hackathon modal
+      setShowHackathonModal(true);
+    }
+  };
 
   // Close user dropdown when clicking outside
   useEffect(() => {
@@ -331,6 +377,11 @@ const MainLayout = () => {
   // When auth state resolves after modal closes
   useEffect(() => {
     if (!user || authModal.open) return;
+    if (authModal.source === 'hackathon') {
+      setShowHackathonModal(true);
+      setAuthModal(prev => ({ ...prev, source: '' }));
+      return;
+    }
     if (!authModal.pass) return;
 
     if (!registration) {
@@ -348,7 +399,7 @@ const MainLayout = () => {
       setShowDashboard(true);
     }
     setAuthModal(prev => ({ ...prev, pass: '' }));
-  }, [user, registration, authModal.open]);
+  }, [user, registration, authModal.open, authModal.source]);
 
   // Display name for navbar
   const displayName = registration?.firstName || user?.displayName?.split(' ')[0] || user?.email?.split('@')[0] || 'Account';
@@ -493,6 +544,10 @@ const MainLayout = () => {
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.15 }}
                       className="absolute right-0 top-full mt-2 w-48 border-4 border-black bg-white shadow-[6px_6px_0px_rgba(0,0,0,1)] z-50">
+                      <button onClick={() => { handleOpenHackathon(); setUserMenuOpen(false); }}
+                        className="w-full flex items-center gap-3 px-4 py-3 font-black uppercase tracking-widest text-xs bg-blue-50 text-blue-900 hover:bg-black hover:text-white transition-colors border-b-2 border-black">
+                        <Users className="w-4 h-4 text-blue-600" /> Hackathon Team
+                      </button>
                       {registration && registration.paymentStatus !== 'pending' && (
                         <button onClick={() => { setShowDashboard(true); setUserMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-4 py-3 font-black uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-colors border-b-2 border-black">
@@ -573,6 +628,12 @@ const MainLayout = () => {
                   <Ticket className="w-5 h-5" /> Choose Pass
                 </button>
               )}
+              {user && (
+                <button onClick={() => { handleOpenHackathon(); setMenuOpen(false); }}
+                  className="w-full flex items-center gap-3 px-8 py-4 font-black uppercase tracking-widest text-blue-900 bg-blue-50 border-b-2 border-black hover:bg-black hover:text-white transition-colors">
+                  <Users className="w-5 h-5 text-blue-600" /> Hackathon Team
+                </button>
+              )}
               {!user ? (
                 <button onClick={() => { handleRegisterHereClick(); setMenuOpen(false); }}
                   className="w-full px-8 py-4 font-black uppercase tracking-widest bg-[#1f2022] text-white hover:bg-black transition-colors text-left">
@@ -594,26 +655,26 @@ const MainLayout = () => {
             <span className="inline-block overflow-hidden">
               <motion.span className="inline-block" style={redGrad}
                 initial={{ y: '110%', opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.75, delay: 0.65, ease: [0.22, 1, 0.36, 1] }}>HEMA&nbsp;</motion.span>
+                transition={{ duration: 0.75, delay: 0.65, ease: [0.22, 1, 0.36, 1] }}>EASWARI&nbsp;</motion.span>
             </span>
             <span className="inline-block overflow-hidden">
               <motion.span className="inline-block"
                 initial={{ y: '110%', opacity: 0 }} animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.75, delay: 0.82, ease: [0.22, 1, 0.36, 1] }}>
-                <span style={blueGrad}>ila</span>na.
+                <span style={blueGrad}>STARTUP</span>
               </motion.span>
             </span>
             <br />
             <span className="inline-block overflow-hidden">
               <motion.span className="inline-block"
                 initial={{ y: '110%', opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.75, delay: 0.99, ease: [0.22, 1, 0.36, 1] }}>EASWARI&nbsp;</motion.span>
+                transition={{ duration: 0.75, delay: 0.99, ease: [0.22, 1, 0.36, 1] }}>PERAVAI&nbsp;</motion.span>
             </span>
             <span className="inline-block overflow-hidden">
               <motion.span className="inline-block"
                 initial={{ y: '110%', opacity: 0 }} animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.75, delay: 1.15, ease: [0.22, 1, 0.36, 1] }}>
-                <span style={blueGrad2}>ila</span>.
+                <span style={blueGrad2}></span>
               </motion.span>
             </span>
           </h2>
@@ -650,7 +711,7 @@ const MainLayout = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 1.5, ease: [0.22, 1, 0.36, 1] }}
           >
-            {[['HIRAN', 'Participants'], ['SUNDAR', 'Speakers'], ['SAKTHI', 'Power Days']].map(([num, label], i) => (
+            {[['1000+', 'Participants'], ['50+', 'Speakers'], ['2', 'Power Days']].map(([num, label], i) => (
               <div key={i} className={`py-5 px-4 text-center ${i < 2 ? 'border-r-4 border-[#1f2022]' : ''}`}>
                 <p className="font-black text-2xl md:text-3xl text-[#1f2022] leading-none">{num}</p>
                 <p className="font-bold text-xs uppercase tracking-[0.2em] text-gray-500 mt-1">{label}</p>
@@ -668,7 +729,7 @@ const MainLayout = () => {
 
           {/* Events Slideshow */}
           <div id="whats-happening">
-            <EventSlideshow />
+            <EventSlideshow onOpenHackathon={() => handleOpenHackathon()} />
           </div>
 
           {/* ── Upcoming Events ── */}
@@ -690,6 +751,7 @@ const MainLayout = () => {
                 textColor="text-white"
                 border="border-0"
                 rotate="-rotate-1"
+                onClick={() => handleOpenHackathon()}
               />
               <EventCard
                 title="Shark Tank"
@@ -842,6 +904,35 @@ const MainLayout = () => {
         </motion.div>
       </div>
 
+      {/* ── Profile Required Toast ── */}
+      <AnimatePresence>
+        {profileWarning && (
+          <motion.div
+            initial={{ opacity: 0, y: 80, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: 80, x: '-50%' }}
+            transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+            className="fixed bottom-8 left-1/2 z-[200] flex items-center gap-4 px-6 py-4 border-4 border-black bg-[#1f2022] text-white shadow-[8px_8px_0px_rgba(0,0,0,1)] max-w-sm w-[calc(100%-2rem)]"
+          >
+            <div className="w-10 h-10 border-2 border-white bg-yellow-400 flex items-center justify-center shrink-0">
+              <span className="text-black font-black text-lg">!</span>
+            </div>
+            <div className="flex-1">
+              <p className="font-black uppercase tracking-widest text-xs text-yellow-400 mb-0.5">Profile Required</p>
+              <p className="font-bold text-sm leading-snug">
+                Complete your profile first, then you can join the Hackathon.
+              </p>
+            </div>
+            <button
+              onClick={() => setProfileWarning(false)}
+              className="shrink-0 w-8 h-8 border-2 border-white hover:bg-white hover:text-black flex items-center justify-center transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Auth Modal ── */}
       <AuthModal
         isOpen={authModal.open}
@@ -857,8 +948,13 @@ const MainLayout = () => {
             passType={pendingPass}
             onSuccess={() => {
               setShowRegForm(false);
-              const el = document.getElementById('passes');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
+              // If user was trying to open hackathon, open it now after profile done
+              if (hackathonJoinCode) {
+                setShowHackathonModal(true);
+              } else {
+                const el = document.getElementById('passes');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }
             }}
             onClose={() => setShowRegForm(false)}
           />
@@ -884,6 +980,20 @@ const MainLayout = () => {
       <AnimatePresence>
         {showDashboard && registration && (
           <UserDashboard onClose={() => setShowDashboard(false)} />
+        )}
+      </AnimatePresence>
+
+      {/* ── Hackathon Team Modal ── */}
+      <AnimatePresence>
+        {showHackathonModal && (
+          <HackathonModal
+            isOpen={showHackathonModal}
+            onClose={() => {
+              setShowHackathonModal(false);
+              setHackathonJoinCode('');
+            }}
+            initialJoinCode={hackathonJoinCode}
+          />
         )}
       </AnimatePresence>
     </>
