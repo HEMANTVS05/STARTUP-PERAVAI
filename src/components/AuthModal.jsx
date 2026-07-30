@@ -56,24 +56,11 @@ const AuthModal = ({ isOpen, onClose, selectedPass }) => {
     catch (err) { setError(err.message || 'Google sign-in failed.'); setStep('choose'); }
   };
 
-  // ── Email: check if account exists ──
-  const handleEmailContinue = async () => {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('Enter a valid email address.'); return; }
-    setError(''); setStep('loading');
-    try {
-      const methods = await fetchSignInMethodsForEmail(auth, email);
-      if (methods.length > 0 && methods.includes('password')) {
-        setIsNewUser(false); setStep('email-password');
-      } else if (methods.length > 0 && !methods.includes('password')) {
-        // Signed up via Google etc.
-        setError(`This email is linked to ${methods[0]} sign-in. Use that method instead.`);
-        setStep('email');
-      } else {
-        setIsNewUser(true); setStep('email-signup');
-      }
-    } catch (err) {
-      setError(err.message || 'Something went wrong.'); setStep('email');
-    }
+  // ── Email: continue to auth screen ──
+  const handleEmailContinue = () => {
+    setError('');
+    setIsNewUser(false); // default to sign in
+    setStep('email-auth');
   };
 
   // ── Email: sign in ──
@@ -155,7 +142,7 @@ const AuthModal = ({ isOpen, onClose, selectedPass }) => {
                         <GoogleIcon /> Continue with Google
                       </button>
 
-                      <button id="auth-email-btn" onClick={() => { setError(''); setStep('email'); }}
+                      <button id="auth-email-btn" onClick={handleEmailContinue}
                         className={btnPrimary}>
                         <Mail className="w-5 h-5" /> Continue with Email
                       </button>
@@ -167,102 +154,101 @@ const AuthModal = ({ isOpen, onClose, selectedPass }) => {
                     </motion.div>
                   )}
 
-                  {/* ── EMAIL: enter address ── */}
-                  {step === 'email' && (
-                    <motion.div key="email" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
+                  {/* ── EMAIL AUTH: Login or Register ── */}
+                  {step === 'email-auth' && (
+                    <motion.div key="email-auth" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.2 }} className="space-y-4">
                       <button onClick={() => { setStep('choose'); setError(''); }} className={backBtn}>
                         <ChevronLeft className="w-4 h-4" /> Back
                       </button>
-                      <p className="font-bold text-gray-500 text-xs uppercase tracking-widest">Your email address</p>
-                      <p className="text-xs text-gray-400 font-bold">Works with Gmail, Yahoo, Outlook — any email.</p>
-                      <input id="auth-email-input" type="email" placeholder="you@example.com"
-                        value={email} onChange={(e) => setEmail(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleEmailContinue()}
-                        className={inputCls} autoFocus />
-                      <ErrorMsg msg={error} />
-                      <button id="auth-email-continue-btn" onClick={handleEmailContinue} className={btnPrimary}>
-                        Continue <ArrowRight className="w-4 h-4" />
-                      </button>
-                    </motion.div>
-                  )}
 
-                  {/* ── EMAIL: existing user — sign in ── */}
-                  {step === 'email-password' && (
-                    <motion.div key="email-password" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.2 }} className="space-y-4">
-                      <button onClick={() => { setStep('email'); setError(''); }} className={backBtn}>
-                        <ChevronLeft className="w-4 h-4" /> Back
-                      </button>
-                      <p className="font-bold text-gray-500 text-xs uppercase tracking-widest">Welcome back!</p>
-                      <p className="font-black text-black text-sm">{email}</p>
-                      <div className="relative">
-                        <input id="auth-signin-password" type={showPass ? 'text' : 'password'}
-                          placeholder="Your password" value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && handleEmailSignIn()}
-                          className={inputCls} autoFocus />
-                        <button type="button" onClick={() => setShowPass(!showPass)}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black">
-                          {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      <div className="flex gap-4 mb-6 border-b-2 border-gray-200">
+                        <button
+                          onClick={() => { setIsNewUser(false); setError(''); }}
+                          className={`pb-2 font-black uppercase tracking-widest text-sm transition-colors ${!isNewUser ? 'text-black border-b-4 border-black' : 'text-gray-400 hover:text-black'}`}
+                        >
+                          Sign In
+                        </button>
+                        <button
+                          onClick={() => { setIsNewUser(true); setError(''); }}
+                          className={`pb-2 font-black uppercase tracking-widest text-sm transition-colors ${isNewUser ? 'text-black border-b-4 border-black' : 'text-gray-400 hover:text-black'}`}
+                        >
+                          Sign Up
                         </button>
                       </div>
-                      <ErrorMsg msg={error} />
-                      <button id="auth-signin-btn" onClick={handleEmailSignIn} className={btnPrimary}>
-                        Sign In <ArrowRight className="w-4 h-4" />
-                      </button>
-                      <button onClick={() => { setError(''); setResetSent(false); setStep('forgot'); }}
-                        className="w-full text-xs font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors py-1">
-                        Forgot password?
-                      </button>
-                    </motion.div>
-                  )}
 
-                  {/* ── EMAIL: new user — sign up ── */}
-                  {step === 'email-signup' && (
-                    <motion.div key="email-signup" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.2 }} className="space-y-4">
-                      <button onClick={() => { setStep('email'); setError(''); }} className={backBtn}>
-                        <ChevronLeft className="w-4 h-4" /> Back
-                      </button>
-                      <p className="font-bold text-gray-500 text-xs uppercase tracking-widest">Create your account</p>
-                      <p className="font-black text-black text-sm">{email}</p>
-                      <div className="relative">
-                        <input id="auth-signup-password" type={showPass ? 'text' : 'password'}
-                          placeholder="Create a password (min 6 chars)" value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          className={inputCls} autoFocus />
-                        <button type="button" onClick={() => setShowPass(!showPass)}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black">
-                          {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                      </div>
-                      <div className="relative">
-                        <input id="auth-signup-confirm" type={showConfirm ? 'text' : 'password'}
-                          placeholder="Confirm password" value={confirmPassword}
-                          onChange={(e) => setConfirmPassword(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && handleEmailSignUp()}
-                          className={inputCls} />
-                        <button type="button" onClick={() => setShowConfirm(!showConfirm)}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black">
-                          {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                      </div>
-                      {/* Password strength hint */}
-                      {password && (
-                        <div className="flex gap-1">
-                          {[...Array(4)].map((_, i) => (
-                            <div key={i} className={`flex-1 h-1 transition-colors ${password.length > i * 3
-                              ? password.length < 6 ? 'bg-red-500' : password.length < 10 ? 'bg-yellow-400' : 'bg-green-500'
-                              : 'bg-gray-200'
-                              }`} />
-                          ))}
+                      <div className="space-y-4">
+                        <div>
+                          <p className="font-bold text-gray-500 text-xs uppercase tracking-widest mb-1">Email address</p>
+                          <input id="auth-email-input" type="email" placeholder="you@example.com"
+                            value={email} onChange={(e) => setEmail(e.target.value)}
+                            className={inputCls} autoFocus />
                         </div>
-                      )}
-                      <ErrorMsg msg={error} />
-                      <button id="auth-signup-btn" onClick={handleEmailSignUp} className={btnPrimary}>
-                        Create Account <ArrowRight className="w-4 h-4" />
-                      </button>
+
+                        <div>
+                          <p className="font-bold text-gray-500 text-xs uppercase tracking-widest mb-1">Password</p>
+                          <div className="relative">
+                            <input id="auth-password-input" type={showPass ? 'text' : 'password'}
+                              placeholder={isNewUser ? "Create a password (min 6 chars)" : "Your password"}
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  isNewUser ? handleEmailSignUp() : handleEmailSignIn();
+                                }
+                              }}
+                              className={inputCls} />
+                            <button type="button" onClick={() => setShowPass(!showPass)}
+                              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black">
+                              {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                          </div>
+                        </div>
+
+                        {isNewUser && (
+                          <div>
+                            <p className="font-bold text-gray-500 text-xs uppercase tracking-widest mb-1">Confirm Password</p>
+                            <div className="relative">
+                              <input id="auth-signup-confirm" type={showConfirm ? 'text' : 'password'}
+                                placeholder="Confirm password" value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleEmailSignUp()}
+                                className={inputCls} />
+                              <button type="button" onClick={() => setShowConfirm(!showConfirm)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black">
+                                {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                              </button>
+                            </div>
+                            {password && (
+                              <div className="flex gap-1 mt-2">
+                                {[...Array(4)].map((_, i) => (
+                                  <div key={i} className={`flex-1 h-1 transition-colors ${password.length > i * 3
+                                    ? password.length < 6 ? 'bg-red-500' : password.length < 10 ? 'bg-yellow-400' : 'bg-green-500'
+                                    : 'bg-gray-200'
+                                    }`} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        <ErrorMsg msg={error} />
+
+                        {!isNewUser && (
+                          <button onClick={() => { setError(''); setResetSent(false); setStep('forgot'); }}
+                            className="w-full text-xs font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors py-1 text-right">
+                            Forgot password?
+                          </button>
+                        )}
+
+                        <button
+                          id={isNewUser ? "auth-signup-btn" : "auth-signin-btn"}
+                          onClick={isNewUser ? handleEmailSignUp : handleEmailSignIn}
+                          className={btnPrimary}
+                        >
+                          {isNewUser ? 'Create Account' : 'Sign In'} <ArrowRight className="w-4 h-4" />
+                        </button>
+                      </div>
                     </motion.div>
                   )}
 
@@ -270,7 +256,7 @@ const AuthModal = ({ isOpen, onClose, selectedPass }) => {
                   {step === 'forgot' && (
                     <motion.div key="forgot" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.2 }} className="space-y-4">
-                      <button onClick={() => { setStep('email-password'); setError(''); }} className={backBtn}>
+                      <button onClick={() => { setStep('email-auth'); setError(''); }} className={backBtn}>
                         <ChevronLeft className="w-4 h-4" /> Back
                       </button>
                       {resetSent ? (
@@ -283,7 +269,7 @@ const AuthModal = ({ isOpen, onClose, selectedPass }) => {
                             Check <span className="text-black">{email}</span> for a password reset link.
                             Also check your spam folder.
                           </p>
-                          <button onClick={() => { setStep('email-password'); setResetSent(false); }}
+                          <button onClick={() => { setStep('email-auth'); setResetSent(false); }}
                             className={btnPrimary + ' mt-4'}>
                             Back to Sign In
                           </button>

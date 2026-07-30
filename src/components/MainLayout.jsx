@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Menu, X, Check, Zap, Crown, Ticket, MapPin, Clock, LogOut, QrCode, UserCircle, ChevronDown, Users } from 'lucide-react';
+import { Star, Menu, X, Check, Zap, Crown, Ticket, MapPin, Clock, LogOut, QrCode, UserCircle, ChevronDown, Users, Download } from 'lucide-react';
 import EventSlideshow from './EventSlideshow';
 import AuthModal from './AuthModal';
 import RegistrationForm from './RegistrationForm';
@@ -11,13 +11,15 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 
 import speaker1 from '../assets/MAMAAAA.jpeg';
-import speaker4 from '../assets/hiran.png';
+import eventBrochure from '../assets/EVENT_BROCHURE.pdf';
 
 
 // ─── gradient presets ────────────────────────────────────────────────────────
 const redGrad = { background: 'linear-gradient(135deg,#a80d11,#d82221)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' };
 const blueGrad = { background: 'linear-gradient(135deg,#0b2140,#0f50e3)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' };
 const blueGrad2 = { background: 'linear-gradient(130deg,#0b2140,#0f50e3)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' };
+const fullGrad = { background: 'linear-gradient(135deg,#a80d11,#d82221 40%,#0b2140 70%,#0f50e3)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' };
+const logoGrad = { background: 'linear-gradient(to right, #d82221 30%, #a80d11 40%, #11315dff 50%, #0f50e3 120%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' };
 
 const EventCard = ({ title, date, color, textColor, border, rotate, onClick }) => (
   <motion.div
@@ -166,7 +168,7 @@ const SpeakersCarousel = () => {
   const dragStartX = useRef(0);
   const scrollStartX = useRef(0);
   const animFrameRef = useRef(null);
-  const speedRef = useRef(1.2); // px per frame
+  const speedRef = useRef(3); // px per frame
 
   // Auto-scroll loop
   useEffect(() => {
@@ -513,7 +515,7 @@ const MainLayout = () => {
 
           {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-6 xl:gap-10 text-sm font-black text-gray-500 uppercase tracking-widest">
-            {['Insights', 'Events', 'Passes', 'Speakers'].map(item => (
+            {['Insights', 'Events', 'Passes', 'Speakers', 'Brochure'].map(item => (
               <a key={item}
                 href={`#${item === 'Insights' ? 'whats-happening' : item.toLowerCase()}`}
                 onClick={(e) => handleNavClick(e, item === 'Insights' ? 'whats-happening' : item.toLowerCase())}
@@ -522,6 +524,17 @@ const MainLayout = () => {
                 <div className="absolute bottom-0 left-0 w-full h-[3px] bg-blue-600 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
               </a>
             ))}
+
+            {/*<a
+              href={eventBrochure}
+              download="EVENT_BROCHURE.pdf"
+              className="flex items-center gap-2 px-3 py-1.5 border-2 border-black bg-red-800 text-white font-white uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
+              style={{ background: 'linear-gradient(to right, #a80d11 20%, #d82221 90%)' }}
+            >
+              <Download className="w-5 h-6" />
+              Brochure
+            </a>
+            */}
 
             {/* ── Register Here / User menu ── */}
             {!user ? (
@@ -612,6 +625,14 @@ const MainLayout = () => {
                   {item}
                 </a>
               ))}
+              <a
+                href={eventBrochure}
+                download="EVENT_BROCHURE.pdf"
+                className="w-full flex items-center gap-3 px-8 py-4 font-black uppercase tracking-widest text-white border-b-2 border-black hover:opacity-90 transition-opacity"
+                style={{ background: 'linear-gradient(to right, #a80d11 20%, #d82221 80%)' }}
+              >
+                <Download className="w-5 h-5" /> Download Brochure
+              </a>
               {user && registration && registration.paymentStatus !== 'pending' && (
                 <button onClick={() => { setShowDashboard(true); setMenuOpen(false); }}
                   className="w-full flex items-center gap-3 px-8 py-4 font-black uppercase tracking-widest text-gray-600 border-b-2 border-black hover:bg-black hover:text-white transition-colors">
@@ -651,33 +672,66 @@ const MainLayout = () => {
 
         {/* ── Hero Headline ── */}
         <div className="text-center mb-20 md:mb-32 relative z-10">
-          <h2 className="text-[#1f2022] text-[2.8rem] sm:text-[4rem] md:text-[6rem] lg:text-[8rem] xl:text-[10rem] font-black uppercase tracking-tighter leading-[0.85]">
-            <span className="inline-block overflow-hidden">
-              <motion.span className="inline-block" style={redGrad}
-                initial={{ y: '110%', opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.75, delay: 0.65, ease: [0.22, 1, 0.36, 1] }}>EASWARI&nbsp;</motion.span>
-            </span>
-            <span className="inline-block overflow-hidden">
-              <motion.span className="inline-block"
-                initial={{ y: '110%', opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.75, delay: 0.82, ease: [0.22, 1, 0.36, 1] }}>
-                <span style={blueGrad}>STARTUP</span>
-              </motion.span>
-            </span>
-            <br />
-            <span className="inline-block overflow-hidden">
-              <motion.span className="inline-block"
-                initial={{ y: '110%', opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.75, delay: 0.99, ease: [0.22, 1, 0.36, 1] }}>PERAVAI&nbsp;</motion.span>
-            </span>
-            <span className="inline-block overflow-hidden">
-              <motion.span className="inline-block"
-                initial={{ y: '110%', opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.75, delay: 1.15, ease: [0.22, 1, 0.36, 1] }}>
-                <span style={blueGrad2}></span>
-              </motion.span>
-            </span>
-          </h2>
+          {/* ── HERO HEADLINE — tweak font sizes here ────────────────────────────
+               EASWARI  : change the number in style={{ fontSize: '11vw' }}
+               STARTUP  : change the number in style={{ fontSize: '7.5vw' }}
+               PERAVAI  : change the number in style={{ fontSize: '7.5vw' }}
+               vw = % of screen width, so it NEVER overflows or wraps.
+          ──────────────────────────────────────────────────────────────────── */}
+          <div className="relative w-full px-4 mb-2">
+            {/* Decorative accent line top */}
+
+            <h2 className="font-black uppercase tracking-tighter text-center w-full leading-none">
+
+              {/* ── EASWARI ── change fontSize below to resize */}
+              <span className="block overflow-hidden mb-1">
+                <motion.span
+                  className="block whitespace-nowrap"
+                  style={{ ...logoGrad, fontSize: '9vw' }}
+                  initial={{ y: '110%', opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.75, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  EASWARI
+                </motion.span>
+              </span>
+
+              {/* ── STARTUP + PERAVAI ── change fontSize below to resize both */}
+              <span className="flex items-baseline justify-center gap-[2vw] overflow-hidden">
+                <span className="overflow-hidden">
+                  <motion.span
+                    className="block whitespace-nowrap"
+                    style={{ ...redGrad, fontSize: '8vw' }}
+                    initial={{ y: '110%', opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.75, delay: 0.82, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    STARTUP
+                  </motion.span>
+                </span>
+
+                <span className="overflow-hidden">
+                  <motion.span
+                    className="block whitespace-nowrap"
+                    style={{ ...blueGrad, fontSize: '8vw' }}
+                    initial={{ y: '110%', opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.75, delay: 1.04, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    PERAVAI
+                  </motion.span>
+                </span>
+              </span>
+            </h2>
+
+            {/* Decorative accent line bottom */}
+            <motion.div
+              initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+              transition={{ duration: 0.6, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
+              className="h-[5px] w-full origin-right mt-6"
+              style={{ background: 'linear-gradient(to left, #a80d11, #d82221 45%, #0b2140 55%, #0f50e3)' }}
+            />
+          </div>
 
           {/* Hero Actions */}
           <motion.div
@@ -814,6 +868,78 @@ const MainLayout = () => {
           </div>
 
 
+          {/* ── Brochure Preview Section ── */}
+          <div id="brochure" className="mt-20 md:mt-28 relative z-10 px-4 sm:px-6 lg:px-24">
+            {/* Section header */}
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-10 gap-6">
+              <div>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="font-black uppercase tracking-[0.35em] text-gray-400 text-xs md:text-sm mb-3"
+                >
+                  Official Document
+                </motion.p>
+                <motion.h2
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                  className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none"
+                >
+                  Event <span style={blueGrad}>Brochure.</span>
+                </motion.h2>
+              </div>
+
+              {/* Download CTA */}
+              <motion.a
+                href={eventBrochure}
+                download="EVENT_BROCHURE.pdf"
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                whileHover={{ x: 4, y: -4, transition: { duration: 0.15 } }}
+                className="inline-flex items-center gap-3 px-8 py-4 bg-[#1f2022] text-white font-black uppercase tracking-[0.18em] text-sm border-4 border-[#1f2022] shadow-[6px_6px_0px_rgba(0,0,0,0.25)] hover:shadow-none transition-all duration-150 self-start md:self-auto whitespace-nowrap"
+              >
+                <Download className="w-5 h-5" />
+                Download PDF
+              </motion.a>
+            </div>
+
+            {/* PDF Embed */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="relative border-4 border-[#1f2022] shadow-[10px_10px_0px_rgba(0,0,0,1)]"
+            >
+              {/* Gradient top bar — matches site accent */}
+              <div
+                className="h-[6px] w-full"
+                style={{ background: 'linear-gradient(to right, #a80d11, #d82221 45%, #0b2140 55%, #0f50e3)' }}
+              />
+
+              {/* The PDF viewer */}
+              <div className="relative bg-gray-100" style={{ height: '90vh', minHeight: '500px' }}>
+                <iframe
+                  src={`${eventBrochure}#toolbar=1&navpanes=0&scrollbar=1&view=FitH`}
+                  title="Event Brochure Preview"
+                  className="w-full h-full"
+                  style={{ border: 'none', display: 'block' }}
+                />
+              </div>
+
+              {/* Gradient bottom bar */}
+              <div
+                className="h-[6px] w-full"
+                style={{ background: 'linear-gradient(to left, #a80d11, #d82221 45%, #0b2140 55%, #0f50e3)' }}
+              />
+            </motion.div>
+          </div>
 
           {/* ── Section Divider ── */}
           <div className="mt-20 md:mt-24 mb-16 md:mb-20 px-4 sm:px-6 lg:px-24 flex items-center gap-6">
