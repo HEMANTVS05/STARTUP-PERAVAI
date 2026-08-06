@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Menu, X, Check, Zap, Crown, Ticket, MapPin, Clock, LogOut, QrCode, UserCircle, ChevronDown, Users, Download } from 'lucide-react';
+import { Star, Menu, X, Check, Zap, Crown, Ticket, MapPin, Clock, LogOut, QrCode, UserCircle, ChevronDown, Users, Download, Mail, Phone } from 'lucide-react';
 import EventSlideshow from './EventSlideshow';
 import AuthModal from './AuthModal';
 import RegistrationForm from './RegistrationForm';
 import UserDashboard from './UserDashboard';
 import HackathonModal from './HackathonModal';
+import EventRegistrationModal from './EventRegistrationModal';
 import { useAuth } from '../context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
@@ -21,21 +22,54 @@ const blueGrad2 = { background: 'linear-gradient(130deg,#0b2140,#0f50e3)', Webki
 const fullGrad = { background: 'linear-gradient(135deg,#a80d11,#d82221 40%,#0b2140 70%,#0f50e3)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' };
 const logoGrad = { background: 'linear-gradient(to right, #d82221 30%, #a80d11 40%, #11315dff 50%, #0f50e3 120%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' };
 
+// ─── Events Data (22 events) ──────────────────────────────────────────────────
+const eventsData = [
+  // TECHNICAL COMPETITIONS
+  { id: 'hackathon', name: 'Hackathon', venue: 'TRP', day: 'Both Days', description: 'Collaboration with TNWeSafe. Build real solutions that matter.', eventType: 'Team Event', category: 'Technical', color: 'bg-blue-700', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1', useHackathonModal: true },
+  { id: 'shark-tank', name: 'Shark Tank', venue: 'GEETHAM', day: 'Day 1 & 2', description: 'Early stage students pitch in front of dedicated investors. Top 20 teams shortlisted from 50 registrations.', eventType: 'Team Event', category: 'Technical', color: 'bg-[#1f2022]', textColor: 'text-white', border: 'border-0', rotate: 'rotate-2' },
+  { id: 'phoenix-protocol', name: 'Phoenix Protocol', venue: 'TRP', day: 'Day 2', description: 'Revive forgotten brands — uncover what went wrong and pitch a comeback strategy stronger than ever.', eventType: 'Team Event', category: 'Technical', color: 'bg-white', textColor: 'text-black', border: 'border-8 border-black', rotate: '-rotate-2' },
+  { id: 'illogical-marketing', name: 'Illogical Marketing', venue: 'Hi-Tech Hall 2', day: 'Day 1', description: 'Market and promote illogical objects. The goal is maximum marketing ability — creativity over logic.', eventType: 'Individual', category: 'Technical', color: 'bg-yellow-400', textColor: 'text-black', border: 'border-0', rotate: 'rotate-2' },
+  { id: 'junk-to-genius', name: 'Junk to Genius', venue: 'MBA Seminar Hall 1', day: 'Both Days', description: 'Using UN Sustainable Development Goals, build something brilliant from waste items.', eventType: 'Team Event', category: 'Technical', color: 'bg-red-600', textColor: 'text-white', border: 'border-0', rotate: '-rotate-2' },
+  // SUBMISSION EVENT
+  { id: 'reel-making', name: 'Reel Making', venue: 'Award Show Screening', day: 'Submission', description: 'Create a reel capturing the startup spirit. Top reels screened live during the award show.', eventType: 'Team Event', category: 'Submission', color: 'bg-purple-600', textColor: 'text-white', border: 'border-0', rotate: 'rotate-1' },
+  // EXPO
+  { id: 'stall-expo', name: 'Stall Expo', venue: 'OAT', day: 'Both Days', description: 'Startups, sponsors, and clubs showcase to participants, investors, and students at SRM Ramapuram.', eventType: 'Showcase', category: 'Expo', color: 'bg-orange-500', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1' },
+  { id: 'student-project-expo', name: 'Student Project Expo', venue: 'Library', day: 'Both Days', description: 'University students showcase their working projects to relevant stakeholders and a live audience.', eventType: 'Individual/Team', category: 'Expo', color: 'bg-cyan-500', textColor: 'text-black', border: 'border-0', rotate: 'rotate-2' },
+  // EXPERT EVENTS
+  { id: 'panel-discussions', name: 'Panel Discussions', venue: 'GEETHAM', day: 'Day 1', description: 'Panelists engage in a curated discussion on relevant topics with a select interactive audience.', eventType: 'Individual', category: 'Expert', color: 'bg-indigo-600', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1' },
+  { id: 'keynote-speeches', name: 'Keynote Speeches', venue: 'TRP / GEETHAM', day: 'Both Days', description: 'Inspiring keynote sessions alongside inaugurations and the beginning of key events.', eventType: 'Attendance', category: 'Expert', color: 'bg-[#2d3748]', textColor: 'text-white', border: 'border-0', rotate: 'rotate-1' },
+  { id: 'live-podcast', name: 'Live Podcast', venue: 'GEETHAM', day: 'Both Days', description: 'Live podcast sessions with industry leaders, founders, and startup ecosystem builders.', eventType: 'Individual', category: 'Expert', color: 'bg-pink-500', textColor: 'text-white', border: 'border-0', rotate: '-rotate-2' },
+  { id: 'pavilions', name: 'Pavilions', venue: 'Wing 3', day: 'Day 1', description: 'StartupTN and other organizations with inquiry spots and scheme explanations.', eventType: 'Attendance', category: 'Expert', color: 'bg-teal-500', textColor: 'text-white', border: 'border-0', rotate: 'rotate-2' },
+  // MAIN STAGE
+  { id: 'social-impact-awards', name: 'Social Impact Awards', venue: 'GEETHAM', day: 'Day 2', description: 'Recognizing social impact-oriented startups making a real difference in the world.', eventType: 'Award', category: 'Main Stage', color: 'bg-amber-500', textColor: 'text-black', border: 'border-0', rotate: '-rotate-1' },
+  { id: 'sponsor-promotions', name: 'Sponsor Promotions', venue: 'Along with Awards', day: 'Day 2', description: 'Startup companies launch new products or technology in front of stakeholders for maximum reach.', eventType: 'Showcase', category: 'Main Stage', color: 'bg-lime-400', textColor: 'text-black', border: 'border-0', rotate: 'rotate-2' },
+  { id: 'valedictory', name: 'Valedictory', venue: 'Along with Awards', day: 'Day 2', description: 'Grand closing ceremony honouring the Hackathon and Shark Tank winners.', eventType: 'Attendance', category: 'Main Stage', color: 'bg-rose-600', textColor: 'text-white', border: 'border-0', rotate: '-rotate-2' },
+  { id: 'easwari-startups-launch', name: 'Easwari Startups Launch', venue: 'Main Stage', day: 'Day 2', description: 'Identifying and honouring student startups incubated by Dr. R Shivakumar Foundation.', eventType: 'Award', category: 'Main Stage', color: 'bg-violet-600', textColor: 'text-white', border: 'border-0', rotate: 'rotate-1' },
+  { id: 'standup', name: 'Standup', venue: 'Main Stage', day: 'Day 1', description: 'Lightning standup sessions — share your startup idea with the audience in 60 seconds.', eventType: 'Individual', category: 'Main Stage', color: 'bg-emerald-500', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1' },
+  // WORKSHOP / MENTORSHIP
+  { id: 'design-thinking-bootcamp', name: 'Design Thinking Bootcamp', venue: 'MBA Seminar Hall 2', day: 'Both Days', description: 'A hands-on workshop to develop human-centric, real-world problem-solving skills.', eventType: 'Individual', category: 'Workshop', color: 'bg-sky-500', textColor: 'text-white', border: 'border-0', rotate: 'rotate-2' },
+  { id: 'startup-dating', name: 'Startup Dating', venue: 'Hi-Tech 1', day: 'Both Days', description: 'Students with identified problems get guidance to transform their idea into a real startup.', eventType: 'Individual', category: 'Workshop', color: 'bg-fuchsia-500', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1' },
+  { id: 'incubation-hub-pavilions', name: 'Incubation Hub Pavilions', venue: 'Wing 3', day: 'Both Days', description: 'Pavilions for incubation organizations — inquiry spots and scheme explanations.', eventType: 'Attendance', category: 'Workshop', color: 'bg-yellow-600', textColor: 'text-white', border: 'border-0', rotate: 'rotate-1' },
+  // ADD-ONS
+  { id: 'one-to-one-mentorship', name: 'One-to-One Mentorship', venue: 'Library Panels', day: 'Both Days', description: 'Get personalized one-on-one guidance from industry experts and successful founders.', eventType: 'Individual', category: 'Mentorship', color: 'bg-[#374151]', textColor: 'text-white', border: 'border-0', rotate: '-rotate-2' },
+  { id: 'fireside-chat', name: 'Fireside Chat', venue: 'CIVIL Ground Floor', day: 'Both Days', description: 'Intimate conversations with successful entrepreneurs and innovators in a relaxed setting.', eventType: 'Individual', category: 'Mentorship', color: 'bg-red-800', textColor: 'text-white', border: 'border-0', rotate: 'rotate-2' },
+];
+
 const EventCard = ({ title, date, color, textColor, border, rotate, onClick }) => (
   <motion.div
     onClick={onClick}
     whileHover={{ scale: 1.03, rotate: 0, y: -4 }}
-    className={`p-6 md:p-8 ${color} ${textColor} ${border} flex flex-col justify-between h-48 md:h-56 transform ${rotate} cursor-pointer transition-all duration-300 shadow-[6px_6px_0px_rgba(0,0,0,1)] md:shadow-[10px_10px_0px_rgba(0,0,0,1)] hover:shadow-[14px_14px_0px_rgba(0,0,0,0.8)]`}
+    className={`p-6 md:p-8 ${color} ${textColor} ${border} flex flex-col justify-between min-h-[14rem] md:min-h-[16rem] transform ${rotate} cursor-pointer transition-all duration-300 shadow-[6px_6px_0px_rgba(0,0,0,1)] md:shadow-[10px_10px_0px_rgba(0,0,0,1)] hover:shadow-[14px_14px_0px_rgba(0,0,0,0.8)]`}
   >
     <div>
-      <h4 className="text-2xl md:text-3xl font-black uppercase mb-1 leading-tight tracking-tight">{title}</h4>
+      <h4 className="text-2xl md:text-3xl font-black uppercase mb-1 leading-tight tracking-tight break-words">{title}</h4>
       <p className="font-bold opacity-80 uppercase tracking-widest text-xs md:text-sm">{date}</p>
     </div>
-    <div className="flex justify-between items-end mt-4">
-      <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-current flex items-center justify-center">
+    <div className="flex justify-between items-end mt-6 gap-2">
+      <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-current flex items-center justify-center shrink-0">
         <Star className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" />
       </div>
-      <span className="font-black text-base md:text-xl uppercase underline decoration-4 underline-offset-4">Join Now</span>
+      <span className="font-black text-base md:text-xl uppercase underline decoration-4 underline-offset-4 whitespace-nowrap text-right">Join Now</span>
     </div>
   </motion.div>
 );
@@ -286,6 +320,12 @@ const MainLayout = () => {
   const [hackathonJoinCode, setHackathonJoinCode] = useState('');
   const [profileWarning, setProfileWarning] = useState(false);
 
+  // Event registration modal state
+  const [showEventModal, setShowEventModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showEventPassGate, setShowEventPassGate] = useState(false);
+  const [pendingEvent, setPendingEvent] = useState(null);
+
   const userMenuRef = useRef(null);
   const { user, registration, loadingAuth } = useAuth();
 
@@ -304,26 +344,65 @@ const MainLayout = () => {
         setPendingPass('General Pass');
         setShowRegForm(true);
       } else {
-        setShowHackathonModal(true);
+        const hasEventPass = registration.paymentStatus !== 'pending' &&
+          registration.passType !== 'None' &&
+          registration.passType !== 'General Pass';
+        if (!hasEventPass) {
+          setShowEventPassGate(true);
+        } else {
+          setShowHackathonModal(true);
+        }
       }
     }
   }, [user, registration]);
 
-  // Open Hackathon Modal Helper — gates on profile completion
+  // Open Hackathon Modal Helper — gates on Event Pass + profile completion
   const handleOpenHackathon = (code = '') => {
     if (code) setHackathonJoinCode(code);
     if (!user) {
-      // Not logged in → open auth modal, then come back to hackathon
       setAuthModal({ open: true, pass: '', source: 'hackathon' });
     } else if (!registration) {
-      // Logged in but profile not complete → show warning + open reg form
       setProfileWarning(true);
       setTimeout(() => setProfileWarning(false), 5000);
       setPendingPass('General Pass');
       setShowRegForm(true);
     } else {
-      // All good → open hackathon modal
+      const hasEventPass = registration.paymentStatus !== 'pending' &&
+        registration.passType !== 'None' &&
+        registration.passType !== 'General Pass';
+      if (!hasEventPass) {
+        setShowEventPassGate(true);
+      } else {
+        setShowHackathonModal(true);
+      }
+    }
+  };
+
+  // ── Event card "Join Now" — gates on Event Pass ───────────────────────────────
+  const handleEventJoin = (event) => {
+    if (!user) {
+      setPendingEvent(event);
+      setAuthModal({ open: true, pass: '', source: 'event' });
+      return;
+    }
+    if (!registration) {
+      setPendingEvent(event);
+      setPendingPass('General Pass');
+      setShowRegForm(true);
+      return;
+    }
+    const hasEventPass = registration.paymentStatus !== 'pending' &&
+      registration.passType !== 'None' &&
+      registration.passType !== 'General Pass';
+    if (!hasEventPass) {
+      setShowEventPassGate(true);
+      return;
+    }
+    if (event.useHackathonModal) {
       setShowHackathonModal(true);
+    } else {
+      setSelectedEvent(event);
+      setShowEventModal(true);
     }
   };
 
@@ -379,11 +458,46 @@ const MainLayout = () => {
   // When auth state resolves after modal closes
   useEffect(() => {
     if (!user || authModal.open) return;
+
+    const hasEventPass = registration &&
+      registration.paymentStatus !== 'pending' &&
+      registration.passType !== 'None' &&
+      registration.passType !== 'General Pass';
+
+    // ── Hackathon source ──
     if (authModal.source === 'hackathon') {
-      setShowHackathonModal(true);
       setAuthModal(prev => ({ ...prev, source: '' }));
+      if (!registration) {
+        setPendingPass('General Pass');
+        setShowRegForm(true);
+      } else if (!hasEventPass) {
+        setShowEventPassGate(true);
+      } else {
+        setShowHackathonModal(true);
+      }
       return;
     }
+
+    // ── Event source ──
+    if (authModal.source === 'event') {
+      setAuthModal(prev => ({ ...prev, source: '' }));
+      const evt = pendingEvent;
+      if (!evt) return;
+      if (!registration) {
+        setPendingPass('General Pass');
+        setShowRegForm(true);
+      } else if (!hasEventPass) {
+        setShowEventPassGate(true);
+      } else if (evt.useHackathonModal) {
+        setShowHackathonModal(true);
+      } else {
+        setSelectedEvent(evt);
+        setShowEventModal(true);
+        setPendingEvent(null);
+      }
+      return;
+    }
+
     if (!authModal.pass) return;
 
     if (!registration) {
@@ -401,7 +515,7 @@ const MainLayout = () => {
       setShowDashboard(true);
     }
     setAuthModal(prev => ({ ...prev, pass: '' }));
-  }, [user, registration, authModal.open, authModal.source]);
+  }, [user, registration, authModal.open, authModal.source, pendingEvent]);
 
   // Display name for navbar
   const displayName = registration?.firstName || user?.displayName?.split(' ')[0] || user?.email?.split('@')[0] || 'Account';
@@ -515,7 +629,7 @@ const MainLayout = () => {
 
           {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-6 xl:gap-10 text-sm font-black text-gray-500 uppercase tracking-widest">
-            {['Insights', 'Events', 'Passes', 'Speakers', 'Brochure'].map(item => (
+            {['Insights', 'Events', 'Passes', 'Speakers', 'Brochure', 'Contact'].map(item => (
               <a key={item}
                 href={`#${item === 'Insights' ? 'whats-happening' : item.toLowerCase()}`}
                 onClick={(e) => handleNavClick(e, item === 'Insights' ? 'whats-happening' : item.toLowerCase())}
@@ -617,7 +731,7 @@ const MainLayout = () => {
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}
               className="overflow-hidden lg:hidden border-4 border-black bg-white mb-10 shadow-[6px_6px_0px_rgba(0,0,0,1)]">
-              {['Insights', 'Events', 'Passes', 'Speakers'].map((item) => (
+              {['Insights', 'Events', 'Passes', 'Speakers', 'Contact'].map((item) => (
                 <a key={item}
                   href={`#${item === 'Insights' ? 'whats-happening' : item.toLowerCase()}`}
                   onClick={(e) => handleNavClick(e, item === 'Insights' ? 'whats-happening' : item.toLowerCase())}
@@ -798,146 +912,138 @@ const MainLayout = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
-              <EventCard
-                title="Hackathon"
-                date="Oct 15 - 10:00 AM"
-                color="bg-blue-700"
-                textColor="text-white"
-                border="border-0"
-                rotate="-rotate-1"
-                onClick={() => handleOpenHackathon()}
-              />
-              <EventCard
-                title="Shark Tank"
-                date="Oct 16 - 02:00 PM"
-                color="bg-[#1f2022]"
-                textColor="text-white"
-                border="border-0"
-                rotate="rotate-2"
-              />
-              <EventCard
-                title="Phoenix Protocol"
-                date="Oct 17 - 09:00 AM"
-                color="bg-white"
-                textColor="text-black"
-                border="border-8 border-black"
-                rotate="-rotate-2"
-              />
-              <EventCard
-                title="Illogical Marketing"
-                date="Oct 18 - 07:00 PM"
-                color="bg-yellow-400"
-                textColor="text-black"
-                border="border-0"
-                rotate="rotate-2"
-              />
-              <EventCard
-                title="Junk to Genius"
-                date="Oct 15 - 10:00 AM"
-                color="bg-red-600"
-                textColor="text-white"
-                border="border-0"
-                rotate="-rotate-2"
-              />
-              <EventCard
-                title="Event peru"
-                date="Oct 15 - 10:00 AM"
-                color="bg-purple-500"
-                textColor="text-black"
-                border="border-0"
-                rotate="rotate-2"
-              />
-              <EventCard
-                title="Event peru"
-                date="Oct 15 - 10:00 AM"
-                color="bg-orange-600"
-                textColor="text-white"
-                border="border-0"
-                rotate="-rotate-2"
-              />
-              <EventCard
-                title="Event peru"
-                date="Oct 15 - 10:00 AM"
-                color="bg-cyan-500"
-                textColor="text-black"
-                border="border-0"
-                rotate="rotate-1"
-              />
-
+              {eventsData.map((event) => (
+                <EventCard
+                  key={event.id}
+                  title={event.name}
+                  date={event.day}
+                  color={event.color}
+                  textColor={event.textColor}
+                  border={event.border}
+                  rotate={event.rotate}
+                  onClick={() => handleEventJoin(event)}
+                />
+              ))}
             </div>
           </div>
 
 
-          {/* ── Brochure Preview Section ── */}
+          {/* ── Brochure Section ── */}
           <div id="brochure" className="mt-20 md:mt-28 relative z-10 px-4 sm:px-6 lg:px-24">
-            {/* Section header */}
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-10 gap-6">
-              <div>
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="font-black uppercase tracking-[0.35em] text-gray-400 text-xs md:text-sm mb-3"
-                >
-                  Official Document
-                </motion.p>
-                <motion.h2
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                  className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none"
-                >
-                  Event <span style={blueGrad}>Brochure.</span>
-                </motion.h2>
-              </div>
-
-              {/* Download CTA */}
-              <motion.a
-                href={eventBrochure}
-                download="EVENT_BROCHURE.pdf"
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                whileHover={{ x: 4, y: -4, transition: { duration: 0.15 } }}
-                className="inline-flex items-center gap-3 px-8 py-4 bg-[#1f2022] text-white font-black uppercase tracking-[0.18em] text-sm border-4 border-[#1f2022] shadow-[6px_6px_0px_rgba(0,0,0,0.25)] hover:shadow-none transition-all duration-150 self-start md:self-auto whitespace-nowrap"
-              >
-                <Download className="w-5 h-5" />
-                Download PDF
-              </motion.a>
-            </div>
-
-            {/* PDF Embed */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="relative border-4 border-[#1f2022] shadow-[10px_10px_0px_rgba(0,0,0,1)]"
             >
-              {/* Gradient top bar — matches site accent */}
-              <div
-                className="h-[6px] w-full"
-                style={{ background: 'linear-gradient(to right, #a80d11, #d82221 45%, #0b2140 55%, #0f50e3)' }}
-              />
+              {/* Main light card */}
+              <div className="relative border-4 border-black bg-[#fffefa] shadow-[14px_14px_0px_rgba(0,0,0,1)] overflow-hidden">
+                {/* Top accent bar */}
+                <div className="h-[8px]" style={{ background: 'linear-gradient(to right, #a80d11, #d82221 45%, #0b2140 55%, #0f50e3)' }} />
 
-              {/* The PDF viewer */}
-              <div className="relative bg-gray-100" style={{ height: '90vh', minHeight: '500px' }}>
-                <iframe
-                  src={`${eventBrochure}#toolbar=1&navpanes=0&scrollbar=1&view=FitH`}
-                  title="Event Brochure Preview"
-                  className="w-full h-full"
-                  style={{ border: 'none', display: 'block' }}
-                />
+                <div className="p-8 md:p-12 lg:p-16 grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+                  {/* Left: Text content */}
+                  <div>
+                    <motion.p
+                      initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+                      className="font-black uppercase tracking-[0.35em] text-gray-500 text-xs mb-4"
+                    >
+                      Official Document
+                    </motion.p>
+                    <motion.h2
+                      initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                      className="text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-tighter leading-none text-black mb-4"
+                    >
+                      Event<br />
+                      <span style={{ background: 'linear-gradient(135deg, #a80d11, #d82221 40%, #0b2140 70%, #0f50e3)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                        Brochure.
+                      </span>
+                    </motion.h2>
+                    <div className="h-[6px] w-24 mb-6 bg-black" />
+                    <p className="font-bold text-gray-700 text-sm md:text-base leading-relaxed mb-8 max-w-sm">
+                      Your complete guide to{' '}
+                      <span className="text-black font-black">Easwari Startup Peravai 2026</span>{' '}
+                      — covering all 22 events, keynote speakers, schedules, venue maps, and everything you need to know.
+                    </p>
+
+                    {/* Stat chips */}
+                    <div className="flex flex-wrap gap-3 mb-10">
+                      {[['22+', 'Events'], ['2', 'Power Days'], ['50+', 'Speakers'], ['1000+', 'Attendees']].map(([num, label]) => (
+                        <div key={label} className="border-4 border-black bg-[#f4f4f0] px-4 py-2 text-center min-w-[72px] shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+                          <p className="font-black text-black text-xl leading-none">{num}</p>
+                          <p className="font-bold text-gray-500 text-xs uppercase tracking-widest mt-0.5">{label}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Download button */}
+                    <motion.a
+                      href={eventBrochure}
+                      download="EVENT_BROCHURE.pdf"
+                      whileHover={{ x: 4, y: -4, transition: { duration: 0.15 } }}
+                      whileTap={{ scale: 0.98 }}
+                      className="inline-flex items-center gap-3 px-8 py-5 border-4 border-black bg-yellow-400 text-black font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none transition-all duration-150"
+                    >
+                      <Download className="w-5 h-5" />
+                      Download PDF
+                    </motion.a>
+                  </div>
+
+                  {/* Right: Decorative stacked document visual (light mode) */}
+                  <div className="hidden md:flex items-center justify-center relative" style={{ minHeight: '280px' }}>
+                    {/* Background card */}
+                    <motion.div
+                      initial={{ opacity: 0, rotate: 10, y: 20 }}
+                      whileInView={{ opacity: 1, rotate: 10, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.4, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                      className="absolute w-48 h-64 border-4 border-black bg-blue-100 p-5 flex flex-col justify-between shadow-[8px_8px_0px_rgba(0,0,0,1)]"
+                      style={{ transform: 'rotate(10deg)', top: '10px', right: '10px' }}
+                    >
+                      <div>
+                        <div className="w-6 h-6 border-4 border-black mb-3 bg-white" />
+                        <div className="space-y-2">
+                          <div className="h-2 border-2 border-black bg-white w-full" />
+                          <div className="h-2 border-2 border-black bg-white w-4/5" />
+                          <div className="h-2 border-2 border-black bg-white w-3/5" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="h-2 border-2 border-black bg-white w-full" />
+                        <div className="h-2 border-2 border-black bg-white w-4/5" />
+                      </div>
+                    </motion.div>
+
+                    {/* Foreground card */}
+                    <motion.div
+                      initial={{ opacity: 0, rotate: -4, y: 20 }}
+                      whileInView={{ opacity: 1, rotate: -4, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.6, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                      className="absolute w-48 h-64 border-4 border-black bg-white p-5 flex flex-col justify-between shadow-[12px_12px_0px_rgba(0,0,0,1)]"
+                      style={{ transform: 'rotate(-4deg)', top: '20px', right: '50px' }}
+                    >
+                      <div>
+                        <div className="font-black text-black text-[10px] uppercase tracking-[0.3em] mb-3">PERAVAI 2026</div>
+                        <div className="h-[4px] w-full mb-3" style={{ background: 'linear-gradient(to right, #a80d11, #0f50e3)' }} />
+                        <div className="space-y-2">
+                          <div className="h-2 border-2 border-black bg-gray-100 w-full" />
+                          <div className="h-2 border-2 border-black bg-gray-100 w-4/5" />
+                          <div className="h-2 border-2 border-black bg-gray-100 w-3/5" />
+                          <div className="h-2 border-2 border-black bg-gray-100 w-4/5" />
+                        </div>
+                      </div>
+                      <div className="border-4 border-black p-2 text-center bg-yellow-400">
+                        <p className="text-black font-black text-[10px] uppercase tracking-[0.25em]">Official Brochure</p>
+                      </div>
+                    </motion.div>
+                  </div>
+                </div>
+
+                {/* Bottom accent bar */}
+                <div className="h-[8px]" style={{ background: 'linear-gradient(to left, #a80d11, #d82221 45%, #0b2140 55%, #0f50e3)' }} />
               </div>
-
-              {/* Gradient bottom bar */}
-              <div
-                className="h-[6px] w-full"
-                style={{ background: 'linear-gradient(to left, #a80d11, #d82221 45%, #0b2140 55%, #0f50e3)' }}
-              />
             </motion.div>
           </div>
 
@@ -1030,6 +1136,129 @@ const MainLayout = () => {
         </motion.div>
       </div>
 
+      {/* ── Contact Us Section ── */}
+      <div id="contact" className="py-16 md:py-24 relative z-10 px-4 sm:px-6 lg:px-24 bg-yellow-400 border-b-4 border-black">
+        <div className="flex flex-col md:flex-row gap-12 md:gap-20 max-w-7xl mx-auto">
+          {/* Left Side: Header */}
+          <div className="flex-1">
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="font-black uppercase tracking-[0.35em] text-black/60 text-xs md:text-sm mb-4"
+            >
+              Get in touch
+            </motion.p>
+            <motion.h2
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="text-5xl sm:text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none text-black mb-6 md:mb-8"
+            >
+              Contact <br />
+              <span className="text-white drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">Us.</span>
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="font-bold text-black/80 max-w-md text-base md:text-lg"
+            >
+              Have questions about the event? Want to partner with us? Drop a message or reach out through our socials.
+            </motion.p>
+          </div>
+
+          {/* Right Side: Contact Cards */}
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {/* Email */}
+            <motion.a
+              href="mailto:contact@peravai.com"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="group flex flex-col gap-4 p-6 bg-white border-4 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all"
+            >
+              <div className="w-12 h-12 bg-violet-600 border-4 border-black text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Mail className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="font-black uppercase tracking-widest text-xs text-gray-500 mb-1">Email</p>
+                <p className="font-bold text-black truncate">contact@peravai.com</p>
+              </div>
+            </motion.a>
+
+            {/* Phone */}
+            <motion.a
+              href="tel:+919876543210"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="group flex flex-col gap-4 p-6 bg-white border-4 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all text-white"
+            >
+              <div className="w-12 h-12 bg-red-600 border-4 border-black text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Phone className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="font-black uppercase tracking-widest text-xs text-gray-500 mb-1">Phone</p>
+                <p className="font-bold text-black">+91 98765 43210</p>
+              </div>
+            </motion.a>
+
+            {/* Instagram */}
+            <motion.a
+              href="https://instagram.com/easwaristartup"
+              target="_blank"
+              rel="noreferrer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="group flex flex-col gap-4 p-6 bg-white border-4 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all"
+            >
+              <div className="w-12 h-12 bg-black border-4 border-black text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-black uppercase tracking-widest text-xs text-gray-500 mb-1">Instagram</p>
+                <p className="font-bold text-black truncate">@easwaristartup</p>
+              </div>
+            </motion.a>
+
+            {/* LinkedIn */}
+            <motion.a
+              href="https://linkedin.com/company/easwaristartup"
+              target="_blank"
+              rel="noreferrer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="group flex flex-col gap-4 p-6 bg-white border-4 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all text-white"
+            >
+              <div className="w-12 h-12 bg-blue-600 border-4 border-black text-white-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                  <rect width="4" height="12" x="2" y="9" />
+                  <circle cx="4" cy="4" r="2" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-black uppercase tracking-widest text-xs text-gray-500 mb-1">LinkedIn</p>
+                <p className="font-bold truncate text-black">Startup Peravai</p>
+              </div>
+            </motion.a>
+          </div>
+        </div>
+      </div>
+
       {/* ── Profile Required Toast ── */}
       <AnimatePresence>
         {profileWarning && (
@@ -1074,8 +1303,11 @@ const MainLayout = () => {
             passType={pendingPass}
             onSuccess={() => {
               setShowRegForm(false);
-              // If user was trying to open hackathon, open it now after profile done
-              if (hackathonJoinCode) {
+              if (pendingEvent) {
+                // After profile done — show Event Pass gate (user needs to buy a pass)
+                setShowEventPassGate(true);
+                setPendingEvent(null);
+              } else if (hackathonJoinCode) {
                 setShowHackathonModal(true);
               } else {
                 const el = document.getElementById('passes');
@@ -1119,6 +1351,82 @@ const MainLayout = () => {
               setHackathonJoinCode('');
             }}
             initialJoinCode={hackathonJoinCode}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Event Pass Gate Modal ── */}
+      <AnimatePresence>
+        {showEventPassGate && (
+          <motion.div
+            className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          >
+            <div
+              className="fixed inset-0"
+              style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}
+              onClick={() => setShowEventPassGate(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="relative z-10 w-full max-w-md border-4 border-black bg-[#fffefa] shadow-[14px_14px_0px_rgba(0,0,0,1)]"
+            >
+              <div className="h-3" style={{ background: 'linear-gradient(to right, #a80d11, #d82221 45%, #0b2140 55%, #0f50e3)' }} />
+              <div className="p-8">
+                <div className="flex justify-end mb-4">
+                  <button onClick={() => setShowEventPassGate(false)} className="text-gray-400 hover:text-black transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="w-16 h-16 bg-yellow-400 border-4 border-black flex items-center justify-center mb-6 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+                  <Ticket className="w-8 h-8 text-black" />
+                </div>
+                <h3 className="text-2xl font-black uppercase tracking-tight mb-3">Event Pass Required</h3>
+                <p className="font-bold text-gray-600 mb-2 leading-relaxed">
+                  To register for events, you need an{' '}
+                  <span className="text-black font-black">Event Pass</span> or{' '}
+                  <span className="text-black font-black">Premium Pass</span>.
+                </p>
+                <p className="font-bold text-gray-400 text-sm mb-8">
+                  Upgrade your pass to unlock registration access to all 22+ events.
+                </p>
+                <div className="flex flex-col gap-3">
+                  <button
+                    id="event-gate-view-passes"
+                    onClick={() => {
+                      setShowEventPassGate(false);
+                      const el = document.getElementById('passes');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="w-full py-4 border-4 border-black bg-[#1f2022] text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
+                  >
+                    View Passes →
+                  </button>
+                  <button
+                    onClick={() => setShowEventPassGate(false)}
+                    className="w-full py-3 border-4 border-black bg-white font-black uppercase tracking-widest text-xs hover:bg-gray-50 transition-colors"
+                  >
+                    Maybe Later
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Event Registration Modal ── */}
+      <AnimatePresence>
+        {showEventModal && selectedEvent && (
+          <EventRegistrationModal
+            event={selectedEvent}
+            onClose={() => {
+              setShowEventModal(false);
+              setSelectedEvent(null);
+            }}
           />
         )}
       </AnimatePresence>
