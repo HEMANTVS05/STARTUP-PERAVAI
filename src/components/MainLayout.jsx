@@ -1031,7 +1031,7 @@ const MainLayout = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 1.5, ease: [0.22, 1, 0.36, 1] }}
           >
-            {[['10000+', 'Participants'], ['100+', 'Founders & Leaders'], ['3', 'Days of Impact']].map(([num, label], i) => (
+            {[['10000+', 'Participants'], ['100+', 'Founders & Leaders'], ['2', 'Days of Impact']].map(([num, label], i) => (
               <div key={i} className="py-5 px-4 text-center">
                 <p className="font-black text-2xl md:text-3xl text-[#1f2022] leading-none"><AnimatedNumber value={num} /></p>
                 <p className="font-bold text-xs uppercase tracking-[0.2em] text-gray-500 mt-1">{label}</p>
