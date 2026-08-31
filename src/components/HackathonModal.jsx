@@ -673,7 +673,7 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
                   <label className="font-black uppercase tracking-[0.2em] text-xs text-black block">
                     Team Size Limit (Min 2, Max 4) <span className="text-red-600">*</span>
                   </label>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {[
                       { size: 2, label: '2 Members', desc: 'Leader + 1 Member' },
                       { size: 3, label: '3 Members', desc: 'Leader + 2 Members' },
@@ -786,7 +786,7 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
                 </div>
 
                 {/* Copy Buttons */}
-                <div className="grid grid-cols-2 gap-3 pt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                   <button
                     onClick={handleCopyCode}
                     className="py-3 px-4 border-4 border-black bg-white font-black uppercase text-xs tracking-widest hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"

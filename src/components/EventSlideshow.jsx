@@ -1,23 +1,21 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Calendar, Tag } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Calendar } from 'lucide-react';
+import jkg from "../assets/ill.png"
 
 const events = [
   {
     id: 1,
-    title: "Pitch Fest 2026",
-    tag: "MAIN STAGE",
-    date: "Oct 15, 2026",
+    title: "JUNK TO GENIUS",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     accent: "bg-blue-600",
     textAccent: "text-blue-600",
     borderAccent: "border-blue-600",
+    image: jkg,
   },
   {
     id: 2,
     title: "Founder's Networking",
-    tag: "LOUNGE",
-    date: "Oct 16, 2026",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut labore et dolore magna aliqua. Quisque id diam vel quam elementum pulvinar etiam non quam lacus.",
     accent: "bg-[#1f2022]",
     textAccent: "text-[#1f2022]",
@@ -26,8 +24,6 @@ const events = [
   {
     id: 3,
     title: "Startup Hackathon",
-    tag: "WORKSHOP",
-    date: "Oct 17, 2026",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Eget nunc lobortis mattis aliquam. Egestas maecenas pharetra convallis posuere morbi leo urna.",
     accent: "bg-yellow-400",
     textAccent: "text-yellow-600",
@@ -36,8 +32,6 @@ const events = [
   {
     id: 4,
     title: "Investor Meetup",
-    tag: "KEYNOTE",
-    date: "Oct 18, 2026",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
     accent: "bg-blue-600",
     textAccent: "text-blue-600",
@@ -115,29 +109,39 @@ const EventSlideshow = ({ onOpenHackathon }) => {
           >
             {/* Image Side */}
             <div className="relative aspect-[4/3] lg:aspect-auto lg:min-h-[420px] bg-gray-200 overflow-hidden border-b-4 lg:border-b-0 lg:border-r-4 border-black">
-              {/* Filler placeholder with brutalist pattern */}
-              <div className="absolute inset-0 bg-gray-100">
-                <div className="w-full h-full"
-                  style={{
-                    backgroundImage: 'repeating-linear-gradient(45deg, #e5e7eb 0, #e5e7eb 1px, transparent 0, transparent 50%)',
-                    backgroundSize: '20px 20px'
-                  }}
+              {event.image ? (
+                <img
+                  src={event.image}
+                  alt={event.title}
+                  className="w-full h-full object-cover absolute inset-0"
                 />
-              </div>
-              {/* Image placeholder label */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="border-4 border-dashed border-gray-400 p-8 text-center">
-                  <p className="font-black uppercase text-gray-400 text-xl tracking-widest">Event Image</p>
-                  <p className="font-bold text-gray-300 text-sm mt-2 uppercase tracking-widest">Slide {current + 1}</p>
-                </div>
-              </div>
+              ) : (
+                <>
+                  {/* Filler placeholder with brutalist pattern */}
+                  <div className="absolute inset-0 bg-gray-100">
+                    <div className="w-full h-full"
+                      style={{
+                        backgroundImage: 'repeating-linear-gradient(45deg, #e5e7eb 0, #e5e7eb 1px, transparent 0, transparent 50%)',
+                        backgroundSize: '20px 20px'
+                      }}
+                    />
+                  </div>
+                  {/* Image placeholder label */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="border-4 border-dashed border-gray-400 p-8 text-center">
+                      <p className="font-black uppercase text-gray-400 text-xl tracking-widest">Event Image</p>
+                      <p className="font-bold text-gray-300 text-sm mt-2 uppercase tracking-widest">Slide {current + 1}</p>
+                    </div>
+                  </div>
+                </>
+              )}
               {/* Accent tag overlay */}
-              <div className={`absolute top-6 left-6 ${event.accent} px-4 py-2 shadow-[3px_3px_0px_rgba(0,0,0,1)]`}>
+              {/* <div className={`absolute top-6 left-6 ${event.accent} px-4 py-2 shadow-[3px_3px_0px_rgba(0,0,0,1)]`}>
                 <div className="flex items-center gap-2">
                   <Tag className="w-3 h-3 text-white" />
                   <span className="text-white font-black text-xs tracking-[0.2em]">{event.tag}</span>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* Description Side */}

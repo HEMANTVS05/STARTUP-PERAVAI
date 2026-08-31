@@ -81,7 +81,7 @@ const renderEventForm = (eventId, formData, setField) => {
           <SelectField id="er-stage" label="Startup Stage" icon={Tag} required
             options={['Idea Stage', 'MVP / Prototype', 'Early Revenue', 'Growth Stage']}
             value={v('stage')} onChange={f('stage')} />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field id="er-teamSize" label="Team Size" icon={Users} required type="number"
               placeholder="e.g. 3" min="1" max="6" value={v('teamSize')} onChange={f('teamSize')} />
             <Field id="er-investmentNeed" label="Funding Needed (₹)" icon={Briefcase}
@@ -100,7 +100,7 @@ const renderEventForm = (eventId, formData, setField) => {
         <>
           <Field id="er-teamName" label="Team Name" icon={Users} required
             placeholder="e.g. The Revivalists" value={v('teamName')} onChange={f('teamName')} />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field id="er-college" label="College" icon={Building2} required
               placeholder="e.g. Easwari EC" value={v('college')} onChange={f('college')} />
             <SelectField id="er-teamSize" label="Team Size" icon={Users} required
@@ -118,7 +118,7 @@ const renderEventForm = (eventId, formData, setField) => {
     case 'illogical-marketing':
       return (
         <>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field id="er-college" label="College" icon={Building2} required
               placeholder="e.g. Easwari EC" value={v('college')} onChange={f('college')} />
             <Field id="er-department" label="Department" icon={GraduationCap}
@@ -137,7 +137,7 @@ const renderEventForm = (eventId, formData, setField) => {
         <>
           <Field id="er-teamName" label="Team Name" icon={Users} required
             placeholder="e.g. Waste Warriors" value={v('teamName')} onChange={f('teamName')} />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field id="er-college" label="College" icon={Building2} required
               placeholder="e.g. Easwari EC" value={v('college')} onChange={f('college')} />
             <SelectField id="er-teamSize" label="Team Size" icon={Users} required
@@ -200,7 +200,7 @@ const renderEventForm = (eventId, formData, setField) => {
         <>
           <Field id="er-projectName" label="Project Name" icon={Lightbulb} required
             placeholder="e.g. Smart Waste Sorter" value={v('projectName')} onChange={f('projectName')} />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field id="er-college" label="College" icon={Building2} required
               placeholder="e.g. Easwari EC" value={v('college')} onChange={f('college')} />
             <SelectField id="er-teamSize" label="Team Size" icon={Users} required
@@ -274,7 +274,7 @@ const renderEventForm = (eventId, formData, setField) => {
           <SelectField id="er-impactArea" label="Impact Area" icon={Heart} required
             options={['Environment', 'Education', 'Healthcare', 'Agriculture', 'Women Empowerment', 'Rural Development', 'Disability Inclusion', 'Other']}
             value={v('impactArea')} onChange={f('impactArea')} />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <SelectField id="er-stage" label="Startup Stage" icon={Tag} required
               options={['Idea Stage', 'MVP', 'Early Revenue', 'Scaling']}
               value={v('stage')} onChange={f('stage')} />
@@ -322,7 +322,7 @@ const renderEventForm = (eventId, formData, setField) => {
           <SelectField id="er-incubationStage" label="Incubation Stage" icon={Tag} required
             options={['Idea', 'Pre-Incubation', 'Incubation', 'Graduated']}
             value={v('incubationStage')} onChange={f('incubationStage')} />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field id="er-teamSize" label="Team Size" icon={Users} type="number"
               placeholder="e.g. 3" min="1" value={v('teamSize')} onChange={f('teamSize')} />
             <Field id="er-domain" label="Domain" icon={Briefcase}
@@ -345,7 +345,7 @@ const renderEventForm = (eventId, formData, setField) => {
     case 'design-thinking-bootcamp':
       return (
         <>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field id="er-college" label="College" icon={Building2} required
               placeholder="e.g. Easwari EC" value={v('college')} onChange={f('college')} />
             <SelectField id="er-year" label="Year" icon={GraduationCap} required

@@ -95,8 +95,7 @@ const AuthModal = ({ isOpen, onClose, selectedPass }) => {
 
   const stripColor = selectedPass === 'Event Pass'
     ? 'linear-gradient(to right,#a80d11,#d82221,#0b2140,#0f50e3)'
-    : selectedPass === 'Premium Pass' ? 'linear-gradient(to right,#1f2022,#555)'
-      : 'linear-gradient(to right,#000,#333)';
+    : 'linear-gradient(to right,#000,#333)';
 
   const ErrorMsg = ({ msg }) => msg
     ? <p className="text-red-600 font-bold text-xs border-l-4 border-red-600 pl-3 py-1">{msg}</p>

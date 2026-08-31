@@ -1,19 +1,47 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Menu, X, Check, Zap, Crown, Ticket, MapPin, Clock, LogOut, QrCode, UserCircle, ChevronDown, Users, Download, Mail, Phone } from 'lucide-react';
+import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
+import { Star, Menu, X, Check, Zap, Crown, Ticket, MapPin, Clock, LogOut, QrCode, UserCircle, ChevronDown, Users, Download, Mail, Phone, ExternalLink, Lightbulb, Globe, Rocket, Hammer, Network, TrendingUp, Trophy, Home, BookOpen, Layers } from 'lucide-react';
 import EventSlideshow from './EventSlideshow';
 import AuthModal from './AuthModal';
 import RegistrationForm from './RegistrationForm';
 import UserDashboard from './UserDashboard';
 import HackathonModal from './HackathonModal';
 import EventRegistrationModal from './EventRegistrationModal';
+import Dock from './Dock';
 import { useAuth } from '../context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
+import { useNavigate } from 'react-router-dom';
+import VisitorDetailsModal from './VisitorDetailsModal';
 
 import speaker1 from '../assets/MAMAAAA.jpeg';
 import eventBrochure from '../assets/EVENT_BROCHURE.pdf';
 
+const AnimatedNumber = ({ value }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  const numMatch = value.match(/\d+/);
+  const numValue = numMatch ? parseInt(numMatch[0]) : 0;
+  const suffix = value.replace(/[0-9]/g, '');
+
+  useEffect(() => {
+    if (isInView && ref.current) {
+      const controls = animate(0, numValue, {
+        duration: 1.0,
+        ease: "easeOut",
+        onUpdate: (val) => {
+          if (ref.current) {
+            ref.current.textContent = Math.floor(val) + suffix;
+          }
+        }
+      });
+      return () => controls.stop();
+    }
+  }, [isInView, numValue, suffix]);
+
+  return <span ref={ref}>0{suffix}</span>;
+};
 
 // ─── gradient presets ────────────────────────────────────────────────────────
 const redGrad = { background: 'linear-gradient(135deg,#a80d11,#d82221)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' };
@@ -74,62 +102,197 @@ const EventCard = ({ title, date, color, textColor, border, rotate, onClick }) =
   </motion.div>
 );
 
-// ─── Pass Card ───────────────────────────────────────────────────────────────
-const PassCard = ({ name, icon: Icon, price, features, cta, style, textClass, borderClass, isFeatured, delay, onClaim }) => (
+// ─── Pass Card (Ticket Style) ─────────────────────────────────────────────────
+const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, ticketSunburst, rightBg, rightGradient, rightTextDark, delay, description, description2, buttonText, secondaryButtonText, onClaim, onSecondaryClick }) => (
   <motion.div
-    initial={{ opacity: 0, y: 60 }}
+    initial={{ opacity: 0, y: 50 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: '-60px' }}
-    transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
-    whileHover={{ y: -8, transition: { duration: 0.2 } }}
-    className={`relative flex flex-col ${borderClass}
-      ${isFeatured ? 'border-8 z-10 scale-100 md:scale-105' : 'border-4'}
-      shadow-[6px_6px_0px_rgba(0,0,0,1)] md:shadow-[10px_10px_0px_rgba(0,0,0,1)]
-      hover:shadow-[14px_14px_0px_rgba(0,0,0,0.7)] transition-all duration-300`}
-    style={style}
+    transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+    whileHover={{ y: -6, scale: 1.012, transition: { duration: 0.2 } }}
+    className="w-full cursor-pointer relative"
+    onClick={onClaim}
+    style={{ filter: 'drop-shadow(6px 12px 16px rgba(0,0,0,0.25)) drop-shadow(0px 4px 6px rgba(0,0,0,0.15))' }}
   >
-    {/* Featured badge */}
+    <div
+      className="flex w-full overflow-hidden"
+      style={{
+        height: '240px',
+        position: 'relative',
+        WebkitMaskImage: 'radial-gradient(circle at 0px 50%, transparent 24px, black 25px), radial-gradient(circle at 100% 50%, transparent 24px, black 25px)',
+        WebkitMaskSize: '51% 100%',
+        WebkitMaskRepeat: 'no-repeat',
+        WebkitMaskPosition: 'left, right',
+        maskImage: 'radial-gradient(circle at 0px 50%, transparent 24px, black 25px), radial-gradient(circle at 100% 50%, transparent 24px, black 25px)',
+        maskSize: '51% 100%',
+        maskRepeat: 'no-repeat',
+        maskPosition: 'left, right',
+        borderRadius: '16px'
+      }}
+    >
+      {/* Inner Bevel Border */}
+      <div className="absolute inset-0 pointer-events-none z-50 rounded-2xl border-[3px] border-white/20 shadow-[inset_0_0_12px_rgba(0,0,0,0.2)]" />
 
-    <div className="p-6 md:p-8 flex-1 flex flex-col">
-      {/* Icon + Name */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className={`w-14 h-14 border-4 ${borderClass} flex items-center justify-center`}>
-          <Icon className={`w-7 h-7 ${textClass}`} />
+      {/* LEFT STUB */}
+      <div
+        className="flex flex-col items-center justify-center shrink-0 relative"
+        style={{
+          width: '150px',
+          background: stubGradient,
+          padding: '12px 10px',
+        }}
+      >
+        {/* Stars top/bottom */}
+        <div className="absolute top-6 left-0 right-0 flex justify-center">
+          <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '20px' }}>★</span>
         </div>
-        <div>
-          <p className={`font-black text-2xl md:text-3xl uppercase tracking-tight ${textClass}`}>{name}</p>
-          {price && <p className={`font-bold text-sm uppercase tracking-widest opacity-60 ${textClass}`}>{price}</p>}
+        <div className="absolute bottom-6 left-0 right-0 flex justify-center">
+          <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '20px' }}>★</span>
+        </div>
+        {/* Rotated text */}
+        <div style={{ transform: 'rotate(-90deg)', whiteSpace: 'nowrap', textAlign: 'center' }}>
+          <p className="font-black uppercase text-white tracking-[0.25em]" style={{ fontSize: '18px', lineHeight: 1.2 }}>STARTUP</p>
+          <p className="font-black uppercase text-white tracking-[0.25em]" style={{ fontSize: '18px', lineHeight: 1.2 }}>PERAVAI</p>
         </div>
       </div>
 
-      {/* Divider */}
-      <div className={`h-1 w-full mb-8 ${isFeatured ? 'bg-white/30' : 'bg-black/10'}`} />
+      {/* SOLID SEPARATOR LEFT */}
+      <div
+        className="shrink-0 relative z-20 bg-black/80"
+        style={{ width: '3px' }}
+      />
 
-      {/* Features */}
-      <ul className="space-y-4 flex-1 mb-10">
-        {features.map((f, i) => (
-          <li key={i} className="flex items-start gap-3">
-            <div className={`mt-0.5 w-5 h-5 shrink-0 border-2 ${borderClass} flex items-center justify-center`}>
-              <Check className={`w-3 h-3 ${textClass}`} strokeWidth={3} />
-            </div>
-            <span className={`font-bold text-sm md:text-base leading-snug ${textClass} opacity-90`}>{f}</span>
-          </li>
-        ))}
-      </ul>
-
-      {/* CTA Button */}
-      <button
-        onClick={onClaim}
-        className={`w-full py-4 font-black uppercase tracking-[0.15em] text-sm border-4 ${borderClass}
-        bg-transparent ${textClass}
-        ${borderClass === 'border-white'
-            ? 'shadow-[4px_4px_0px_rgba(255,255,255,1)] hover:bg-white hover:text-black'
-            : 'shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:bg-black hover:text-white'}
-        transition-all duration-200
-        hover:shadow-none hover:translate-x-1 hover:translate-y-1 active:translate-x-1 active:translate-y-1`}
+      {/* MIDDLE SECTION — sunburst + empty space */}
+      <div
+        className="flex-1 relative overflow-hidden"
+        style={{ background: ticketBg }}
       >
-        {cta}
-      </button>
+        {/* Sunburst SVG */}
+        <svg
+          className="absolute inset-0 w-full h-full"
+          viewBox="0 0 400 130"
+          preserveAspectRatio="xMidYMid slice"
+          style={{ opacity: ticketSunburst === 'light' ? 0.22 : 0.14 }}
+        >
+          {Array.from({ length: 24 }, (_, i) => {
+            const angle = (i * 15) * (Math.PI / 180);
+            const x2 = 200 + Math.cos(angle) * 600;
+            const y2 = 65 + Math.sin(angle) * 600;
+            return (
+              <line
+                key={i}
+                x1="200" y1="65"
+                x2={x2} y2={y2}
+                stroke={ticketSunburst === 'light' ? '#8B6914' : '#1E3A6E'}
+                strokeWidth="18"
+              />
+            );
+          })}
+        </svg>
+        {/* Content area for Description & Button */}
+        <div className="relative z-10 w-full h-full flex flex-col items-center justify-center p-8 md:p-12 text-center gap-5">
+          <p className="font-bold text-black/100 text-base md:text-lg max-w-md mx-auto leading-snug">
+            {description}
+          </p>
+
+          <div className="flex gap-4">
+            {secondaryButtonText && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onSecondaryClick?.(); }}
+                className="bg-transparent text-black border-2 border-black/80 px-5 md:px-8 py-3 rounded-md font-black uppercase text-[10px] md:text-xs tracking-[0.15em] hover:bg-black/5 transition-all"
+              >
+                {secondaryButtonText}
+              </button>
+            )}
+            <button
+              onClick={(e) => { e.stopPropagation(); onClaim?.(); }}
+              className="bg-black hover:bg-gray-800 text-white border-2 border-black/10 px-5 md:px-8 py-3 rounded-md font-black uppercase text-[10px] md:text-xs tracking-[0.15em] shadow-[4px_4px_0px_rgba(0,0,0,0.2)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.2)] hover:translate-y-[2px] transition-all"
+            >
+              {buttonText}
+            </button>
+          </div>
+
+          {description2 && (
+            <p className="font-black text-red-600 text-sm md:text-base leading-snug">
+              {description2}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* SOLID SEPARATOR RIGHT */}
+      <div
+        className="shrink-0 relative z-20 bg-black/80"
+        style={{ width: '3px' }}
+      />
+
+      {/* RIGHT SECTION — Pass info */}
+      <div
+        className="flex flex-col items-start justify-center shrink-0 relative overflow-hidden"
+        style={{
+          width: '320px',
+          background: rightGradient || rightBg,
+          padding: '24px 34px',
+        }}
+      >
+        {/* Decorative stars top */}
+        <div className="absolute top-5 left-0 right-0 flex justify-center gap-3">
+          <span style={{ color: rightTextDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.6)', fontSize: '12px' }}>★</span>
+          <span style={{ color: rightTextDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.6)', fontSize: '12px' }}>★</span>
+          <span style={{ color: rightTextDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.6)', fontSize: '12px' }}>★</span>
+        </div>
+        {/* Decorative star bottom */}
+        <div className="absolute bottom-5 left-0 right-0 flex justify-center">
+          <span style={{ color: rightTextDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.6)', fontSize: '12px' }}>★</span>
+        </div>
+        {/* Top rule */}
+        <div className="absolute top-10 left-5 right-5 h-[2px]" style={{ background: rightTextDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.35)' }} />
+        {/* Bottom rule */}
+        <div className="absolute bottom-10 left-5 right-5 h-[2px]" style={{ background: rightTextDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.35)' }} />
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-start gap-1 mt-1 w-full">
+          {/* Top row: Icon + Titles */}
+          <div className="flex flex-row items-center gap-4">
+            {/* Icon box */}
+            <div
+              className="flex items-center justify-center shrink-0"
+              style={{
+                width: '60px', height: '60px',
+                border: `4px solid ${rightTextDark ? '#1a1a1a' : '#ffffff'}`,
+              }}
+            >
+              <Icon style={{ width: '32px', height: '32px', color: rightTextDark ? '#1a1a1a' : '#ffffff' }} />
+            </div>
+
+            {/* Text Stack */}
+            <div className="flex flex-col">
+              <p
+                className="font-black uppercase leading-none tracking-tighter"
+                style={{ fontSize: '42px', lineHeight: 0.95, color: rightTextDark ? '#1a1a1a' : '#ffffff' }}
+              >
+                {name}
+              </p>
+              {nameLine2 && (
+                <p
+                  className="font-black uppercase leading-none tracking-tighter"
+                  style={{ fontSize: '42px', lineHeight: 0.95, color: rightTextDark ? '#1a1a1a' : '#ffffff' }}
+                >
+                  {nameLine2}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom text */}
+          <p
+            className="font-bold uppercase tracking-[0.25em]"
+            style={{ fontSize: '13px', color: rightTextDark ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.8)', marginTop: '10px' }}
+          >
+            {price}
+          </p>
+        </div>
+      </div>
     </div>
   </motion.div>
 );
@@ -325,9 +488,12 @@ const MainLayout = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventPassGate, setShowEventPassGate] = useState(false);
   const [pendingEvent, setPendingEvent] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showVisitorModal, setShowVisitorModal] = useState(false);
 
   const userMenuRef = useRef(null);
   const { user, registration, loadingAuth } = useAuth();
+  const navigate = useNavigate();
 
   // Handle URL joinCode parameter on load
   useEffect(() => {
@@ -341,12 +507,12 @@ const MainLayout = () => {
         // User logged in but profile incomplete — show warning + open registration form
         setProfileWarning(true);
         setTimeout(() => setProfileWarning(false), 5000);
-        setPendingPass('General Pass');
+        setPendingPass('Visitor\'s Pass');
         setShowRegForm(true);
       } else {
         const hasEventPass = registration.paymentStatus !== 'pending' &&
           registration.passType !== 'None' &&
-          registration.passType !== 'General Pass';
+          registration.passType !== 'Visitor\'s Pass';
         if (!hasEventPass) {
           setShowEventPassGate(true);
         } else {
@@ -364,17 +530,25 @@ const MainLayout = () => {
     } else if (!registration) {
       setProfileWarning(true);
       setTimeout(() => setProfileWarning(false), 5000);
-      setPendingPass('General Pass');
+      setPendingPass('Visitor\'s Pass');
       setShowRegForm(true);
     } else {
       const hasEventPass = registration.paymentStatus !== 'pending' &&
         registration.passType !== 'None' &&
-        registration.passType !== 'General Pass';
+        registration.passType !== 'Visitor\'s Pass';
       if (!hasEventPass) {
         setShowEventPassGate(true);
       } else {
         setShowHackathonModal(true);
       }
+    }
+  };
+
+  const handleExploreEvents = () => {
+    if (!user) {
+      setAuthModal({ open: true, pass: 'EVENT PASS', source: 'event-browse' });
+    } else {
+      navigate('/events');
     }
   };
 
@@ -387,13 +561,13 @@ const MainLayout = () => {
     }
     if (!registration) {
       setPendingEvent(event);
-      setPendingPass('General Pass');
+      setPendingPass('Visitor\'s Pass');
       setShowRegForm(true);
       return;
     }
     const hasEventPass = registration.paymentStatus !== 'pending' &&
       registration.passType !== 'None' &&
-      registration.passType !== 'General Pass';
+      registration.passType !== 'Visitor\'s Pass';
     if (!hasEventPass) {
       setShowEventPassGate(true);
       return;
@@ -423,9 +597,9 @@ const MainLayout = () => {
   // ── Navbar "Register Here" click ──
   const handleRegisterHereClick = () => {
     if (!user) {
-      setAuthModal({ open: true, pass: 'General Pass', source: 'navbar' });
+      setAuthModal({ open: true, pass: 'Visitor\'s Pass', source: 'navbar' });
     } else if (!registration) {
-      setPendingPass('General Pass');
+      setPendingPass('Visitor\'s Pass');
       setShowRegForm(true);
     } else if (registration.paymentStatus === 'pending') {
       const el = document.getElementById('passes');
@@ -462,13 +636,13 @@ const MainLayout = () => {
     const hasEventPass = registration &&
       registration.paymentStatus !== 'pending' &&
       registration.passType !== 'None' &&
-      registration.passType !== 'General Pass';
+      registration.passType !== 'Visitor\'s Pass';
 
     // ── Hackathon source ──
     if (authModal.source === 'hackathon') {
       setAuthModal(prev => ({ ...prev, source: '' }));
       if (!registration) {
-        setPendingPass('General Pass');
+        setPendingPass('Visitor\'s Pass');
         setShowRegForm(true);
       } else if (!hasEventPass) {
         setShowEventPassGate(true);
@@ -484,7 +658,7 @@ const MainLayout = () => {
       const evt = pendingEvent;
       if (!evt) return;
       if (!registration) {
-        setPendingPass('General Pass');
+        setPendingPass('Visitor\'s Pass');
         setShowRegForm(true);
       } else if (!hasEventPass) {
         setShowEventPassGate(true);
@@ -516,6 +690,17 @@ const MainLayout = () => {
     }
     setAuthModal(prev => ({ ...prev, pass: '' }));
   }, [user, registration, authModal.open, authModal.source, pendingEvent]);
+
+  // ── Floating dock scroll state ──
+  const [dockVisible, setDockVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setDockVisible(window.scrollY > 120);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // Display name for navbar
   const displayName = registration?.firstName || user?.displayName?.split(' ')[0] || user?.email?.split('@')[0] || 'Account';
@@ -552,63 +737,47 @@ const MainLayout = () => {
     setMenuOpen(false);
   };
 
+
   const passes = [
     {
-      name: 'General Pass',
+      name: "VISITOR",
+      nameLine2: 'PASS',
       icon: Ticket,
-      price: 'No Cost · Open Entry',
-      features: [
-        'hema soluvan',
-        'hema soluvan',
-        'hema soluvan',
-        'hema soluvan',
-        'hema soluvan',
-      ],
-      cta: 'CLAIM GENERAL PASS',
-      style: { background: '#fffefaff' },
-      textClass: 'text-black',
-      borderClass: 'border-black',
-      isFeatured: false,
+      price: "VISITOR'S ENTRY",
+      // Left red stub
+      stubGradient: '#a80d11',
+      // Middle cream/sunburst
+      ticketBg: '#ffffffff',
+      ticketSunburst: 'dark',
+      // Right cream section (dark text)
+      rightBg: '#f6f4ee',
+      rightGradient: null,
+      rightTextDark: true,
+      description: 'Your Gateway into Easwari Startup Peravai',
+      buttonText: 'GET YOUR PASS',
+      secondaryButtonText: "WHAT YOU'LL GET",
+      onSecondaryClick: () => setShowVisitorModal(true),
       delay: 0.1,
     },
     {
-      name: 'Event Pass',
+      name: 'EVENT',
+      nameLine2: 'PASS',
       icon: Zap,
-      price: 'Event Access',
-      features: [
-        'hema soluvan',
-        'hema soluvan',
-        'hema soluvan',
-        'hema soluvan',
-        'hema soluvan',
-        'hema soluvan',
-        'hema soluvan',
-      ],
-      cta: 'UPGRADE TO ELITE',
-      style: { background: 'linear-gradient(145deg, #a80d11, #d82221, #0b2140, #0f50e3)' },
-      textClass: 'text-white',
-      borderClass: 'border-white',
-      isFeatured: true,
+      price: 'EVENT ACCESS',
+      // Left blue stub
+      stubGradient: '#0a2140',
+      // Middle light blue/sunburst
+      ticketBg: '#e4e5e7ff',
+      ticketSunburst: 'blue',
+      // Right red-to-blue gradient (white text)
+      rightGradient: 'linear-gradient(135deg, #a80d11, #d82221 40%, #0b2140 60%, #0f50e3)',
+      rightBg: null,
+      rightTextDark: false,
+      description: 'Ideas Need Action. Be the Changemaker.',
+      buttonText: 'EXPLORE EVENTS',
+      description2: 'Participate in Our Events.',
+      onClaim: () => handleExploreEvents(),
       delay: 0.0,
-    },
-    {
-      name: 'Premium Pass',
-      icon: Crown,
-      price: 'Premium Access',
-      features: [
-        'hema soluvan',
-        'hema soluvan',
-        'hema soluvan',
-        'hema soluvan',
-        'hema soluvan',
-        'hema soluvan',
-      ],
-      cta: 'Upgrade to Premium',
-      style: { background: '#1f2022' },
-      textClass: 'text-white',
-      borderClass: 'border-white',
-      isFeatured: false,
-      delay: 0.2,
     },
   ];
 
@@ -629,7 +798,7 @@ const MainLayout = () => {
 
           {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-6 xl:gap-10 text-sm font-black text-gray-500 uppercase tracking-widest">
-            {['Insights', 'Events', 'Passes', 'Speakers', 'Brochure', 'Contact'].map(item => (
+            {['Insights', 'Passes', 'Speakers', 'Brochure', 'Contact'].map(item => (
               <a key={item}
                 href={`#${item === 'Insights' ? 'whats-happening' : item.toLowerCase()}`}
                 onClick={(e) => handleNavClick(e, item === 'Insights' ? 'whats-happening' : item.toLowerCase())}
@@ -692,7 +861,7 @@ const MainLayout = () => {
                         </button>
                       )}
                       {!registration && (
-                        <button onClick={() => { setPendingPass('General Pass'); setShowRegForm(true); setUserMenuOpen(false); }}
+                        <button onClick={() => { setPendingPass('Visitor\'s Pass'); setShowRegForm(true); setUserMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-4 py-3 font-black uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-colors border-b-2 border-black">
                           <UserCircle className="w-4 h-4" /> Complete Profile
                         </button>
@@ -786,22 +955,12 @@ const MainLayout = () => {
 
         {/* ── Hero Headline ── */}
         <div className="text-center mb-20 md:mb-32 relative z-10">
-          {/* ── HERO HEADLINE — tweak font sizes here ────────────────────────────
-               EASWARI  : change the number in style={{ fontSize: '11vw' }}
-               STARTUP  : change the number in style={{ fontSize: '7.5vw' }}
-               PERAVAI  : change the number in style={{ fontSize: '7.5vw' }}
-               vw = % of screen width, so it NEVER overflows or wraps.
-          ──────────────────────────────────────────────────────────────────── */}
           <div className="relative w-full px-4 mb-2">
-            {/* Decorative accent line top */}
-
             <h2 className="font-black uppercase tracking-tighter text-center w-full leading-none">
-
-              {/* ── EASWARI ── change fontSize below to resize */}
               <span className="block overflow-hidden mb-1">
                 <motion.span
                   className="block whitespace-nowrap"
-                  style={{ ...logoGrad, fontSize: '9vw' }}
+                  style={{ ...logoGrad, fontSize: 'clamp(3rem, 9vw, 8rem)' }}
                   initial={{ y: '110%', opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.75, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -809,13 +968,11 @@ const MainLayout = () => {
                   EASWARI
                 </motion.span>
               </span>
-
-              {/* ── STARTUP + PERAVAI ── change fontSize below to resize both */}
               <span className="flex items-baseline justify-center gap-[2vw] overflow-hidden">
                 <span className="overflow-hidden">
                   <motion.span
                     className="block whitespace-nowrap"
-                    style={{ ...redGrad, fontSize: '8vw' }}
+                    style={{ ...redGrad, fontSize: 'clamp(2.5rem, 8vw, 7rem)' }}
                     initial={{ y: '110%', opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.75, delay: 0.82, ease: [0.22, 1, 0.36, 1] }}
@@ -827,7 +984,7 @@ const MainLayout = () => {
                 <span className="overflow-hidden">
                   <motion.span
                     className="block whitespace-nowrap"
-                    style={{ ...blueGrad, fontSize: '8vw' }}
+                    style={{ ...blueGrad, fontSize: 'clamp(2.5rem, 8vw, 7rem)' }}
                     initial={{ y: '110%', opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.75, delay: 1.04, ease: [0.22, 1, 0.36, 1] }}
@@ -838,7 +995,6 @@ const MainLayout = () => {
               </span>
             </h2>
 
-            {/* Decorative accent line bottom */}
             <motion.div
               initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
               transition={{ duration: 0.6, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
@@ -847,14 +1003,12 @@ const MainLayout = () => {
             />
           </div>
 
-          {/* Hero Actions */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.3, ease: [0.22, 1, 0.36, 1] }}
             className="mt-12 md:mt-20 flex flex-col sm:flex-row gap-4 items-center justify-center w-full px-4"
           >
-            {/* Primary CTA — solid black, neobrutalist */}
             <a
               href="#passes"
               onClick={(e) => handleNavClick(e, 'passes')}
@@ -862,7 +1016,6 @@ const MainLayout = () => {
             >
               Grab Your Pass →
             </a>
-            {/* Secondary CTA — transparent with thick border */}
             <a
               href="#events"
               onClick={(e) => handleNavClick(e, 'events')}
@@ -872,189 +1025,326 @@ const MainLayout = () => {
             </a>
           </motion.div>
 
-          {/* ── Stats bar ── */}
           <motion.div
-            className="mt-12 md:mt-16 grid grid-cols-3 gap-0 border-4 border-[#1f2022] max-w-2xl mx-auto shadow-[6px_6px_0px_rgba(0,0,0,1)]"
+            className="mt-12 md:mt-16 grid grid-cols-1 md:grid-cols-3 gap-0 border-4 border-[#1f2022] max-w-2xl mx-auto shadow-[6px_6px_0px_rgba(0,0,0,1)] divide-y-4 md:divide-y-0 md:divide-x-4 divide-[#1f2022]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 1.5, ease: [0.22, 1, 0.36, 1] }}
           >
-            {[['1000+', 'Participants'], ['50+', 'Speakers'], ['2', 'Power Days']].map(([num, label], i) => (
-              <div key={i} className={`py-5 px-4 text-center ${i < 2 ? 'border-r-4 border-[#1f2022]' : ''}`}>
-                <p className="font-black text-2xl md:text-3xl text-[#1f2022] leading-none">{num}</p>
+            {[['10000+', 'Participants'], ['100+', 'Founders & Leaders'], ['3', 'Days of Impact']].map(([num, label], i) => (
+              <div key={i} className="py-5 px-4 text-center">
+                <p className="font-black text-2xl md:text-3xl text-[#1f2022] leading-none"><AnimatedNumber value={num} /></p>
                 <p className="font-bold text-xs uppercase tracking-[0.2em] text-gray-500 mt-1">{label}</p>
               </div>
             ))}
           </motion.div>
         </div>
 
-        {/* ── Below hero fades up ── */}
+        {/* ── ABOUT PERAVAI ── */}
+        <div id="about" className="relative mt-16 md:mt-24 mb-0 px-4 sm:px-6 lg:px-0 overflow-hidden">
+          <div aria-hidden className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
+            <span className="text-[22vw] font-black uppercase tracking-tighter text-black/[0.025] whitespace-nowrap leading-none">
+              PERAVAI
+            </span>
+          </div>
+
+          <div className="relative z-10 max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="mb-10 md:mb-14"
+            >
+              <div className="h-[4.5px] mb-6 w-full" style={{ background: 'linear-gradient(to right, #000000ff, #000000ff 35%, #000000ff 100%, #0f50e3)' }} />
+              <p className="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-gray-400 mb-3">Who We Are</p>
+              <h2 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase text-black tracking-tighter leading-none">
+                About<br /><span style={blueGrad}>Peravai.</span>
+              </h2>
+            </motion.div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
+              <motion.div
+                initial={{ opacity: 0, x: -40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+                className="lg:col-span-7 border-4 border-black bg-[#f6f4ee] text-black p-8 md:p-12 shadow-[10px_10px_0px_rgba(0,0,0,1)] flex flex-col gap-8"
+              >
+                <div>
+                  <p className="font-black text-[11px] uppercase tracking-[0.3em] mb-4" style={{ color: '#bd1d1d' }}>
+                    Where Ideas Meet Action. Where Ambition Finds Opportunity.
+                  </p>
+                  <p className="font-black text-xl md:text-2xl xl:text-3xl leading-snug tracking-tight text-black">
+                    Tamil Nadu's student-driven startup and innovation movement{' '}
+                    <span style={{ color: '#a80d11' }}>
+                      connecting students, entrepreneurs, investors,
+                    </span>{' '}
+                    academia, and industry through a shared ecosystem{' '}
+                    <span style={{ color: '#002f6bff' }}>
+                      built for ideas to grow into impact.
+                    </span>
+                  </p>
+                </div>
+                <div className="border-t-2 border-white/10 pt-6">
+                  <p className="font-black text-sm md:text-base leading-relaxed text-gray-500">
+                    Every breakthrough begins with an idea. But ideas become reality when they meet the right people, opportunities, resources, and support.{' '}
+                    <span className="text-black">Peravai exists to build that bridge.</span>
+                  </p>
+                </div>
+              </motion.div>
+
+              <div className="lg:col-span-5 flex flex-col gap-6">
+                <motion.div
+                  initial={{ opacity: 0, x: 40 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                  className="border-4 border-black bg-[#f6f4ee] p-6 shadow-[6px_6px_0px_rgba(0,0,0,1)] flex items-start gap-5"
+                >
+                  <div className="w-11 h-11 shrink-0 border-black flex items-center justify-center"
+                    style={{ background: 'linear-gradient(135deg, #f6f4ee)' }}>
+                    <Lightbulb className="w-7 h-7 text-black" />
+                  </div>
+                  <div>
+                    <p className="font-black uppercase tracking-[0.2em] text-[10px] text-gray-500 mb-1">The Bridge</p>
+                    <p className="font-black text-sm md:text-base leading-snug text-[#1f2022]">
+                      From classrooms of Chennai to emerging innovation hubs : bringing the next generation of founders and changemakers with networks they need.
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 40 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  className="border-4 border-black bg-[#f6f4ee] p-6 shadow-[6px_6px_0px_rgba(0,0,0,1)] flex items-start gap-5"
+                >
+                  <div className="w-11 h-11 shrink-0 border-black flex items-center justify-center"
+                    style={{ background: 'linear-gradient(135deg, #f6f4ee)' }}>
+                    <Globe className="w-7 h-7 text-black" />
+                  </div>
+                  <div>
+                    <p className="font-black uppercase tracking-[0.2em] text-[10px] text-gray-500 mb-1">The Reach</p>
+                    <p className="font-black text-sm md:text-base leading-snug text-[#1f2022]">
+                      Tier 2 &amp; Tier 3 cities across Tamil Nadu where talent finds opportunity and ambition finds a path to action.
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 40 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  className="border-4 border-black bg-[#f6f4ee] p-6 shadow-[6px_6px_0px_rgba(0,0,0,1)] flex items-start gap-5"
+                >
+                  <div className="w-11 h-11 shrink-0 border-black flex items-center justify-center"
+                    style={{ background: 'linear-gradient(135deg, #f6f4ee)' }}>
+                    <Rocket className="w-7 h-7 text-black" />
+                  </div>
+                  <div>
+                    <p className="font-black uppercase tracking-[0.2em] text-[10px] text-gray-500 mb-1">The Vision</p>
+                    <p className="font-black text-sm md:text-base leading-snug text-[#1f2022]">
+                      A stronger, more connected innovation ecosystem where ideas find support and talent leads tomorrow's industry.
+                    </p>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.75, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-6 md:mt-8 grid grid-cols-2 md:grid-cols-4 border-4 border-black shadow-[8px_8px_0px_rgba(0,0,0,1)] divide-y-4 md:divide-y-0 divide-x-0 md:divide-x-4 divide-black overflow-hidden"
+            >
+              {[
+                { word: 'BUILD', sub: 'Ideas into products', Icon: Hammer, bg: '#a80d11', text: '#fff' },
+                { word: 'CONNECT', sub: 'People & opportunities', Icon: Network, bg: '#1f2022', text: '#fff' },
+                { word: 'GROW', sub: 'Talent & networks', Icon: TrendingUp, bg: '#0b2140', text: '#fff' },
+                { word: 'LEAD', sub: 'The innovation wave', Icon: Trophy, bg: '#fffefa', text: '#1f2022' },
+              ].map(({ word, sub, Icon, bg, text }, i) => (
+                <div key={i} className="py-7 px-5 text-center group hover:brightness-90 transition-all duration-200 cursor-default" style={{ background: bg }}>
+                  <div className="flex justify-center mb-2">
+                    <Icon className="w-5 h-5" style={{ color: text, opacity: 0.7 }} />
+                  </div>
+                  <p className="font-black text-2xl md:text-3xl uppercase tracking-tighter leading-none" style={{ color: text }}>
+                    {word}
+                  </p>
+                  <p className="font-bold text-[10px] uppercase tracking-[0.2em] mt-1" style={{ color: text, opacity: 0.55 }}>{sub}</p>
+                </div>
+              ))}
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-6 border-l-[6px] border-black bg-[#2c2d2c] px-9 py-5 shadow-[6px_6px_0px_rgba(0,0,0,0.12)]"
+            >
+              <p className="font-black text-base md:text-xl text-[#f8f8f8] leading-snug">
+                "We are building a stronger, more connected innovation ecosystem for Tamil Nadu one where{' '}
+                <span style={{ color: '#e84040' }}>talent finds opportunity</span>,{' '}
+                <span style={{ color: '#4b80f7' }}>ideas find support</span>, and{' '}
+                <span className="text-white">ambition finds a path to action</span>."
+              </p>
+              <p className="mt-3 font-black text-[10px] uppercase tracking-[0.35em] text-gray-200">— Peravai Mission</p>
+            </motion.div>
+          </div>
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.0, delay: 1.4, ease: [0.22, 1, 0.36, 1] }}
         >
-
-          {/* Events Slideshow */}
           <div id="whats-happening">
             <EventSlideshow onOpenHackathon={() => handleOpenHackathon()} />
           </div>
 
-          {/* ── Upcoming Events ── */}
-          <div id="events" className="mt-24 md:mt-8 relative z-10 px-4 sm:px-6 lg:px-24">
-            <div className="flex items-end justify-between mb-9 md:mb-12">
-              <div>
-                <p className="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-gray-400 mb-3">Discover More</p>
-                <h2 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase text-black tracking-tighter leading-none">
-                  Upcoming<br /><span className="text-blue-600">Events.</span>
-                </h2>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
-              {eventsData.map((event) => (
-                <EventCard
-                  key={event.id}
-                  title={event.name}
-                  date={event.day}
-                  color={event.color}
-                  textColor={event.textColor}
-                  border={event.border}
-                  rotate={event.rotate}
-                  onClick={() => handleEventJoin(event)}
-                />
-              ))}
-            </div>
-          </div>
-
-
-          {/* ── Brochure Section ── */}
-          <div id="brochure" className="mt-20 md:mt-28 relative z-10 px-4 sm:px-6 lg:px-24">
+          <div id="brochure" className="mt-20 md:mt-28 relative z-10 px-4 sm:px-6 lg:px-20">
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="max-w-6xl mx-auto"
             >
-              {/* Main light card */}
-              <div className="relative border-4 border-black bg-[#fffefa] shadow-[14px_14px_0px_rgba(0,0,0,1)] overflow-hidden">
-                {/* Top accent bar */}
-                <div className="h-[8px]" style={{ background: 'linear-gradient(to right, #a80d11, #d82221 45%, #0b2140 55%, #0f50e3)' }} />
+              <div className="relative border-4 border-black bg-[#f6f4ee] shadow-[14px_14px_0px_rgba(0,0,0,1)] overflow-hidden">
+                <div className="h-[6px]" style={{ background: 'linear-gradient(to right, #a80d11, #d82221 40%, #0b2140 60%, #0f50e3)' }} />
+                <div aria-hidden className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
+                  <span className="text-[12vw] font-black uppercase tracking-tighter text-black/[0.04] whitespace-nowrap leading-none text-center">
+                    STARTUP<br />PERAVAI
+                  </span>
+                </div>
 
-                <div className="p-8 md:p-12 lg:p-16 grid md:grid-cols-2 gap-10 md:gap-16 items-center">
-                  {/* Left: Text content */}
-                  <div>
-                    <motion.p
-                      initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-                      className="font-black uppercase tracking-[0.35em] text-gray-500 text-xs mb-4"
-                    >
-                      Official Document
-                    </motion.p>
-                    <motion.h2
-                      initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                      className="text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-tighter leading-none text-black mb-4"
-                    >
-                      Event<br />
-                      <span style={{ background: 'linear-gradient(135deg, #a80d11, #d82221 40%, #0b2140 70%, #0f50e3)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                        Brochure.
-                      </span>
-                    </motion.h2>
-                    <div className="h-[6px] w-24 mb-6 bg-black" />
-                    <p className="font-bold text-gray-700 text-sm md:text-base leading-relaxed mb-8 max-w-sm">
-                      Your complete guide to{' '}
-                      <span className="text-black font-black">Easwari Startup Peravai 2026</span>{' '}
-                      — covering all 22 events, keynote speakers, schedules, venue maps, and everything you need to know.
-                    </p>
+                <div className="relative z-10 p-6 md:p-8 lg:p-10">
+                  <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start mb-12 md:mb-16">
+                    <div>
+                      <motion.p
+                        initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }} transition={{ duration: 0.5 }}
+                        className="font-black uppercase tracking-[0.4em] text-[#d82221] text-xs mb-5"
+                      >
+                        · Official Document · 2026
+                      </motion.p>
+                      <motion.h2
+                        initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+                        className="text-5xl sm:text-6xl md:text-7xl font-black uppercase tracking-tighter leading-none text-black mb-6"
+                      >
+                        Event<br />
+                        <span style={{ background: 'linear-gradient(to right, #a80d11, #d82221 40%, #0b2140 60%, #0f50e3)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                          Brochure.
+                        </span>
+                      </motion.h2>
 
-                    {/* Stat chips */}
-                    <div className="flex flex-wrap gap-3 mb-10">
-                      {[['22+', 'Events'], ['2', 'Power Days'], ['50+', 'Speakers'], ['1000+', 'Attendees']].map(([num, label]) => (
-                        <div key={label} className="border-4 border-black bg-[#f4f4f0] px-4 py-2 text-center min-w-[72px] shadow-[4px_4px_0px_rgba(0,0,0,1)]">
-                          <p className="font-black text-black text-xl leading-none">{num}</p>
-                          <p className="font-bold text-gray-500 text-xs uppercase tracking-widest mt-0.5">{label}</p>
-                        </div>
-                      ))}
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }} transition={{ delay: 0.3, duration: 0.5 }}
+                        className="flex flex-row items-center gap-4"
+                      >
+                        <motion.a
+                          href={eventBrochure}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          whileHover={{ x: 3, y: -3, transition: { duration: 0.12 } }}
+                          whileTap={{ scale: 0.97 }}
+                          className="flex items-center gap-3 px-7 py-4 border-2 border-black bg-white text-black font-black uppercase tracking-[0.15em] text-sm shadow-[5px_5px_0px_rgba(0,0,0,0.25)] hover:shadow-none transition-all duration-150 whitespace-nowrap"
+                        >
+                          <ExternalLink className="w-5 h-5" />
+                          View Brochure
+                        </motion.a>
+                        <motion.a
+                          href={eventBrochure}
+                          download="EVENT_BROCHURE.pdf"
+                          whileHover={{ x: 3, y: -3, transition: { duration: 0.12 } }}
+                          whileTap={{ scale: 0.97 }}
+                          className="flex items-center gap-3 px-7 py-4 border-4 border-yellow-400 bg-yellow-400 text-black font-black uppercase tracking-[0.15em] text-sm shadow-[5px_5px_0px_rgba(234,179,8,0.5)] hover:shadow-none transition-all duration-150 whitespace-nowrap"
+                        >
+                          <Download className="w-5 h-5" />
+                          Download PDF
+                        </motion.a>
+                      </motion.div>
                     </div>
 
-                    {/* Download button */}
-                    <motion.a
-                      href={eventBrochure}
-                      download="EVENT_BROCHURE.pdf"
-                      whileHover={{ x: 4, y: -4, transition: { duration: 0.15 } }}
-                      whileTap={{ scale: 0.98 }}
-                      className="inline-flex items-center gap-3 px-8 py-5 border-4 border-black bg-yellow-400 text-black font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none transition-all duration-150"
-                    >
-                      <Download className="w-5 h-5" />
-                      Download PDF
-                    </motion.a>
-                  </div>
-
-                  {/* Right: Decorative stacked document visual (light mode) */}
-                  <div className="hidden md:flex items-center justify-center relative" style={{ minHeight: '280px' }}>
-                    {/* Background card */}
-                    <motion.div
-                      initial={{ opacity: 0, rotate: 10, y: 20 }}
-                      whileInView={{ opacity: 1, rotate: 10, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.4, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                      className="absolute w-48 h-64 border-4 border-black bg-blue-100 p-5 flex flex-col justify-between shadow-[8px_8px_0px_rgba(0,0,0,1)]"
-                      style={{ transform: 'rotate(10deg)', top: '10px', right: '10px' }}
-                    >
-                      <div>
-                        <div className="w-6 h-6 border-4 border-black mb-3 bg-white" />
-                        <div className="space-y-2">
-                          <div className="h-2 border-2 border-black bg-white w-full" />
-                          <div className="h-2 border-2 border-black bg-white w-4/5" />
-                          <div className="h-2 border-2 border-black bg-white w-3/5" />
+                    <div className="hidden lg:flex items-center justify-center relative" style={{ minHeight: '240px' }}>
+                      <motion.div
+                        initial={{ opacity: 0, rotate: 12, y: 30 }}
+                        whileInView={{ opacity: 1, rotate: 12, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.5, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                        className="absolute w-44 h-60 border-4 border-white/20 bg-white/5 p-5 flex flex-col justify-between"
+                        style={{ top: '0px', right: '20px' }}
+                      >
+                        <div>
+                          <div className="w-5 h-5 border-2 border-white/30 mb-3" />
+                          <div className="space-y-2">
+                            {[1, 0.8, 0.6, 0.8].map((w, i) => <div key={i} className="h-1.5 bg-white/20 rounded-none" style={{ width: `${w * 100}%` }} />)}
+                          </div>
                         </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="h-2 border-2 border-black bg-white w-full" />
-                        <div className="h-2 border-2 border-black bg-white w-4/5" />
-                      </div>
-                    </motion.div>
-
-                    {/* Foreground card */}
-                    <motion.div
-                      initial={{ opacity: 0, rotate: -4, y: 20 }}
-                      whileInView={{ opacity: 1, rotate: -4, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.6, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                      className="absolute w-48 h-64 border-4 border-black bg-white p-5 flex flex-col justify-between shadow-[12px_12px_0px_rgba(0,0,0,1)]"
-                      style={{ transform: 'rotate(-4deg)', top: '20px', right: '50px' }}
-                    >
-                      <div>
-                        <div className="font-black text-black text-[10px] uppercase tracking-[0.3em] mb-3">PERAVAI 2026</div>
-                        <div className="h-[4px] w-full mb-3" style={{ background: 'linear-gradient(to right, #a80d11, #0f50e3)' }} />
                         <div className="space-y-2">
-                          <div className="h-2 border-2 border-black bg-gray-100 w-full" />
-                          <div className="h-2 border-2 border-black bg-gray-100 w-4/5" />
-                          <div className="h-2 border-2 border-black bg-gray-100 w-3/5" />
-                          <div className="h-2 border-2 border-black bg-gray-100 w-4/5" />
+                          {[1, 0.7].map((w, i) => <div key={i} className="h-1.5 bg-white/20" style={{ width: `${w * 100}%` }} />)}
                         </div>
-                      </div>
-                      <div className="border-4 border-black p-2 text-center bg-yellow-400">
-                        <p className="text-black font-black text-[10px] uppercase tracking-[0.25em]">Official Brochure</p>
-                      </div>
-                    </motion.div>
+                      </motion.div>
+
+                      <motion.div
+                        initial={{ opacity: 0, rotate: -5, y: 30 }}
+                        whileInView={{ opacity: 1, rotate: -5, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.65, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                        className="absolute w-44 h-60 border-4 border-white/30 bg-[#2a2d30] p-5 flex flex-col justify-between shadow-[8px_8px_0px_rgba(0,0,0,0.5)]"
+                        style={{ top: '15px', right: '60px' }}
+                      >
+                        <div>
+                          <div className="font-black text-white/50 text-[9px] uppercase tracking-[0.3em] mb-2">Peravai 2026</div>
+                          <div className="h-[3px] w-full mb-3" style={{ background: 'linear-gradient(to right, #a80d11, #0f50e3)' }} />
+                          <div className="space-y-2">
+                            {[1, 0.8, 0.6, 0.75].map((w, i) => <div key={i} className="h-1.5 bg-white/15" style={{ width: `${w * 100}%` }} />)}
+                          </div>
+                        </div>
+                        <div className="border-2 border-yellow-400/50 p-2 text-center">
+                          <p className="text-yellow-400 font-black text-[9px] uppercase tracking-[0.25em]">Official</p>
+                        </div>
+                      </motion.div>
+
+                      <motion.div
+                        initial={{ opacity: 0, rotate: 2, y: 30 }}
+                        whileInView={{ opacity: 1, rotate: 2, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.8, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                        className="absolute w-44 h-60 border-4 border-white bg-[#fffefa] p-5 flex flex-col justify-between shadow-[10px_10px_0px_rgba(0,0,0,1)]"
+                        style={{ top: '30px', right: '100px' }}
+                      >
+                        <div>
+                          <div className="font-black text-black text-[9px] uppercase tracking-[0.3em] mb-2">PERAVAI 2026</div>
+                          <div className="h-[2px] w-full mb-3" style={{ background: 'linear-gradient(to right, #a80d11, #0f50e3)' }} />
+                          <div className="space-y-2">
+                            {[1, 0.8, 0.55, 0.8].map((w, i) => <div key={i} className="h-2 bg-gray-200 border border-black/10" style={{ width: `${w * 100}%` }} />)}
+                          </div>
+                        </div>
+                        <div className="border-4 border-black p-2 text-center bg-yellow-400">
+                          <p className="text-black font-black text-[9px] uppercase tracking-[0.2em]">Brochure</p>
+                        </div>
+                      </motion.div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Bottom accent bar */}
-                <div className="h-[8px]" style={{ background: 'linear-gradient(to left, #a80d11, #d82221 45%, #0b2140 55%, #0f50e3)' }} />
+                <div className="h-[6px]" style={{ background: 'linear-gradient(to left, #a80d11, #d82221 40%, #0b2140 60%, #0f50e3)' }} />
               </div>
             </motion.div>
           </div>
 
-          {/* ── Section Divider ── */}
           <div className="mt-20 md:mt-24 mb-16 md:mb-20 px-4 sm:px-6 lg:px-24 flex items-center gap-6">
             <div className="flex-1 h-[4px] bg-black" />
           </div>
 
-          {/* ── Passes Section ── */}
           <div id="passes" className="relative z-10 px-4 sm:px-6 lg:px-24">
-            {/* Section Header — centered, large, original style */}
             <div className="text-center mb-10 md:mb-20">
               <motion.p
                 initial={{ opacity: 0 }}
@@ -1077,14 +1367,16 @@ const MainLayout = () => {
               </motion.h2>
             </div>
 
-            {/* Pass Cards — Elite centered and scaled up */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-center md:items-stretch max-w-6xl mx-auto">
+            <div className="flex flex-col gap-10 max-w-5xl mx-auto">
               {passes.map((pass) => (
-                <PassCard key={pass.name} {...pass} onClaim={() => handlePassClick(pass.name)} />
+                <PassCard
+                  key={pass.name + pass.nameLine2}
+                  {...pass}
+                  onClaim={pass.onClaim ? pass.onClaim : () => handlePassClick(`${pass.name} ${pass.nameLine2}`)}
+                />
               ))}
             </div>
 
-            {/* Fine print */}
             <motion.p
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -1095,12 +1387,9 @@ const MainLayout = () => {
               All passes include entry to Easwari Startup Peravai 2026
             </motion.p>
           </div>
-
         </motion.div>
       </div>
 
-      {/* ── Guest Speakers Section ── */}
-      {/* Top gradient divider */}
       <div className="mt-20 md:mt-24 mx-4 sm:mx-6 lg:mx-24 h-[3px]" style={{ background: 'linear-gradient(to right, transparent, #a80d11 20%, #1f2022 50%, #0f50e3 80%, transparent)' }} />
 
       <div id="speakers" className="py-12 md:py-20 relative">
@@ -1116,10 +1405,8 @@ const MainLayout = () => {
         <SpeakersCarousel />
       </div>
 
-      {/* Bottom gradient divider */}
       <div className="mx-4 sm:mx-6 lg:mx-24 h-[3px]" style={{ background: 'linear-gradient(to right, transparent, #a80d11 20%, #1f2022 50%, #0f50e3 80%, transparent)' }} />
 
-      {/* ── Marquee Ticker ── */}
       <div className="mt-16 md:mt-12 border-y-4 border-black bg-[#1f2022] overflow-hidden py-4">
         <motion.div
           className="flex gap-12 whitespace-nowrap"
@@ -1136,10 +1423,8 @@ const MainLayout = () => {
         </motion.div>
       </div>
 
-      {/* ── Contact Us Section ── */}
       <div id="contact" className="py-16 md:py-24 relative z-10 px-4 sm:px-6 lg:px-24 bg-yellow-400 border-b-4 border-black">
         <div className="flex flex-col md:flex-row gap-12 md:gap-20 max-w-7xl mx-auto">
-          {/* Left Side: Header */}
           <div className="flex-1">
             <motion.p
               initial={{ opacity: 0 }}
@@ -1170,9 +1455,7 @@ const MainLayout = () => {
             </motion.p>
           </div>
 
-          {/* Right Side: Contact Cards */}
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {/* Email */}
             <motion.a
               href="mailto:contact@peravai.com"
               initial={{ opacity: 0, y: 20 }}
@@ -1190,7 +1473,6 @@ const MainLayout = () => {
               </div>
             </motion.a>
 
-            {/* Phone */}
             <motion.a
               href="tel:+919876543210"
               initial={{ opacity: 0, y: 20 }}
@@ -1208,9 +1490,8 @@ const MainLayout = () => {
               </div>
             </motion.a>
 
-            {/* Instagram */}
             <motion.a
-              href="https://instagram.com/easwaristartup"
+              href="https://www.instagram.com/startup_peravai/?utm_source=ig_web_button_share_sheet"
               target="_blank"
               rel="noreferrer"
               initial={{ opacity: 0, y: 20 }}
@@ -1228,13 +1509,12 @@ const MainLayout = () => {
               </div>
               <div>
                 <p className="font-black uppercase tracking-widest text-xs text-gray-500 mb-1">Instagram</p>
-                <p className="font-bold text-black truncate">@easwaristartup</p>
+                <p className="font-bold text-black truncate">@startup_peravai</p>
               </div>
             </motion.a>
 
-            {/* LinkedIn */}
             <motion.a
-              href="https://linkedin.com/company/easwaristartup"
+              href="https://www.linkedin.com/in/easwari-startup-peravai?utm_source=share_via&utm_content=profile&utm_medium=member_android"
               target="_blank"
               rel="noreferrer"
               initial={{ opacity: 0, y: 20 }}
@@ -1259,7 +1539,6 @@ const MainLayout = () => {
         </div>
       </div>
 
-      {/* ── Profile Required Toast ── */}
       <AnimatePresence>
         {profileWarning && (
           <motion.div
@@ -1288,14 +1567,12 @@ const MainLayout = () => {
         )}
       </AnimatePresence>
 
-      {/* ── Auth Modal ── */}
       <AuthModal
         isOpen={authModal.open}
         onClose={handleAuthClose}
         selectedPass={authModal.pass}
       />
 
-      {/* ── Registration Form (new user) ── */}
       <AnimatePresence>
         {user && !registration && showRegForm && (
           <RegistrationForm
@@ -1304,7 +1581,6 @@ const MainLayout = () => {
             onSuccess={() => {
               setShowRegForm(false);
               if (pendingEvent) {
-                // After profile done — show Event Pass gate (user needs to buy a pass)
                 setShowEventPassGate(true);
                 setPendingEvent(null);
               } else if (hackathonJoinCode) {
@@ -1319,7 +1595,6 @@ const MainLayout = () => {
         )}
       </AnimatePresence>
 
-      {/* ── Payment Gateway (existing user, pending pass) ── */}
       <AnimatePresence>
         {user && registration?.paymentStatus === 'pending' && showPayment && (
           <RegistrationForm
@@ -1334,14 +1609,12 @@ const MainLayout = () => {
         )}
       </AnimatePresence>
 
-      {/* ── User Dashboard (existing user) ── */}
       <AnimatePresence>
         {showDashboard && registration && (
           <UserDashboard onClose={() => setShowDashboard(false)} />
         )}
       </AnimatePresence>
 
-      {/* ── Hackathon Team Modal ── */}
       <AnimatePresence>
         {showHackathonModal && (
           <HackathonModal
@@ -1355,7 +1628,6 @@ const MainLayout = () => {
         )}
       </AnimatePresence>
 
-      {/* ── Event Pass Gate Modal ── */}
       <AnimatePresence>
         {showEventPassGate && (
           <motion.div
@@ -1387,8 +1659,7 @@ const MainLayout = () => {
                 <h3 className="text-2xl font-black uppercase tracking-tight mb-3">Event Pass Required</h3>
                 <p className="font-bold text-gray-600 mb-2 leading-relaxed">
                   To register for events, you need an{' '}
-                  <span className="text-black font-black">Event Pass</span> or{' '}
-                  <span className="text-black font-black">Premium Pass</span>.
+                  <span className="text-black font-black">Event Pass</span>.
                 </p>
                 <p className="font-bold text-gray-400 text-sm mb-8">
                   Upgrade your pass to unlock registration access to all 22+ events.
@@ -1428,6 +1699,60 @@ const MainLayout = () => {
               setSelectedEvent(null);
             }}
           />
+        )}
+      </AnimatePresence>
+
+      <VisitorDetailsModal isOpen={showVisitorModal} onClose={() => setShowVisitorModal(false)} />
+
+      {/* ── Floating Dock Navbar (appears on scroll) ── */}
+      <AnimatePresence>
+        {dockVisible && (
+          <motion.div
+            className="fixed bottom-6 left-1/2 z-[999] hidden lg:flex"
+            style={{ x: '-50%' }}
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+          >
+            <Dock
+              panelHeight={68}
+              baseItemSize={48}
+              magnification={68}
+              items={[
+                {
+                  icon: <Home size={20} />,
+                  label: 'Home',
+                  onClick: () => handleNavClick({ preventDefault: () => { } }, ''),
+                },
+                {
+                  icon: <Lightbulb size={20} />,
+                  label: 'Insights',
+                  onClick: () => handleNavClick({ preventDefault: () => { } }, 'whats-happening'),
+                },
+                {
+                  icon: <Ticket size={20} />,
+                  label: 'Passes',
+                  onClick: () => handleNavClick({ preventDefault: () => { } }, 'passes'),
+                },
+                {
+                  icon: <Users size={20} />,
+                  label: 'Speakers',
+                  onClick: () => handleNavClick({ preventDefault: () => { } }, 'speakers'),
+                },
+                {
+                  icon: <BookOpen size={20} />,
+                  label: 'Brochure',
+                  onClick: () => handleNavClick({ preventDefault: () => { } }, 'brochure'),
+                },
+                {
+                  icon: <Mail size={20} />,
+                  label: 'Contact',
+                  onClick: () => handleNavClick({ preventDefault: () => { } }, 'contact'),
+                },
+              ]}
+            />
+          </motion.div>
         )}
       </AnimatePresence>
     </>

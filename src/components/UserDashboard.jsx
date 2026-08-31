@@ -7,7 +7,7 @@ import { auth } from '../firebase';
 import { useAuth } from '../context/AuthContext';
 
 const passColors = {
-  'General Pass': {
+  'Visitor\'s Pass': {
     bg: '#fffefa',
     text: 'text-black',
     border: 'border-black',
@@ -21,19 +21,12 @@ const passColors = {
     badge: '#fff',
     strip: 'linear-gradient(to right,#a80d11,#d82221,#0b2140,#0f50e3)',
   },
-  'Premium Pass': {
-    bg: '#1f2022',
-    text: 'text-white',
-    border: 'border-white',
-    badge: '#fff',
-    strip: 'linear-gradient(to right,#1f2022,#555)',
-  },
 };
 
 const UserDashboard = ({ onClose }) => {
   const { user, registration } = useAuth();
-  const colors = passColors[registration?.passType] || passColors['General Pass'];
-  const isFeatured = registration?.passType !== 'General Pass';
+  const colors = passColors[registration?.passType] || passColors['Visitor\'s Pass'];
+  const isFeatured = registration?.passType !== 'Visitor\'s Pass';
 
   const handleSignOut = async () => {
     await signOut(auth);
@@ -89,7 +82,7 @@ const UserDashboard = ({ onClose }) => {
             <div>
               <p className="font-black text-2xl uppercase tracking-tight">{registration.passType}</p>
               <p className={`text-xs font-bold uppercase tracking-widest opacity-60`}>
-                {registration.passType === 'General Pass' ? 'Open Access' : registration.passType === 'Event Pass' ? 'Full Event Access' : 'VIP Access'}
+                {registration.passType === 'Visitor\'s Pass' ? 'Open Access' : registration.passType === 'Event Pass' ? 'Full Event Access' : 'VIP Access'}
               </p>
             </div>
           </div>
@@ -130,7 +123,7 @@ const UserDashboard = ({ onClose }) => {
             <p className="font-black uppercase tracking-[0.2em] text-xs opacity-60 mb-3">
               Gate Entry Status
             </p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {['Day 1', 'Day 2'].map((day, i) => {
                 const checked = i === 0 ? registration.checkedInDay1 : registration.checkedInDay2;
                 return (

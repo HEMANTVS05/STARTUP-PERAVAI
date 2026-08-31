@@ -33,17 +33,15 @@ const ErrorMsg = ({ msg }) => msg
 
 // Pass colours
 const passStrip = {
-  'General Pass': 'linear-gradient(to right,#000,#333)',
+  'Visitor\'s Pass': 'linear-gradient(to right,#000,#333)',
   'Event Pass': 'linear-gradient(to right,#a80d11,#d82221,#0b2140,#0f50e3)',
-  'Premium Pass': 'linear-gradient(to right,#1f2022,#555)',
 };
 const passDot = {
-  'General Pass': '#000',
+  'Visitor\'s Pass': '#000',
   'Event Pass': 'linear-gradient(135deg,#a80d11,#0f50e3)',
-  'Premium Pass': '#1f2022',
 };
-const passPrice = { 'General Pass': 'Free', 'Event Pass': '₹499', 'Premium Pass': '₹999' };
-const passIcon = { 'General Pass': Ticket, 'Event Pass': Zap, 'Premium Pass': Crown };
+const passPrice = { 'Visitor\'s Pass': 'Free', 'Event Pass': '₹499' };
+const passIcon = { 'Visitor\'s Pass': Ticket, 'Event Pass': Zap };
 
 // ── PaymentGateway ────────────────────────────────────────────────────────────
 const PaymentGateway = ({ passType, setPassType, registrationData, onSuccess, onBack }) => {
@@ -54,7 +52,7 @@ const PaymentGateway = ({ passType, setPassType, registrationData, onSuccess, on
   const [method, setMethod] = useState('card'); // 'card' | 'upi'
   const [upi, setUpi] = useState('');
   const [error, setError] = useState('');
-  const isFree = passType === 'General Pass';
+  const isFree = passType === 'Visitor\'s Pass';
   const PassIcon = passIcon[passType] || Ticket;
 
   const formatCard = (v) => v.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
@@ -129,9 +127,8 @@ const PaymentGateway = ({ passType, setPassType, registrationData, onSuccess, on
         <div className="flex-1 min-w-0 relative">
           <select value={passType} onChange={(e) => setPassType(e.target.value)}
             className="w-full font-black uppercase tracking-tight text-lg leading-tight bg-transparent focus:outline-none cursor-pointer pr-4">
-            <option value="General Pass">General Pass</option>
+            <option value="Visitor's Pass">Visitor's Pass</option>
             <option value="Event Pass">Event Pass</option>
-            <option value="Premium Pass">Premium Pass</option>
           </select>
           <p className="font-bold text-xs text-gray-500 uppercase tracking-widest mt-1">Tap to change pass</p>
         </div>
@@ -149,7 +146,7 @@ const PaymentGateway = ({ passType, setPassType, registrationData, onSuccess, on
       ) : (
         <>
           {/* Method toggle */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {['card', 'upi'].map((m) => (
               <button key={m} onClick={() => { setMethod(m); setError(''); }}
                 className={`py-3 border-4 font-black uppercase tracking-widest text-xs transition-all
@@ -166,7 +163,7 @@ const PaymentGateway = ({ passType, setPassType, registrationData, onSuccess, on
               <Field id="pay-card" label="Card Number" icon={CreditCard} type="text"
                 placeholder="1234 5678 9012 3456" maxLength={19}
                 value={card.number} onChange={e => setCard(p => ({ ...p, number: formatCard(e.target.value) }))} />
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Field id="pay-exp" label="Expiry" icon={CreditCard} type="text"
                   placeholder="MM/YY" maxLength={5}
                   value={card.expiry} onChange={e => setCard(p => ({ ...p, expiry: formatExp(e.target.value) }))} />
@@ -218,7 +215,7 @@ const RegistrationForm = ({ passType, onSuccess, isPaymentOnly = false, onClose 
   const [step, setStep] = useState(isPaymentOnly ? 'payment' : 'role'); // 'role' | 'details' | 'payment'
   const [role, setRole] = useState(''); // 'student' | 'startup'
   const [error, setError] = useState('');
-  const [localPass, setLocalPass] = useState(passType || 'General Pass');
+  const [localPass, setLocalPass] = useState(passType || 'Visitor\'s Pass');
   const [savingProfile, setSavingProfile] = useState(false);
 
   // Student fields
@@ -303,12 +300,13 @@ const RegistrationForm = ({ passType, onSuccess, isPaymentOnly = false, onClose 
       await refreshRegistration();
       onSuccess();
     } catch (err) {
+      console.error("Save profile error:", err);
       setError('Failed to save profile. Please try again.');
     }
     setSavingProfile(false);
   };
 
-  const strip = passStrip[localPass] || passStrip['General Pass'];
+  const strip = passStrip[localPass] || passStrip['Visitor\'s Pass'];
 
   return (
     <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -413,7 +411,7 @@ const RegistrationForm = ({ passType, onSuccess, isPaymentOnly = false, onClose 
                 </div>
 
                 {/* Common: First / Last name */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Field id="reg-first" label="First Name" icon={User} type="text"
                     placeholder="Your Name" value={role === 'student' ? student.firstName : startup.firstName}
                     onChange={role === 'student' ? setS('firstName') : setSt('firstName')} required />
@@ -437,7 +435,7 @@ const RegistrationForm = ({ passType, onSuccess, isPaymentOnly = false, onClose 
                     <Field id="reg-college" label="College / Institution" icon={Building2} type="text"
                       placeholder="e.g. Easwari Engineering College"
                       value={student.college} onChange={setS('college')} required />
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <Select id="reg-year" label="Year" icon={GraduationCap}
                         value={student.year} onChange={setS('year')} required>
                         <option value="">Select Year</option>
