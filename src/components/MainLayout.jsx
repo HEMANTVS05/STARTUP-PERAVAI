@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Menu, X, Check, Zap, Crown, Ticket, MapPin, Clock, LogOut, QrCode, UserCircle, ChevronDown, Users, Download, Mail, Phone, ExternalLink, Lightbulb, Globe, Rocket, Hammer, Network, TrendingUp, Trophy, Home, BookOpen, Layers } from 'lucide-react';
 import EventSlideshow from './EventSlideshow';
 import AuthModal from './AuthModal';
@@ -14,33 +14,39 @@ import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import VisitorDetailsModal from './VisitorDetailsModal';
 
-import speaker1 from '../assets/MAMAAAA.jpeg';
+import speaker1 from '../assets/speaker1.jpeg';
 import eventBrochure from '../assets/EVENT_BROCHURE.pdf';
 
-const AnimatedNumber = ({ value }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
+const AnimatedNumber = ({ value, delay = 0 }) => {
   const numMatch = value.match(/\d+/);
   const numValue = numMatch ? parseInt(numMatch[0]) : 0;
   const suffix = value.replace(/[0-9]/g, '');
+  const [display, setDisplay] = useState(0);
 
   useEffect(() => {
-    if (isInView && ref.current) {
-      const controls = animate(0, numValue, {
-        duration: 1.0,
-        ease: "easeOut",
-        onUpdate: (val) => {
-          if (ref.current) {
-            ref.current.textContent = Math.floor(val) + suffix;
-          }
-        }
-      });
-      return () => controls.stop();
-    }
-  }, [isInView, numValue, suffix]);
+    const duration = 1200; // ms
+    let raf;
 
-  return <span ref={ref}>0{suffix}</span>;
+    const start = () => {
+      const startTime = performance.now();
+      const tick = (now) => {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // easeOut cubic
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setDisplay(Math.floor(eased * numValue));
+        if (progress < 1) {
+          raf = requestAnimationFrame(tick);
+        }
+      };
+      raf = requestAnimationFrame(tick);
+    };
+
+    const timer = setTimeout(start, delay);
+    return () => { clearTimeout(timer); cancelAnimationFrame(raf); };
+  }, [numValue, delay]);
+
+  return <span>{display}{suffix}</span>;
 };
 
 // ─── gradient presets ────────────────────────────────────────────────────────
@@ -103,7 +109,7 @@ const EventCard = ({ title, date, color, textColor, border, rotate, onClick }) =
 );
 
 // ─── Pass Card (Ticket Style) ─────────────────────────────────────────────────
-const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, ticketSunburst, rightBg, rightGradient, rightTextDark, delay, description, description2, buttonText, secondaryButtonText, onClaim, onSecondaryClick }) => (
+const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, ticketSunburst, rightBg, rightGradient, rightTextDark, delay, description, descriptionNode, description2, description2Node, buttonText, secondaryButtonText, onClaim, onSecondaryClick }) => (
   <motion.div
     initial={{ opacity: 0, y: 50 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -117,7 +123,7 @@ const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, 
     <div
       className="flex w-full overflow-hidden"
       style={{
-        height: '240px',
+        height: '250px',
         position: 'relative',
         WebkitMaskImage: 'radial-gradient(circle at 0px 50%, transparent 24px, black 25px), radial-gradient(circle at 100% 50%, transparent 24px, black 25px)',
         WebkitMaskSize: '51% 100%',
@@ -137,7 +143,7 @@ const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, 
       <div
         className="flex flex-col items-center justify-center shrink-0 relative"
         style={{
-          width: '150px',
+          width: '140px',
           background: stubGradient,
           padding: '12px 10px',
         }}
@@ -191,9 +197,11 @@ const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, 
         </svg>
         {/* Content area for Description & Button */}
         <div className="relative z-10 w-full h-full flex flex-col items-center justify-center p-8 md:p-12 text-center gap-5">
-          <p className="font-bold text-black/100 text-base md:text-lg max-w-md mx-auto leading-snug">
-            {description}
-          </p>
+          {descriptionNode ? descriptionNode : (
+            <p className="font-bold text-black/100 text-base md:text-lg max-w-md mx-auto leading-snug">
+              {description}
+            </p>
+          )}
 
           <div className="flex gap-4">
             {secondaryButtonText && (
@@ -212,7 +220,7 @@ const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, 
             </button>
           </div>
 
-          {description2 && (
+          {description2Node ? description2Node : description2 && (
             <p className="font-black text-red-600 text-sm md:text-base leading-snug">
               {description2}
             </p>
@@ -230,7 +238,7 @@ const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, 
       <div
         className="flex flex-col items-start justify-center shrink-0 relative overflow-hidden"
         style={{
-          width: '320px',
+          width: '340px',
           background: rightGradient || rightBg,
           padding: '24px 34px',
         }}
@@ -300,8 +308,8 @@ const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, 
 // ─── Guest Speakers Data & Component ─────────────────────────────────────────
 const speakers = [
   {
-    name: 'Hemachaandra Na S',
-    company: 'ALL ROUNDER',
+    name: 'Balasubramanian N',
+    company: 'VICE PRESIDENT - PRODUCT ENGINEERING at Renault Nissan Technology & Business Centre India',
     photo: speaker1,
     linkedin: 'https://linkedin.com/'
   },
@@ -331,31 +339,44 @@ const speakers = [
   },
 ];
 
-const SpeakerCard = ({ speaker }) => (
-  <div className="group relative shrink-0 w-64 md:w-72 border-4 border-black bg-white shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all duration-300 mx-4 select-none">
-    <div className="relative h-64 md:h-72 border-b-4 border-black overflow-hidden bg-gray-200">
-      <img
-        src={speaker.photo}
-        alt={speaker.name}
-        draggable={false}
-        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 pointer-events-none"
-      />
-      <a href={speaker.linkedin} target="_blank" rel="noopener noreferrer"
-        className="absolute bottom-4 right-4 w-10 h-10 bg-[#1f2022] border-4 border-black flex items-center justify-center text-white hover:bg-black transition-colors shadow-[3px_3px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
-        onClick={e => e.stopPropagation()}>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-          <rect width="4" height="12" x="2" y="9" />
-          <circle cx="4" cy="4" r="2" />
-        </svg>
-      </a>
+const SpeakerCard = ({ speaker }) => {
+  const atIndex = speaker.company ? speaker.company.indexOf(' at ') : -1;
+  const role = atIndex !== -1 ? speaker.company.slice(0, atIndex) : speaker.company;
+  const companyName = atIndex !== -1 ? speaker.company.slice(atIndex + 4) : null;
+
+  return (
+    <div className="group relative shrink-0 w-64 md:w-72 border-4 border-black bg-white shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all duration-300 mx-4 select-none flex flex-col justify-between">
+      <div className="relative h-64 md:h-72 border-b-4 border-black overflow-hidden bg-gray-200 shrink-0">
+        <img
+          src={speaker.photo}
+          alt={speaker.name}
+          draggable={false}
+          className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 pointer-events-none"
+        />
+        <a href={speaker.linkedin} target="_blank" rel="noopener noreferrer"
+          className="absolute bottom-4 right-4 w-10 h-10 bg-[#1f2022] border-4 border-black flex items-center justify-center text-white hover:bg-black transition-colors shadow-[3px_3px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
+          onClick={e => e.stopPropagation()}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+            <rect width="4" height="12" x="2" y="9" />
+            <circle cx="4" cy="4" r="2" />
+          </svg>
+        </a>
+      </div>
+      <div className="p-4 md:p-5 text-left flex-1 flex flex-col justify-start min-h-[110px]">
+        <h3 className="font-black uppercase text-lg md:text-xl tracking-tight leading-none mb-2">{speaker.name}</h3>
+        <p className="font-extrabold text-[#d82221] text-xs uppercase tracking-wider leading-tight">
+          {role}
+        </p>
+        {companyName && (
+          <p className="font-bold text-gray-600 text-[11px] uppercase tracking-wide leading-snug mt-1">
+            at {companyName}
+          </p>
+        )}
+      </div>
     </div>
-    <div className="p-4 md:p-5 text-left">
-      <h3 className="font-black uppercase text-lg md:text-xl tracking-tight leading-none mb-1">{speaker.name}</h3>
-      <p className="font-bold text-gray-500 text-xs uppercase tracking-widest">{speaker.company}</p>
-    </div>
-  </div>
-);
+  );
+};
 
 // ─── Speakers Carousel (drag + arrows + auto-scroll) ─────────────────────────
 const SpeakersCarousel = () => {
@@ -744,16 +765,40 @@ const MainLayout = () => {
       nameLine2: 'PASS',
       icon: Ticket,
       price: "VISITOR'S ENTRY",
-      // Left red stub
       stubGradient: '#a80d11',
-      // Middle cream/sunburst
       ticketBg: '#ffffffff',
       ticketSunburst: 'dark',
-      // Right cream section (dark text)
       rightBg: '#f6f4ee',
       rightGradient: null,
       rightTextDark: true,
       description: 'Your Gateway into Easwari Startup Peravai',
+      descriptionNode: (
+        <div style={{ textAlign: 'center', maxWidth: '360px', margin: '0 auto' }}>
+          <p style={{
+            fontFamily: '"Playfair Display", Georgia, serif',
+            fontWeight: 700,
+            fontStyle: 'italic',
+            fontSize: '20px',
+            lineHeight: 1.3,
+            letterSpacing: '0.01em',
+            color: '#1a1a1a',
+            marginBottom: '4px',
+          }}>Your Gateway into</p>
+          <p style={{
+            fontFamily: '"Playfair Display", Georgia, serif',
+            fontWeight: 1000,
+            fontStyle: 'normal',
+            fontSize: '22px',
+            lineHeight: 1.2,
+            letterSpacing: '0.01em',
+            color: '#0f0f0f',
+          }}>
+            Easwari{' '}
+            <span style={{ color: '#a80d11' }}>Startup</span>{' '}
+            Peravai
+          </p>
+        </div>
+      ),
       buttonText: 'GET YOUR PASS',
       secondaryButtonText: "WHAT YOU'LL GET",
       onSecondaryClick: () => setShowVisitorModal(true),
@@ -764,18 +809,49 @@ const MainLayout = () => {
       nameLine2: 'PASS',
       icon: Zap,
       price: 'EVENT ACCESS',
-      // Left blue stub
       stubGradient: '#0a2140',
-      // Middle light blue/sunburst
       ticketBg: '#e4e5e7ff',
       ticketSunburst: 'blue',
-      // Right red-to-blue gradient (white text)
       rightGradient: 'linear-gradient(135deg, #a80d11, #d82221 40%, #0b2140 60%, #0f50e3)',
       rightBg: null,
       rightTextDark: false,
       description: 'Ideas Need Action. Be the Changemaker.',
+      descriptionNode: (
+        <div style={{ textAlign: 'center', maxWidth: '360px', margin: '0 auto' }}>
+          <p style={{
+            fontFamily: '"Playfair Display", Georgia, serif',
+            fontWeight: 700,
+            fontStyle: 'italic',
+            fontSize: '20px',
+            lineHeight: 1.3,
+            letterSpacing: '0.01em',
+            color: '#1a1a1a',
+            marginBottom: '4px',
+          }}>Ideas Need Action.</p>
+          <p style={{
+            fontFamily: '"Playfair Display", Georgia, serif',
+            fontWeight: 900,
+            fontStyle: 'normal',
+            fontSize: '22px',
+            lineHeight: 1.2,
+            letterSpacing: '0.01em',
+            color: '#0b2140',
+          }}>Be the Changemaker</p>
+        </div>
+      ),
       buttonText: 'EXPLORE EVENTS',
       description2: 'Participate in Our Events.',
+      description2Node: (
+        <p style={{
+          fontFamily: '"Playfair Display", Georgia, serif',
+          fontWeight: 900,
+          fontStyle: 'normal',
+          fontSize: '22px',
+          lineHeight: 1.2,
+          letterSpacing: '0.01em',
+          color: '#a80d11',
+        }}>Participate in Our Events</p>
+      ),
       onClaim: () => handleExploreEvents(),
       delay: 0.0,
     },
@@ -965,7 +1041,7 @@ const MainLayout = () => {
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.75, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  EASWARI
+                  Easwari
                 </motion.span>
               </span>
               <span className="flex items-baseline justify-center gap-[2vw] overflow-hidden">
@@ -977,7 +1053,7 @@ const MainLayout = () => {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.75, delay: 0.82, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    STARTUP
+                    Startup
                   </motion.span>
                 </span>
 
@@ -989,7 +1065,7 @@ const MainLayout = () => {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.75, delay: 1.04, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    PERAVAI
+                    Peravai
                   </motion.span>
                 </span>
               </span>
@@ -1033,7 +1109,7 @@ const MainLayout = () => {
           >
             {[['10000+', 'Participants'], ['100+', 'Founders & Leaders'], ['2', 'Days of Impact']].map(([num, label], i) => (
               <div key={i} className="py-5 px-4 text-center">
-                <p className="font-black text-2xl md:text-3xl text-[#1f2022] leading-none"><AnimatedNumber value={num} /></p>
+                <p className="font-black text-2xl md:text-3xl text-[#1f2022] leading-none"><AnimatedNumber value={num} delay={1500} /></p>
                 <p className="font-bold text-xs uppercase tracking-[0.2em] text-gray-500 mt-1">{label}</p>
               </div>
             ))}
@@ -1206,144 +1282,6 @@ const MainLayout = () => {
             <EventSlideshow onOpenHackathon={() => handleOpenHackathon()} />
           </div>
 
-          <div id="brochure" className="mt-20 md:mt-28 relative z-10 px-4 sm:px-6 lg:px-20">
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="max-w-6xl mx-auto"
-            >
-              <div className="relative border-4 border-black bg-[#f6f4ee] shadow-[14px_14px_0px_rgba(0,0,0,1)] overflow-hidden">
-                <div className="h-[6px]" style={{ background: 'linear-gradient(to right, #a80d11, #d82221 40%, #0b2140 60%, #0f50e3)' }} />
-                <div aria-hidden className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
-                  <span className="text-[12vw] font-black uppercase tracking-tighter text-black/[0.04] whitespace-nowrap leading-none text-center">
-                    STARTUP<br />PERAVAI
-                  </span>
-                </div>
-
-                <div className="relative z-10 p-6 md:p-8 lg:p-10">
-                  <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start mb-12 md:mb-16">
-                    <div>
-                      <motion.p
-                        initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }} transition={{ duration: 0.5 }}
-                        className="font-black uppercase tracking-[0.4em] text-[#d82221] text-xs mb-5"
-                      >
-                        · Official Document · 2026
-                      </motion.p>
-                      <motion.h2
-                        initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-                        className="text-5xl sm:text-6xl md:text-7xl font-black uppercase tracking-tighter leading-none text-black mb-6"
-                      >
-                        Event<br />
-                        <span style={{ background: 'linear-gradient(to right, #a80d11, #d82221 40%, #0b2140 60%, #0f50e3)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                          Brochure.
-                        </span>
-                      </motion.h2>
-
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }} transition={{ delay: 0.3, duration: 0.5 }}
-                        className="flex flex-row items-center gap-4"
-                      >
-                        <motion.a
-                          href={eventBrochure}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          whileHover={{ x: 3, y: -3, transition: { duration: 0.12 } }}
-                          whileTap={{ scale: 0.97 }}
-                          className="flex items-center gap-3 px-7 py-4 border-2 border-black bg-white text-black font-black uppercase tracking-[0.15em] text-sm shadow-[5px_5px_0px_rgba(0,0,0,0.25)] hover:shadow-none transition-all duration-150 whitespace-nowrap"
-                        >
-                          <ExternalLink className="w-5 h-5" />
-                          View Brochure
-                        </motion.a>
-                        <motion.a
-                          href={eventBrochure}
-                          download="EVENT_BROCHURE.pdf"
-                          whileHover={{ x: 3, y: -3, transition: { duration: 0.12 } }}
-                          whileTap={{ scale: 0.97 }}
-                          className="flex items-center gap-3 px-7 py-4 border-4 border-yellow-400 bg-yellow-400 text-black font-black uppercase tracking-[0.15em] text-sm shadow-[5px_5px_0px_rgba(234,179,8,0.5)] hover:shadow-none transition-all duration-150 whitespace-nowrap"
-                        >
-                          <Download className="w-5 h-5" />
-                          Download PDF
-                        </motion.a>
-                      </motion.div>
-                    </div>
-
-                    <div className="hidden lg:flex items-center justify-center relative" style={{ minHeight: '240px' }}>
-                      <motion.div
-                        initial={{ opacity: 0, rotate: 12, y: 30 }}
-                        whileInView={{ opacity: 1, rotate: 12, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.5, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                        className="absolute w-44 h-60 border-4 border-white/20 bg-white/5 p-5 flex flex-col justify-between"
-                        style={{ top: '0px', right: '20px' }}
-                      >
-                        <div>
-                          <div className="w-5 h-5 border-2 border-white/30 mb-3" />
-                          <div className="space-y-2">
-                            {[1, 0.8, 0.6, 0.8].map((w, i) => <div key={i} className="h-1.5 bg-white/20 rounded-none" style={{ width: `${w * 100}%` }} />)}
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          {[1, 0.7].map((w, i) => <div key={i} className="h-1.5 bg-white/20" style={{ width: `${w * 100}%` }} />)}
-                        </div>
-                      </motion.div>
-
-                      <motion.div
-                        initial={{ opacity: 0, rotate: -5, y: 30 }}
-                        whileInView={{ opacity: 1, rotate: -5, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.65, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                        className="absolute w-44 h-60 border-4 border-white/30 bg-[#2a2d30] p-5 flex flex-col justify-between shadow-[8px_8px_0px_rgba(0,0,0,0.5)]"
-                        style={{ top: '15px', right: '60px' }}
-                      >
-                        <div>
-                          <div className="font-black text-white/50 text-[9px] uppercase tracking-[0.3em] mb-2">Peravai 2026</div>
-                          <div className="h-[3px] w-full mb-3" style={{ background: 'linear-gradient(to right, #a80d11, #0f50e3)' }} />
-                          <div className="space-y-2">
-                            {[1, 0.8, 0.6, 0.75].map((w, i) => <div key={i} className="h-1.5 bg-white/15" style={{ width: `${w * 100}%` }} />)}
-                          </div>
-                        </div>
-                        <div className="border-2 border-yellow-400/50 p-2 text-center">
-                          <p className="text-yellow-400 font-black text-[9px] uppercase tracking-[0.25em]">Official</p>
-                        </div>
-                      </motion.div>
-
-                      <motion.div
-                        initial={{ opacity: 0, rotate: 2, y: 30 }}
-                        whileInView={{ opacity: 1, rotate: 2, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.8, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                        className="absolute w-44 h-60 border-4 border-white bg-[#fffefa] p-5 flex flex-col justify-between shadow-[10px_10px_0px_rgba(0,0,0,1)]"
-                        style={{ top: '30px', right: '100px' }}
-                      >
-                        <div>
-                          <div className="font-black text-black text-[9px] uppercase tracking-[0.3em] mb-2">PERAVAI 2026</div>
-                          <div className="h-[2px] w-full mb-3" style={{ background: 'linear-gradient(to right, #a80d11, #0f50e3)' }} />
-                          <div className="space-y-2">
-                            {[1, 0.8, 0.55, 0.8].map((w, i) => <div key={i} className="h-2 bg-gray-200 border border-black/10" style={{ width: `${w * 100}%` }} />)}
-                          </div>
-                        </div>
-                        <div className="border-4 border-black p-2 text-center bg-yellow-400">
-                          <p className="text-black font-black text-[9px] uppercase tracking-[0.2em]">Brochure</p>
-                        </div>
-                      </motion.div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="h-[6px]" style={{ background: 'linear-gradient(to left, #a80d11, #d82221 40%, #0b2140 60%, #0f50e3)' }} />
-              </div>
-            </motion.div>
-          </div>
-
-          <div className="mt-20 md:mt-24 mb-16 md:mb-20 px-4 sm:px-6 lg:px-24 flex items-center gap-6">
-            <div className="flex-1 h-[4px] bg-black" />
-          </div>
-
           <div id="passes" className="relative z-10 px-4 sm:px-6 lg:px-24">
             <div className="text-center mb-10 md:mb-20">
               <motion.p
@@ -1392,7 +1330,7 @@ const MainLayout = () => {
 
       <div className="mt-20 md:mt-24 mx-4 sm:mx-6 lg:mx-24 h-[3px]" style={{ background: 'linear-gradient(to right, transparent, #a80d11 20%, #1f2022 50%, #0f50e3 80%, transparent)' }} />
 
-      <div id="speakers" className="py-12 md:py-20 relative">
+      {/*<div id="speakers" className="py-12 md:py-20 relative">
         <div className="text-center mb-10 md:mb-14 relative z-10">
           <p className="font-black uppercase tracking-[0.35em] text-gray-400 text-xs md:text-sm mb-4">
             Hear from the best
@@ -1404,8 +1342,146 @@ const MainLayout = () => {
         </div>
         <SpeakersCarousel />
       </div>
+      */}
+      <div className="mx-4 sm:mx-6 lg:mx-24 h-[2px]" style={{ background: 'linear-gradient(to right, transparent, #a80d11 20%, #1f2022 50%, #0f50e3 80%, transparent)' }} />
 
-      <div className="mx-4 sm:mx-6 lg:mx-24 h-[3px]" style={{ background: 'linear-gradient(to right, transparent, #a80d11 20%, #1f2022 50%, #0f50e3 80%, transparent)' }} />
+      <div id="brochure" className="mt-20 md:mt-28 relative z-10 px-4 sm:px-6 lg:px-20">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-6xl mx-auto"
+        >
+          <div className="relative border-4 border-black bg-[#f6f4ee] shadow-[14px_14px_0px_rgba(0,0,0,1)] overflow-hidden">
+            <div className="h-[6px]" style={{ background: 'linear-gradient(to right, #a80d11, #d82221 40%, #0b2140 60%, #0f50e3)' }} />
+            <div aria-hidden className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
+              <span className="text-[12vw] font-black uppercase tracking-tighter text-black/[0.04] whitespace-nowrap leading-none text-center">
+                STARTUP<br />PERAVAI
+              </span>
+            </div>
+
+            <div className="relative z-10 p-6 md:p-8 lg:p-10">
+              <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start mb-12 md:mb-16">
+                <div>
+                  <motion.p
+                    initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }} transition={{ duration: 0.5 }}
+                    className="font-black uppercase tracking-[0.4em] text-[#d82221] text-xs mb-5"
+                  >
+                    · Official Document · 2026
+                  </motion.p>
+                  <motion.h2
+                    initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+                    className="text-5xl sm:text-6xl md:text-7xl font-black uppercase tracking-tighter leading-none text-black mb-6"
+                  >
+                    Event<br />
+                    <span style={{ background: 'linear-gradient(to right, #a80d11, #d82221 40%, #0b2140 60%, #0f50e3)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                      Brochure.
+                    </span>
+                  </motion.h2>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }} transition={{ delay: 0.3, duration: 0.5 }}
+                    className="flex flex-row items-center gap-4"
+                  >
+                    <motion.a
+                      href={eventBrochure}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ x: 3, y: -3, transition: { duration: 0.12 } }}
+                      whileTap={{ scale: 0.97 }}
+                      className="flex items-center gap-3 px-7 py-4 border-2 border-black bg-white text-black font-black uppercase tracking-[0.15em] text-sm shadow-[5px_5px_0px_rgba(0,0,0,0.25)] hover:shadow-none transition-all duration-150 whitespace-nowrap"
+                    >
+                      <ExternalLink className="w-5 h-5" />
+                      View Brochure
+                    </motion.a>
+                    <motion.a
+                      href={eventBrochure}
+                      download="EVENT_BROCHURE.pdf"
+                      whileHover={{ x: 3, y: -3, transition: { duration: 0.12 } }}
+                      whileTap={{ scale: 0.97 }}
+                      className="flex items-center gap-3 px-7 py-4 border-4 border-yellow-400 bg-yellow-400 text-black font-black uppercase tracking-[0.15em] text-sm shadow-[5px_5px_0px_rgba(234,179,8,0.5)] hover:shadow-none transition-all duration-150 whitespace-nowrap"
+                    >
+                      <Download className="w-5 h-5" />
+                      Download PDF
+                    </motion.a>
+                  </motion.div>
+                </div>
+
+                <div className="hidden lg:flex items-center justify-center relative" style={{ minHeight: '240px' }}>
+                  <motion.div
+                    initial={{ opacity: 0, rotate: 12, y: 30 }}
+                    whileInView={{ opacity: 1, rotate: 12, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.5, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute w-44 h-60 border-4 border-white/20 bg-white/5 p-5 flex flex-col justify-between"
+                    style={{ top: '0px', right: '20px' }}
+                  >
+                    <div>
+                      <div className="w-5 h-5 border-2 border-white/30 mb-3" />
+                      <div className="space-y-2">
+                        {[1, 0.8, 0.6, 0.8].map((w, i) => <div key={i} className="h-1.5 bg-white/20 rounded-none" style={{ width: `${w * 100}%` }} />)}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      {[1, 0.7].map((w, i) => <div key={i} className="h-1.5 bg-white/20" style={{ width: `${w * 100}%` }} />)}
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, rotate: -5, y: 30 }}
+                    whileInView={{ opacity: 1, rotate: -5, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.65, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute w-44 h-60 border-4 border-white/30 bg-[#2a2d30] p-5 flex flex-col justify-between shadow-[8px_8px_0px_rgba(0,0,0,0.5)]"
+                    style={{ top: '15px', right: '60px' }}
+                  >
+                    <div>
+                      <div className="font-black text-white/50 text-[9px] uppercase tracking-[0.3em] mb-2">Peravai 2026</div>
+                      <div className="h-[3px] w-full mb-3" style={{ background: 'linear-gradient(to right, #a80d11, #0f50e3)' }} />
+                      <div className="space-y-2">
+                        {[1, 0.8, 0.6, 0.75].map((w, i) => <div key={i} className="h-1.5 bg-white/15" style={{ width: `${w * 100}%` }} />)}
+                      </div>
+                    </div>
+                    <div className="border-2 border-yellow-400/50 p-2 text-center">
+                      <p className="text-yellow-400 font-black text-[9px] uppercase tracking-[0.25em]">Official</p>
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, rotate: 2, y: 30 }}
+                    whileInView={{ opacity: 1, rotate: 2, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.8, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute w-44 h-60 border-4 border-white bg-[#fffefa] p-5 flex flex-col justify-between shadow-[10px_10px_0px_rgba(0,0,0,1)]"
+                    style={{ top: '30px', right: '100px' }}
+                  >
+                    <div>
+                      <div className="font-black text-black text-[9px] uppercase tracking-[0.3em] mb-2">PERAVAI 2026</div>
+                      <div className="h-[2px] w-full mb-3" style={{ background: 'linear-gradient(to right, #a80d11, #0f50e3)' }} />
+                      <div className="space-y-2">
+                        {[1, 0.8, 0.55, 0.8].map((w, i) => <div key={i} className="h-2 bg-gray-200 border border-black/10" style={{ width: `${w * 100}%` }} />)}
+                      </div>
+                    </div>
+                    <div className="border-4 border-black p-2 text-center bg-yellow-400">
+                      <p className="text-black font-black text-[9px] uppercase tracking-[0.2em]">Brochure</p>
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+            </div>
+
+            <div className="h-[6px]" style={{ background: 'linear-gradient(to left, #a80d11, #d82221 40%, #0b2140 60%, #0f50e3)' }} />
+          </div>
+        </motion.div>
+      </div>
+
+      <div className="mt-20 md:mt-24 mb-16 md:mb-20 px-4 sm:px-6 lg:px-24 flex items-center gap-6">
+        <div className="flex-1 h-[4px] bg-black" />
+      </div>
 
       <div className="mt-16 md:mt-12 border-y-4 border-black bg-[#1f2022] overflow-hidden py-4">
         <motion.div
@@ -1422,6 +1498,7 @@ const MainLayout = () => {
           ))}
         </motion.div>
       </div>
+
 
       <div id="contact" className="py-16 md:py-24 relative z-10 px-4 sm:px-6 lg:px-24 bg-yellow-400 border-b-4 border-black">
         <div className="flex flex-col md:flex-row gap-12 md:gap-20 max-w-7xl mx-auto">
