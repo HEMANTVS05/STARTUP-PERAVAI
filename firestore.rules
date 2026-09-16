@@ -1,18 +1,117 @@
-rules_version='2'
+// PERAVAI — Firestore Security Rules
+// ──────────────────────────────────────────────────────────────────────────────
+// IMPORTANT: The primary data access layer is Express + Firebase Admin SDK.
+// These rules act as a DEFENSE-IN-DEPTH layer — they deny direct client access
+// to sensitive collections even if someone bypasses the backend.
+// The backend must still perform all authorization checks independently.
+// ──────────────────────────────────────────────────────────────────────────────
 
+rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ── Helper functions ──────────────────────────────────────────────────────
+
+    // Is the request from an authenticated user?
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Is the requesting user the owner of this document?
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    // Does the user's Custom Claim include an admin role?
+    function hasAdminClaim() {
+      return isAuthenticated() &&
+        (request.auth.token.role == 'admin' || request.auth.token.role == 'organizer');
+    }
+
+    // ── /users ────────────────────────────────────────────────────────────────
+    // Users can read their own profile. Only backend (Admin SDK) can write.
+    match /users/{uid} {
+      allow read: if isOwner(uid) || hasAdminClaim();
+      allow write: if false; // All writes go through the Express backend
+    }
+
+    // ── /events ───────────────────────────────────────────────────────────────
+    // Anyone authenticated can read events. Only admins can write.
+    match /events/{eventId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+
+    // ── /registrations ────────────────────────────────────────────────────────
+    // Users can read their own registration. Backend handles all writes.
+    match /registrations/{registrationId} {
+      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    // ── /teams ────────────────────────────────────────────────────────────────
+    // Authenticated users can read teams (needed for team discovery/joining).
+    // All writes go through the backend to enforce business rules.
+    match /teams/{teamId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // ── /team_members ─────────────────────────────────────────────────────────
+    match /team_members/{memberId} {
+      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    // ── /tickets ──────────────────────────────────────────────────────────────
+    // Users can read only their own tickets.
+    match /tickets/{ticketId} {
+      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    // ── /payments ─────────────────────────────────────────────────────────────
+    // Users can read their own payment records. No direct writes.
+    match /payments/{paymentId} {
+      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    // ── /attendance ───────────────────────────────────────────────────────────
+    // Attendance is fully admin-managed. No direct client access.
+    match /attendance/{attendanceId} {
+      allow read:  if hasAdminClaim();
+      allow write: if false;
+    }
+
+    // ── /announcements ────────────────────────────────────────────────────────
+    match /announcements/{announcementId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // ── /notifications ────────────────────────────────────────────────────────
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    // ── /auditLogs ────────────────────────────────────────────────────────────
+    match /auditLogs/{logId} {
+      allow read:  if hasAdminClaim();
+      allow write: if false; // Internal backend use only
+    }
+
+    // ── /problem_statements ───────────────────────────────────────────────────
+    // Read-only for authenticated users.
+    match /problem_statements/{psId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // ── DEFAULT: deny everything not explicitly listed ────────────────────────
     match /{document=**} {
-      // This rule allows anyone with your database reference to view, edit,
-      // and delete all data in your database. It is useful for getting
-      // started, but it is configured to expire after 30 days because it
-      // leaves your app open to attackers. At that time, all client
-      // requests to your database will be denied.
-      //
-      // Make sure to write security rules for your app before that time, or
-      // else all client requests to your database will be denied until you
-      // update your rules.
-      allow read, write: if request.time < timestamp.date(2026, 9, 20);
+      allow read, write: if false;
     }
   }
 }
