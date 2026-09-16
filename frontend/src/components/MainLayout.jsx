@@ -126,9 +126,9 @@ const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, 
         alt="Mascot"
         className="absolute z-40 pointer-events-none drop-shadow-[2px_4px_12px_rgba(0,0,0,0.4)] object-contain"
         style={{
-          height: '115%',
-          left: '95px',
-          bottom: '-7%',
+          height: '100%',
+          left: '100px',
+          bottom: '-1%',
         }}
       />
     )}
@@ -208,9 +208,9 @@ const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, 
           })}
         </svg>
         {/* Content area for Description & Button */}
-        <div 
+        <div
           className="relative z-10 w-full h-full flex flex-col items-center justify-center p-8 md:p-12 text-center gap-5"
-          style={{ paddingLeft: mascotImg ? '140px' : '' }}
+          style={{ paddingLeft: mascotImg ? '160px' : '' }}
         >
           {descriptionNode ? descriptionNode : (
             <p className="font-bold text-black/100 text-base md:text-lg max-w-md mx-auto leading-snug">
@@ -218,18 +218,21 @@ const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, 
             </p>
           )}
 
-          <div className="flex gap-4">
+          <div className={`flex ${secondaryButtonText ? 'gap-3 md:gap-4' : 'gap-4'}`}>
             {secondaryButtonText && (
               <button
                 onClick={(e) => { e.stopPropagation(); onSecondaryClick?.(); }}
-                className="bg-transparent text-black border-2 border-black/80 px-5 md:px-8 py-3 rounded-md font-black uppercase text-[10px] md:text-xs tracking-[0.15em] hover:bg-black/5 transition-all"
+                className="bg-transparent text-black border-2 border-black/80 px-4 md:px-6 py-2.5 rounded-md font-black uppercase text-[10px] md:text-[11px] tracking-[0.1em] hover:bg-black/5 transition-all whitespace-nowrap"
               >
                 {secondaryButtonText}
               </button>
             )}
             <button
               onClick={(e) => { e.stopPropagation(); onClaim?.(); }}
-              className="bg-black hover:bg-gray-800 text-white border-2 border-black/10 px-5 md:px-8 py-3 rounded-md font-black uppercase text-[10px] md:text-xs tracking-[0.15em] shadow-[4px_4px_0px_rgba(0,0,0,0.2)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.2)] hover:translate-y-[2px] transition-all"
+              className={`bg-black hover:bg-gray-800 text-white border-2 border-black/10 rounded-md font-black uppercase shadow-[3px_3px_0px_rgba(0,0,0,0.2)] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.2)] hover:translate-y-[2px] transition-all whitespace-nowrap ${secondaryButtonText
+                ? 'px-4 md:px-6 py-2.5 text-[10px] md:text-[11px] tracking-[0.1em]'
+                : 'px-5 md:px-8 py-3 text-[10px] md:text-xs tracking-[0.15em]'
+                }`}
             >
               {buttonText}
             </button>
@@ -816,7 +819,7 @@ const MainLayout = () => {
         </div>
       ),
       buttonText: 'GET YOUR PASS',
-      secondaryButtonText: "WHAT YOU'LL GET",
+      secondaryButtonText: "WHAT’S INSIDE",
       onSecondaryClick: () => setShowVisitorModal(true),
       delay: 0.1,
     },
