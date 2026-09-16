@@ -109,7 +109,7 @@ const EventCard = ({ title, date, color, textColor, border, rotate, onClick }) =
 );
 
 // ─── Pass Card (Ticket Style) ─────────────────────────────────────────────────
-const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, ticketSunburst, rightBg, rightGradient, rightTextDark, delay, description, descriptionNode, description2, description2Node, buttonText, secondaryButtonText, onClaim, onSecondaryClick }) => (
+const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, ticketSunburst, rightBg, rightGradient, rightTextDark, delay, description, descriptionNode, description2, description2Node, buttonText, secondaryButtonText, mascotImg, onClaim, onSecondaryClick }) => (
   <motion.div
     initial={{ opacity: 0, y: 50 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -120,6 +120,18 @@ const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, 
     onClick={onClaim}
     style={{ filter: 'drop-shadow(6px 12px 16px rgba(0,0,0,0.25)) drop-shadow(0px 4px 6px rgba(0,0,0,0.15))' }}
   >
+    {mascotImg && (
+      <img
+        src={mascotImg}
+        alt="Mascot"
+        className="absolute z-40 pointer-events-none drop-shadow-[2px_4px_12px_rgba(0,0,0,0.4)] object-contain"
+        style={{
+          height: '115%',
+          left: '95px',
+          bottom: '-7%',
+        }}
+      />
+    )}
     <div
       className="flex w-full overflow-hidden"
       style={{
@@ -196,7 +208,10 @@ const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, 
           })}
         </svg>
         {/* Content area for Description & Button */}
-        <div className="relative z-10 w-full h-full flex flex-col items-center justify-center p-8 md:p-12 text-center gap-5">
+        <div 
+          className="relative z-10 w-full h-full flex flex-col items-center justify-center p-8 md:p-12 text-center gap-5"
+          style={{ paddingLeft: mascotImg ? '140px' : '' }}
+        >
           {descriptionNode ? descriptionNode : (
             <p className="font-bold text-black/100 text-base md:text-lg max-w-md mx-auto leading-snug">
               {description}
@@ -771,6 +786,7 @@ const MainLayout = () => {
       rightBg: '#f6f4ee',
       rightGradient: null,
       rightTextDark: true,
+      mascotImg: '/visitor_pass_mascot.png',
       description: 'Your Gateway into Easwari Startup Peravai',
       descriptionNode: (
         <div style={{ textAlign: 'center', maxWidth: '360px', margin: '0 auto' }}>
@@ -815,6 +831,7 @@ const MainLayout = () => {
       rightGradient: 'linear-gradient(135deg, #a80d11, #d82221 40%, #0b2140 60%, #0f50e3)',
       rightBg: null,
       rightTextDark: false,
+      mascotImg: '/event_pass_mascot.png',
       description: 'Ideas Need Action. Be the Changemaker.',
       descriptionNode: (
         <div style={{ textAlign: 'center', maxWidth: '360px', margin: '0 auto' }}>
