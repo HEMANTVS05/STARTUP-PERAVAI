@@ -7,6 +7,7 @@ import RegistrationForm from './RegistrationForm';
 import UserDashboard from './UserDashboard';
 import HackathonModal from './HackathonModal';
 import EventRegistrationModal from './EventRegistrationModal';
+import VisitorPassPaymentModal from './VisitorPassPaymentModal';
 import Dock from './Dock';
 import { useAuth } from '../context/AuthContext';
 import { signOut } from 'firebase/auth';
@@ -529,6 +530,7 @@ const MainLayout = () => {
   const [pendingEvent, setPendingEvent] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showVisitorModal, setShowVisitorModal] = useState(false);
+  const [showVisitorPaymentModal, setShowVisitorPaymentModal] = useState(false);
 
   const userMenuRef = useRef(null);
   const { user, registration, loadingAuth } = useAuth();
@@ -584,10 +586,14 @@ const MainLayout = () => {
   };
 
   const handleExploreEvents = () => {
+    navigate('/events');
+  };
+
+  const handleVisitorPassClick = () => {
     if (!user) {
-      setAuthModal({ open: true, pass: 'EVENT PASS', source: 'event-browse' });
+      setAuthModal({ open: true, pass: 'VISITOR PASS', source: 'visitor' });
     } else {
-      navigate('/events');
+      setShowVisitorPaymentModal(true);
     }
   };
 
@@ -821,6 +827,7 @@ const MainLayout = () => {
       buttonText: 'GET YOUR PASS',
       secondaryButtonText: "WHAT’S INSIDE",
       onSecondaryClick: () => setShowVisitorModal(true),
+      onClaim: () => handleVisitorPassClick(),
       delay: 0.1,
     },
     {
@@ -1112,13 +1119,12 @@ const MainLayout = () => {
             >
               Grab Your Pass →
             </a>
-            <a
-              href="#events"
-              onClick={(e) => handleNavClick(e, 'events')}
+            <button
+              onClick={handleExploreEvents}
               className="w-full sm:w-auto px-10 py-4 bg-transparent text-[#1f2022] font-black uppercase tracking-[0.18em] text-sm border-4 border-[#1f2022] shadow-[6px_6px_0px_rgba(0,0,0,0.15)] hover:bg-[#1f2022] hover:text-white hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all duration-150"
             >
               Explore Events
-            </a>
+            </button>
           </motion.div>
 
           <motion.div
@@ -1335,15 +1341,31 @@ const MainLayout = () => {
               ))}
             </div>
 
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.4 }}
-              className="text-center text-sm font-bold text-gray-400 uppercase tracking-widest mt-12"
+              className="mt-16 mx-auto max-w-4xl border-4 border-black p-6 md:p-8 bg-white relative shadow-[8px_8px_0px_rgba(0,0,0,1)]"
             >
-              All passes include entry to Easwari Startup Peravai 2026
-            </motion.p>
+              <div className="absolute -top-4 left-6 bg-black text-white px-4 py-1 font-black uppercase tracking-widest text-xs">
+                TERMS & CONDITIONS
+              </div>
+              <ul className="space-y-4 text-left">
+                <li className="flex items-start gap-3">
+
+                  <p className="font-bold text-gray-800 text-sm md:text-base leading-relaxed">
+                    Those with an event pass need not avail entry pass separately.
+                  </p>
+                </li>
+                <li className="flex items-start gap-3">
+
+                  <p className="font-bold text-gray-800 text-sm md:text-base leading-relaxed">
+                    Those with a particular event pass can register to multiple events provided their schedule does not interfere with that of another event.
+                  </p>
+                </li>
+              </ul>
+            </motion.div>
           </div>
         </motion.div>
       </div>
@@ -1511,7 +1533,7 @@ const MainLayout = () => {
         >
           {[...Array(2)].map((_, ri) => (
             <span key={ri} className="flex gap-12 shrink-0">
-              {['Startup Peravai 2026', '\u2605 Oct 15 & 16', 'Easwari Engineering College', '\u2605 500+ Participants', 'Pitch \u00b7 Network \u00b7 Grow', '\u2605 Register Now', "Tamil Nadu's Biggest Student Summit", '\u2605 Limited Passes'].map((t, i) => (
+              {['Easwari Startup Peravai', '\u2605 Oct 15 & 16', 'Easwari Engineering College', '\u2605 500+ Participants', 'Pitch \u00b7 Network \u00b7 Grow', '\u2605 Register Now', "Tamil Nadu's Biggest Student Summit", '\u2605 Limited Passes'].map((t, i) => (
                 <span key={i} className="font-black uppercase tracking-[0.25em] text-sm text-white/80">{t}</span>
               ))}
             </span>
@@ -1724,6 +1746,15 @@ const MainLayout = () => {
           />
         )}
       </AnimatePresence>
+
+      <VisitorPassPaymentModal
+        isOpen={showVisitorPaymentModal}
+        onClose={() => setShowVisitorPaymentModal(false)}
+        onSuccess={() => {
+          setShowVisitorPaymentModal(false);
+          setShowDashboard(true);
+        }}
+      />
 
       <AnimatePresence>
         {showEventPassGate && (

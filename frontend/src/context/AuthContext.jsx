@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../config/firebase';
+import { auth } from '../config/firebase';
+import api from '../utils/api';
 
 const AuthContext = createContext(null);
 
@@ -14,8 +14,13 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
-        const snap = await getDoc(doc(db, 'registrations', firebaseUser.uid));
-        setRegistration(snap.exists() ? snap.data() : null);
+        try {
+          const res = await api.get('/api/registrations');
+          setRegistration(res.data);
+        } catch (err) {
+          // If 404, it just means they haven't registered yet, which is fine.
+          setRegistration(null);
+        }
       } else {
         setRegistration(null);
       }
@@ -27,8 +32,12 @@ export const AuthProvider = ({ children }) => {
   // Call this after completing registration so UI refreshes without re-auth
   const refreshRegistration = async () => {
     if (!user) return;
-    const snap = await getDoc(doc(db, 'registrations', user.uid));
-    setRegistration(snap.exists() ? snap.data() : null);
+    try {
+      const res = await api.get('/api/registrations');
+      setRegistration(res.data);
+    } catch (err) {
+      setRegistration(null);
+    }
   };
 
   return (

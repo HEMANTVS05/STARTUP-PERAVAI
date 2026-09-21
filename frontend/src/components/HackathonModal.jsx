@@ -16,6 +16,8 @@ import {
   fetchUserTeamData,
   updateTeamInFirestore
 } from '../services/hackathonService';
+import RazorpayCheckoutButton from './RazorpayCheckoutButton';
+import confetti from 'canvas-confetti';
 
 const inputCls = 'w-full border-4 border-black px-3.5 py-2.5 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-1 bg-white placeholder:text-gray-400';
 const labelCls = 'flex items-center gap-2 font-black uppercase tracking-[0.2em] text-xs text-gray-700 mb-1.5';
@@ -41,13 +43,16 @@ const ErrorMsg = ({ msg }) => msg
   : null;
 
 const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
-  const { user } = useAuth();
+  const { user, registration } = useAuth();
 
   // Navigation states: 'loading' | 'choice' | 'create' | 'join' | 'success' | 'dashboard'
   const [view, setView] = useState('loading');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  // 'info' | 'payment' | 'paid-success' — then hasPaid switches to choice
+  const [paymentStep, setPaymentStep] = useState('info');
+  const [hasPaid, setHasPaid] = useState(false);
 
   // Loaded problem statements
   const [problemStatements, setProblemStatements] = useState([]);
@@ -490,7 +495,7 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-400">Startup Peravai 2026</p>
+              <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-400">Easwari Startup Peravai</p>
               <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight">Hackathon Team Portal</h3>
             </div>
           </div>
@@ -514,8 +519,110 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
             </div>
           )}
 
+          {/* VIEW: INFO CARD (Step 1) */}
+          {!loading && view === 'choice' && !hasPaid && paymentStep === 'info' && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
+              <div className="border-4 border-black p-4 bg-[#f0f9ff] flex items-center gap-4">
+                <div className="w-12 h-12 bg-[#0b2140] border-2 border-black flex items-center justify-center shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                </div>
+                <div>
+                  <p className="font-black uppercase tracking-[0.2em] text-xs text-[#0b2140] mb-0.5">Registering As</p>
+                  <p className="font-black text-base text-black">{registration?.name || user?.displayName || user?.email}</p>
+                  <p className="font-bold text-xs text-gray-500">{registration?.email || user?.email}</p>
+                </div>
+              </div>
+              <div className="border-4 border-black p-6 bg-[#fff5f5] text-center">
+                <p className="font-black uppercase tracking-[0.25em] text-xs text-gray-500 mb-2">Registration Fee</p>
+                <p className="font-black text-5xl text-[#a80d11] mb-1">₹1200</p>
+                <p className="font-bold text-xs text-gray-500 uppercase tracking-wider">Hackathon</p>
+              </div>
+              <p className="text-center text-xs font-bold text-gray-500">
+                Complete your payment to enter the Hackathon Team Portal.
+              </p>
+              <button
+                onClick={() => setPaymentStep('payment')}
+                className="w-full py-4 border-4 border-black bg-[#a80d11] text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-3"
+              >
+                Continue to Payment <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+              </button>
+              <button onClick={onClose} className="w-full py-2 text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-black transition-colors">Cancel</button>
+            </motion.div>
+          )}
+
+          {/* VIEW: RAZORPAY (Step 2) */}
+          {!loading && view === 'choice' && !hasPaid && paymentStep === 'payment' && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-5 text-center">
+              <div className="border-4 border-black p-5 bg-[#fff5f5]">
+                <p className="font-black uppercase tracking-[0.25em] text-xs text-gray-500 mb-2">Amount</p>
+                <p className="font-black text-4xl text-[#a80d11]">₹1200</p>
+                <p className="font-bold text-xs text-gray-400 mt-1">Hackathon Registration</p>
+              </div>
+              <div className="border-4 border-black p-4 bg-[#f0f9ff] flex items-center gap-3">
+                <div className="shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-[#0b2140]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                </div>
+                <div className="text-left">
+                  <p className="font-black text-sm">{registration?.name || user?.displayName || user?.email}</p>
+                  <p className="font-bold text-xs text-gray-500">{registration?.email || user?.email}</p>
+                </div>
+              </div>
+              <div className="flex justify-center pt-2">
+                <RazorpayCheckoutButton
+                  amount={120000}
+                  currency="INR"
+                  prefillName={registration?.name || user?.displayName || ''}
+                  prefillEmail={registration?.email || user?.email || ''}
+                  prefillContact={registration?.phone || ''}
+                  onSuccess={() => {
+                    confetti({ particleCount: 120, spread: 70, origin: { x: 0, y: 0.6 }, colors: ['#a80d11','#d82221','#0b2140','#f59e0b','#fff'] });
+                    confetti({ particleCount: 120, spread: 70, origin: { x: 1, y: 0.6 }, colors: ['#a80d11','#d82221','#0b2140','#f59e0b','#fff'] });
+                    setTimeout(() => confetti({ particleCount: 80, spread: 100, origin: { x: 0.5, y: 0.4 }, colors: ['#a80d11','#fbbf24','#fff','#0f50e3'] }), 250);
+                    setPaymentStep('paid-success');
+                  }}
+                />
+              </div>
+              <button onClick={() => setPaymentStep('info')} className="w-full py-2 text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-black transition-colors">← Back</button>
+            </motion.div>
+          )}
+
+          {/* VIEW: PAYMENT SUCCESS (Step 3) */}
+          {!loading && view === 'choice' && !hasPaid && paymentStep === 'paid-success' && (
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center space-y-5 py-4">
+              <motion.div
+                initial={{ scale: 0, rotate: -10 }} animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
+                className="w-24 h-24 mx-auto bg-green-500 border-4 border-black shadow-[8px_8px_0px_rgba(0,0,0,1)] flex items-center justify-center"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+              </motion.div>
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                <p className="font-black text-xs uppercase tracking-[0.3em] text-green-600 mb-1">🎉 Payment Successful!</p>
+                <h3 className="text-xl font-black uppercase tracking-tight">Hackathon</h3>
+                <p className="font-bold text-sm text-gray-600 mt-2 max-w-xs mx-auto">
+                  Payment has been done successfully for registration. Click Register to join the Hackathon.
+                </p>
+              </motion.div>
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+                className="border-4 border-green-500 p-4 bg-green-50 text-left"
+              >
+                <p className="font-black uppercase tracking-widest text-xs text-green-700 mb-1">Paid By</p>
+                <p className="font-black text-sm">{registration?.name || user?.displayName || user?.email}</p>
+                <p className="font-bold text-xs text-gray-500">{registration?.email || user?.email}</p>
+              </motion.div>
+              <motion.button
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
+                onClick={() => setHasPaid(true)}
+                className="w-full py-4 border-4 border-black bg-[#1f2022] text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-3"
+              >
+                Register for Hackathon
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+              </motion.button>
+            </motion.div>
+          )}
+
           {/* VIEW 1: CHOICE SCREEN (Join Team vs Create Team) */}
-          {!loading && view === 'choice' && (
+          {!loading && view === 'choice' && hasPaid && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
               <div className="text-center space-y-2">
                 <h4 className="text-3xl font-black uppercase tracking-tight">Join The Hackathon</h4>

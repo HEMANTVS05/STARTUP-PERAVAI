@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import RazorpayCheckoutButton from './RazorpayCheckoutButton';
+import confetti from 'canvas-confetti';
 
 // ── Shared UI ─────────────────────────────────────────────────────────────────
 const inputCls =
@@ -522,25 +524,71 @@ const EventRegistrationModal = ({ event, onClose }) => {
   const [alreadyRegistered, setAlready]   = useState(false);
   const [error, setError]                 = useState('');
   const [checking, setChecking]           = useState(true);
+  // 'info' | 'payment' | 'paid-success' | 'form'
+  const [paymentStep, setPaymentStep]     = useState('info');
 
-  // Field setter
+  const getEventAmount = (eventId) => {
+    switch (eventId) {
+      case 'hackathon':               return 1200;
+      case 'shark-tank':              return 700;
+      case 'phoenix-protocol':        return 500;
+      case 'junk-to-genius':          return 500;
+      case 'illogical-marketing':     return 150;
+      case 'design-thinking-bootcamp':return 300;
+      default:                        return 0;
+    }
+  };
+
+  const amountRequired = getEventAmount(event?.id);
+
   const setField = (key) => (e) =>
     setFormData((prev) => ({ ...prev, [key]: e.target.value }));
 
-  // Check duplicate registration via backend
+  // Check duplicate registration
   useEffect(() => {
     if (!user || !event) return;
     const check = async () => {
       try {
         await api.get(`/api/events/${event.id}/my-registration`);
         setAlready(true);
-      } catch {
-        // 404 = not registered yet
-      }
+      } catch { /* 404 = not yet registered */ }
       setChecking(false);
     };
     check();
+    // Default to 'form' directly if no amount needed
+    if (amountRequired === 0) setPaymentStep('form');
   }, [user, event]);
+
+  const fireConfetti = () => {
+    // Left cannon
+    confetti({
+      particleCount: 120,
+      spread: 70,
+      origin: { x: 0, y: 0.6 },
+      colors: ['#a80d11', '#d82221', '#0b2140', '#f59e0b', '#fff'],
+    });
+    // Right cannon
+    confetti({
+      particleCount: 120,
+      spread: 70,
+      origin: { x: 1, y: 0.6 },
+      colors: ['#a80d11', '#d82221', '#0b2140', '#f59e0b', '#fff'],
+    });
+    // Center burst
+    setTimeout(() => {
+      confetti({
+        particleCount: 80,
+        spread: 100,
+        origin: { x: 0.5, y: 0.4 },
+        colors: ['#a80d11', '#fbbf24', '#fff', '#0f50e3'],
+      });
+    }, 250);
+  };
+
+  const handlePaymentSuccess = () => {
+    fireConfetti();
+    setPaymentStep('paid-success');
+  };
 
   const validate = () => {
     const required = getRequiredFields(event.id);
@@ -558,7 +606,6 @@ const EventRegistrationModal = ({ event, onClose }) => {
     setError('');
     setSubmitting(true);
     try {
-      // POST to Express backend — never write event registrations directly to Firestore
       await api.post(`/api/events/${event.id}/register`, {
         eventName:       event.name,
         eventCategory:   event.category,
@@ -575,6 +622,8 @@ const EventRegistrationModal = ({ event, onClose }) => {
   };
 
   const catStyle = categoryColors[event?.category] || { bg: '#f3f4f6', border: '#1f2022', text: '#1f2022' };
+  const userName  = registration?.name  || user?.displayName || user?.email || 'Attendee';
+  const userEmail = registration?.email || user?.email || '';
 
   return (
     <motion.div
@@ -613,16 +662,12 @@ const EventRegistrationModal = ({ event, onClose }) => {
             <SuccessScreen event={event} onClose={onClose} />
           ) : (
             <>
-              {/* Header */}
+              {/* Header — always visible */}
               <div className="flex justify-between items-start mb-5">
                 <div>
                   <span
                     className="inline-block px-2 py-0.5 font-black text-xs uppercase tracking-widest border-2 mb-2"
-                    style={{
-                      background:   catStyle.bg,
-                      borderColor:  catStyle.border,
-                      color:        catStyle.text,
-                    }}
+                    style={{ background: catStyle.bg, borderColor: catStyle.border, color: catStyle.text }}
                   >
                     {event.category}
                   </span>
@@ -635,73 +680,173 @@ const EventRegistrationModal = ({ event, onClose }) => {
                 </button>
               </div>
 
-              {/* Info chips */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                <span className="px-3 py-1 border-2 border-black bg-white font-black text-xs uppercase tracking-widest">
-                  {event.day}
-                </span>
-                <span className="px-3 py-1 border-2 border-black bg-yellow-400 font-black text-xs uppercase tracking-widest">
-                  {event.venue}
-                </span>
-                {event.eventType && (
-                  <span className="px-3 py-1 border-2 border-black bg-black text-white font-black text-xs uppercase tracking-widest">
-                    {event.eventType}
-                  </span>
-                )}
-              </div>
+              {/* ── STEP 1: INFO CARD (always shown first if amount > 0) ── */}
+              {paymentStep === 'info' && amountRequired > 0 && (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
+                  {/* User info card */}
+                  <div className="border-4 border-black p-4 bg-[#f0f9ff] flex items-center gap-4">
+                    <div className="w-12 h-12 bg-[#0b2140] border-2 border-black flex items-center justify-center shrink-0">
+                      <User className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-black uppercase tracking-[0.2em] text-xs text-[#0b2140] mb-0.5">Registering As</p>
+                      <p className="font-black text-base text-black">{userName}</p>
+                      <p className="font-bold text-xs text-gray-500">{userEmail}</p>
+                    </div>
+                  </div>
 
-              {/* Description */}
-              {event.description && (
-                <p className="text-sm font-bold text-gray-600 border-l-4 border-black pl-4 mb-5 leading-relaxed">
-                  {event.description}
-                </p>
-              )}
+                  {/* Amount card */}
+                  <div className="border-4 border-black p-6 bg-[#fff5f5] text-center">
+                    <p className="font-black uppercase tracking-[0.25em] text-xs text-gray-500 mb-2">Registration Fee</p>
+                    <p className="font-black text-5xl text-[#a80d11] mb-1">₹{amountRequired}</p>
+                    <p className="font-bold text-xs text-gray-500 uppercase tracking-wider">{event.name}</p>
+                  </div>
 
-              {/* Pre-filled info banner */}
-              <div className="border-4 border-black bg-[#f0f9ff] p-3 mb-5 flex items-start gap-3">
-                <div className="w-6 h-6 bg-blue-600 border-2 border-black flex items-center justify-center shrink-0 mt-0.5">
-                  <User className="w-3.5 h-3.5 text-white" />
-                </div>
-                <div>
-                  <p className="font-black uppercase tracking-widest text-xs text-blue-900">Registering as</p>
-                  <p className="font-bold text-sm text-blue-800">
-                    {registration?.name || user?.displayName || user?.email}
-                    {registration?.email ? ` · ${registration.email}` : ''}
+                  <p className="text-center text-xs font-bold text-gray-500">
+                    Complete your payment to unlock the event registration form.
                   </p>
-                </div>
-              </div>
 
-              <div className="border-b-4 border-black mb-5" />
-
-              {/* Event-specific fields */}
-              <div className="space-y-4">
-                {renderEventForm(event.id, formData, setField)}
-              </div>
-
-              {/* Error */}
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-4 text-red-700 bg-red-50 border-l-4 border-red-600 p-3 font-bold text-xs flex items-start gap-2"
-                >
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                  <span>{error}</span>
+                  {/* Buttons */}
+                  <button
+                    onClick={() => setPaymentStep('payment')}
+                    className="w-full py-4 border-4 border-black bg-[#a80d11] text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-3"
+                  >
+                    Continue to Payment <ArrowRight className="w-5 h-5" />
+                  </button>
+                  <button onClick={onClose} className="w-full py-2 text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-black transition-colors">
+                    Cancel
+                  </button>
                 </motion.div>
               )}
 
-              {/* Submit */}
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="mt-6 w-full flex items-center justify-center gap-3 py-4 border-4 border-black font-black uppercase tracking-[0.15em] text-sm bg-[#1f2022] text-white shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                {submitting ? (
-                  <><Loader2 className="w-5 h-5 animate-spin" /> Registering...</>
-                ) : (
-                  <>Register for {event.name} <ArrowRight className="w-5 h-5" /></>
-                )}
-              </button>
+              {/* ── STEP 2: RAZORPAY BUTTON ── */}
+              {paymentStep === 'payment' && (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-5 text-center">
+                  <div className="border-4 border-black p-5 bg-[#fff5f5]">
+                    <p className="font-black uppercase tracking-[0.25em] text-xs text-gray-500 mb-2">Amount</p>
+                    <p className="font-black text-4xl text-[#a80d11]">₹{amountRequired}</p>
+                    <p className="font-bold text-xs text-gray-400 mt-1">{event.name}</p>
+                  </div>
+                  <div className="border-4 border-black p-4 bg-[#f0f9ff] flex items-center gap-3">
+                    <User className="w-5 h-5 text-[#0b2140] shrink-0" />
+                    <div className="text-left">
+                      <p className="font-black text-sm">{userName}</p>
+                      <p className="font-bold text-xs text-gray-500">{userEmail}</p>
+                    </div>
+                  </div>
+                  <div className="flex justify-center pt-2">
+                    <RazorpayCheckoutButton
+                      amount={amountRequired * 100}
+                      currency="INR"
+                      prefillName={userName}
+                      prefillEmail={userEmail}
+                      prefillContact={registration?.phone || ''}
+                      onSuccess={handlePaymentSuccess}
+                    />
+                  </div>
+                  <button
+                    onClick={() => setPaymentStep('info')}
+                    className="w-full py-2 text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-black transition-colors"
+                  >
+                    ← Back
+                  </button>
+                </motion.div>
+              )}
+
+              {/* ── STEP 3: PAYMENT SUCCESS + CONFETTI ── */}
+              {paymentStep === 'paid-success' && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="text-center space-y-5 py-4"
+                >
+                  <motion.div
+                    initial={{ scale: 0, rotate: -10 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
+                    className="w-24 h-24 mx-auto bg-green-500 border-4 border-black shadow-[8px_8px_0px_rgba(0,0,0,1)] flex items-center justify-center"
+                  >
+                    <CheckCircle2 className="w-12 h-12 text-white" />
+                  </motion.div>
+
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                    <p className="font-black text-xs uppercase tracking-[0.3em] text-green-600 mb-1">🎉 Payment Successful!</p>
+                    <h3 className="text-xl font-black uppercase tracking-tight">{event.name}</h3>
+                    <p className="font-bold text-sm text-gray-600 mt-2 max-w-xs mx-auto">
+                      Payment has been done successfully for registration.
+                    </p>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="border-4 border-green-500 p-4 bg-green-50 text-left"
+                  >
+                    <p className="font-black uppercase tracking-widest text-xs text-green-700 mb-1">Paid By</p>
+                    <p className="font-black text-sm">{userName}</p>
+                    <p className="font-bold text-xs text-gray-500">{userEmail}</p>
+                  </motion.div>
+
+                  <motion.button
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                    onClick={() => setPaymentStep('form')}
+                    className="w-full py-4 border-4 border-black bg-[#1f2022] text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-3"
+                  >
+                    Register for {event.name} <ArrowRight className="w-5 h-5" />
+                  </motion.button>
+                </motion.div>
+              )}
+
+              {/* ── STEP 4: REGISTRATION FORM ── */}
+              {paymentStep === 'form' && (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+                  {/* Info chips */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="px-3 py-1 border-2 border-black bg-white font-black text-xs uppercase tracking-widest">{event.day}</span>
+                    <span className="px-3 py-1 border-2 border-black bg-yellow-400 font-black text-xs uppercase tracking-widest">{event.venue}</span>
+                  </div>
+
+                  {/* Registering-as banner */}
+                  <div className="border-4 border-black bg-[#f0f9ff] p-3 flex items-start gap-3">
+                    <div className="w-6 h-6 bg-blue-600 border-2 border-black flex items-center justify-center shrink-0 mt-0.5">
+                      <User className="w-3.5 h-3.5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-black uppercase tracking-widest text-xs text-blue-900">Registering as</p>
+                      <p className="font-bold text-sm text-blue-800">{userName}{userEmail ? ` · ${userEmail}` : ''}</p>
+                    </div>
+                  </div>
+
+                  <div className="border-b-4 border-black" />
+
+                  <div className="space-y-4">
+                    {renderEventForm(event.id, formData, setField)}
+                  </div>
+
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+                      className="mt-4 text-red-700 bg-red-50 border-l-4 border-red-600 p-3 font-bold text-xs flex items-start gap-2"
+                    >
+                      <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span>{error}</span>
+                    </motion.div>
+                  )}
+
+                  <button
+                    onClick={handleSubmit}
+                    disabled={submitting}
+                    className="mt-6 w-full flex items-center justify-center gap-3 py-4 border-4 border-black font-black uppercase tracking-[0.15em] text-sm bg-[#1f2022] text-white shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {submitting
+                      ? <><Loader2 className="w-5 h-5 animate-spin" /> Registering...</>
+                      : <>Register for {event.name} <ArrowRight className="w-5 h-5" /></>}
+                  </button>
+                </motion.div>
+              )}
             </>
           )}
         </div>
