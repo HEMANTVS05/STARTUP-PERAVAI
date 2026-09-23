@@ -7,30 +7,37 @@ import EventRegistrationModal from './EventRegistrationModal';
 import HackathonModal from './HackathonModal';
 import AuthModal from './AuthModal';
 import RegistrationForm from './RegistrationForm';
-import speaker1 from "../assets/MAMAAAA.jpeg";
 
 const GROUP_EVENTS = [
   {
-    id: 'hackathon', name: 'Hackathon', limit: '3–5 Members', desc: 'Hemaaaaa Solraaaa',
-    venue: 'TRP', day: 'Both Days', accent: '#0b2140', accentLight: '#e8f0ff',
+    id: 'hackathon', name: 'Hackathon', limit: '3–5 Members', desc: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. 24 hours. Details about CUMTA.',
+    venue: 'MLCP labs', day: 'Both Days', accent: '#0b2140', accentLight: '#e8f0ff',
     rules: [
-      { title: '1. Team Size', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Teams must consist of 3 to 5 members. Each member must be a registered participant of the event.' },
-      { title: '2. Eligibility', body: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. All participants must be currently enrolled students with a valid college ID.' },
-      { title: '3. Problem Statement', body: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. Teams will be assigned a problem statement at the start of the event and must build a solution within the given time.' },
-      { title: '4. Submission', body: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. All code must be submitted via the official platform before the deadline.' },
-      { title: '5. Judging Criteria', body: 'Excepteur sint occaecat cupidatat non proident. Projects will be judged on innovation, technical complexity, design, and presentation skills.' },
-      { title: '6. Code of Conduct', body: 'At vero eos et accusamus et iusto odio dignissimos ducimus. Any form of plagiarism or misconduct will lead to immediate disqualification.' },
+      { title: '1. Team Size', body: 'Each team must consist of 3–5 members.' },
+      { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
+      { title: '3. Registration & Payment', body: 'The team leader must register and make the payment for all team members. All team members must join the team created by the team leader.' },
+      { title: '4. Reporting Time', body: 'All participants must report to their allocated venue 15 minutes before the start of the event. ID cards are mandatory for all participants.' },
+      { title: '5. Problem Statements', body: 'Problem statements will be revealed on the day of the event.' },
+      { title: '6. Code of Conduct', body: 'Any form of unfair practice or copied work will lead to immediate disqualification. The judges’ decision will be final and will not be open to discussion.' },
     ],
   },
   {
-    id: 'shark-tank', name: 'Startup Singam Jr', limit: 'Limit 5', desc: 'Pitching Event',
-    venue: 'GEETHAM', day: 'Day 1 & 2', accent: '#0b2140', accentLight: '#e8f0ff',
+    id: 'shark-tank', name: 'Startup Singam Jr', limit: 'Limit 5',
+    desc: (
+      <>
+        <span>In partnership with <strong>Startup Singam</strong>, this is a <strong>two-day startup pitching competition</strong> for young entrepreneurs.</span>
+        <span className="block mt-2 text-black/75"><strong>Day 1 — Prelims:</strong> Pitch before a preliminary jury and get shortlisted.</span>
+        <span className="block mt-1 text-black/75"><strong>Day 2 — Grand Finale:</strong> Present directly to a distinguished panel of investors.</span>
+      </>
+    ),
+    venue: 'Civil Block 3rd Floor - Computer labs', day: 'Day 1 & 2', accent: '#0b2140', accentLight: '#e8f0ff',
     rules: [
-      { title: '1. nee solu', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Teams may have a maximum of 5 members. Solo participation is also permitted.' },
-      { title: '2. nee solu', body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem. Each team will have 5 minutes to pitch and 3 minutes for Q&A from the panel.' },
-      { title: '3. nee solu', body: 'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit. The startup idea must be original and must not be a copy of an existing business.' },
-      { title: '4. nee solu', body: 'Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit. Slides must be submitted 24 hours before the event. Maximum 10 slides allowed.' },
-      { title: '5. nee solu', body: 'Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet. Ideas will be judged on market viability, scalability, innovation, and team delivery.' },
+      { title: '1. Team Size', body: 'Each team can have a maximum of 5 members.' },
+      { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
+      { title: '3. Registration & Payment', body: 'The team leader must register and make the payment for all team members. All team members must join the team created by the team leader.' },
+      { title: '4. Reporting Time', body: 'All participants must report to their allocated venue 15 minutes before the start of the event. ID cards are mandatory for all participants.' },
+      { title: '5. Finale Eligibility', body: 'Only teams selected from the prelims will be eligible to present in the finale. All teams must adhere to the presentation time allotted by the organizing committee.' },
+      { title: '6. Code of Conduct', body: 'Any form of unfair practice or copied work will lead to immediate disqualification. The judges’ decision will be final and will not be open to discussion.' },
     ],
   },
   {
@@ -59,8 +66,15 @@ const GROUP_EVENTS = [
 
 const INDIVIDUAL_EVENTS = [
   {
-    id: 'live-podcast', name: 'Live Podcast', desc: 'Hema Solraaaa',
-    venue: 'GEETHAM', day: 'Both Days', accent: '#a80d11', accentLight: '#fff0f0',
+    id: 'live-podcast', name: 'Live Podcast',
+    desc: (
+      <>
+        <span><strong>What really happens behind the success story?</strong></span>
+        <span className="block mt-2">Hear directly from <strong>successful founders from Tamil Nadu</strong> as they share their journeys — the risks, the failures, and the decisions that changed everything.</span>
+        <span className="block mt-2 text-black/75 italic">No scripts. No filters. Just real founder stories.</span>
+      </>
+    ),
+    venue: 'GEETHAM / TRP', day: 'Both Days', accent: '#a80d11', accentLight: '#fff0f0',
     rules: [
       { title: '1. Eligibility', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Open to all registered participants. Each participant will be given a topic 15 minutes before going live.' },
       { title: '2. Duration', body: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Each podcast session will last a maximum of 8 minutes. Going overtime will incur point deduction.' },
@@ -70,8 +84,14 @@ const INDIVIDUAL_EVENTS = [
     ],
   },
   {
-    id: 'panel-discussions', name: 'Panel Discussion', desc: 'Hema Solraaaa',
-    venue: 'GEETHAM', day: 'Day 1', accent: '#a80d11', accentLight: '#fff0f0',
+    id: 'panel-discussions', name: 'Panel Discussion',
+    desc: (
+      <>
+        <span>A dynamic panel where <strong>industry leaders, entrepreneurs and experts</strong> share real-time insights on a given theme.</span>
+        <span className="block mt-2 text-black/75">Expect real-world challenges, diverse viewpoints, and practical experiences — followed by an <strong>interactive Q&amp;A</strong> with the panelists.</span>
+      </>
+    ),
+    venue: 'GEETHAM / TRP', day: 'Day 1', accent: '#a80d11', accentLight: '#fff0f0',
     rules: [
       { title: '1. Participation', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Individual participation only. Participants will be grouped into panels of 5 on the day of the event.' },
       { title: '2. Topic Disclosure', body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem. Topics will be revealed 10 minutes before the discussion begins. No prior preparation is allowed.' },
@@ -81,14 +101,21 @@ const INDIVIDUAL_EVENTS = [
     ],
   },
   {
-    id: 'illogical-marketing', name: 'Illogical Marketing', desc: 'Hema Solraaaa',
+    id: 'illogical-marketing', name: 'Illogical Marketing',
+    desc: (
+      <>
+        <span><strong>Can you sell a product that makes absolutely no sense?</strong></span>
+        <span className="block mt-2">You'll receive an illogical product on the spot and must pitch it convincingly — using <strong>branding, storytelling and persuasion</strong>.</span>
+        <span className="block mt-2 text-black/75 italic">The product may be illogical. Your marketing strategy cannot be.</span>
+      </>
+    ),
     venue: 'Hi-Tech Hall 2', day: 'Day 1', accent: '#a80d11', accentLight: '#fff0f0',
     rules: [
-      { title: '1. Format', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Individual event. Participants must market an absurd, fictional product assigned to them on the spot.' },
-      { title: '2. Preparation Time', body: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. You will have 5 minutes to prepare your marketing pitch before presenting to the judges.' },
-      { title: '3. Pitch Duration', body: 'Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi. The pitch must be between 3–5 minutes. No props or pre-made materials allowed.' },
-      { title: '4. Creativity Rule', body: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum. The more outrageous and creative your pitch, the better. Logical pitches will be penalized.' },
-      { title: '5. Judging', body: 'Excepteur sint occaecat cupidatat non proident sunt in culpa. Evaluated on creativity, humor, persuasiveness, and overall showmanship.' },
+      { title: '1. Solo Event', body: 'This is a solo event.' },
+      { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
+      { title: '3. Reporting Time', body: 'All participants must report to their allocated venue 15 minutes before the start of the event. ID cards are mandatory for all participants.' },
+      { title: '4. Format', body: 'Participants will be given an illogical product and must come up with convincing marketing strategies to sell it. The judges will provide the product on the spot.' },
+      { title: '5. Code of Conduct', body: 'Any form of unfair practice or copied work will lead to immediate disqualification. The judges’ decision will be final and will not be open to discussion.' },
     ],
   },
   {
@@ -115,9 +142,9 @@ const PODCAST_SPEAKERS = {
     {
       id: 'spk-d1-1',
       name: 'Speaker 1',
-      title: 'Hema pola varuma',
+      title: 'lorem ipsum',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-      photo: speaker1,
+      photo: null,
     },
     {
       id: 'spk-d1-2',
@@ -877,6 +904,42 @@ const LearnMoreModal = ({ evt, isGroup, onClose, onRegister }) => {
               )}
             </div>
 
+            {/* Event Description & Photo */}
+            <div className="mb-8">
+              <div
+                className="mb-6 p-4"
+                style={{
+                  border: '2px solid #e5e5e5',
+                  borderLeft: `4px solid ${evt.accent}`,
+                  background: '#fafafa',
+                }}
+              >
+                <h4 className="text-[12px] font-black uppercase tracking-wide text-black mb-1.5 flex items-center gap-2">
+                  Event Overview
+                </h4>
+                <p className="text-[12px] font-medium text-black/60 leading-relaxed">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </p>
+              </div>
+              <div
+                className="w-full bg-gray-50 flex items-center justify-center overflow-hidden"
+                style={{
+                  height: '280px',
+                  border: '3px solid #111',
+                  boxShadow: '6px 6px 0 #111'
+                }}
+              >
+                {evt.photo ? (
+                  <img src={evt.photo} alt={evt.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="flex flex-col items-center gap-3 text-gray-400">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
+                    <span className="font-black uppercase tracking-widest text-xs">Event Photo Placeholder</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Rules & Regulations */}
             <div className="mb-6">
               <h3
@@ -992,9 +1055,9 @@ const EventCard = ({ evt, idx, onRegister, isGroup, onLoginRequest }) => {
           </h3>
 
           {/* Description */}
-          <p className="text-[14px] font-medium text-black/80 leading-relaxed flex-1 mb-4">
+          <div className="text-[14.5px] font-medium text-black/90 leading-relaxed flex-1 mb-4">
             {evt.desc}
-          </p>
+          </div>
 
           {/* Meta pills */}
           <div className="flex flex-wrap gap-2 mb-4">

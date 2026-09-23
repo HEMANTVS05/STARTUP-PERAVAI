@@ -60,10 +60,10 @@ const logoGrad = { background: 'linear-gradient(to right, #d82221 30%, #a80d11 4
 // ─── Events Data (22 events) ──────────────────────────────────────────────────
 const eventsData = [
   // TECHNICAL COMPETITIONS
-  { id: 'hackathon', name: 'Hackathon', venue: 'TRP', day: 'Both Days', description: 'Collaboration with TNWeSafe. Build real solutions that matter.', eventType: 'Team Event', category: 'Technical', color: 'bg-blue-700', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1', useHackathonModal: true },
-  { id: 'shark-tank', name: 'Shark Tank', venue: 'GEETHAM', day: 'Day 1 & 2', description: 'Early stage students pitch in front of dedicated investors. Top 20 teams shortlisted from 50 registrations.', eventType: 'Team Event', category: 'Technical', color: 'bg-[#1f2022]', textColor: 'text-white', border: 'border-0', rotate: 'rotate-2' },
+  { id: 'hackathon', name: 'Hackathon', venue: 'MLCP labs', day: 'Both Days', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. 24 hours. Details about CUMTA.', eventType: 'Team Event', category: 'Technical', color: 'bg-blue-700', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1', useHackathonModal: true },
+  { id: 'shark-tank', name: 'Startup Singam Jr', venue: 'Civil Block 3rd Floor - Computer labs', day: 'Day 1 & 2', description: 'In partnership with Startup Singam, Startup Singam Junior is a two-day startup pitching competition that gives young entrepreneurs the opportunity to take their ideas from the first pitch to the investor stage. Day 1 — Prelims: Participants pitch before a preliminary jury. Day 2 — Grand Finale: Shortlisted teams pitch to investors.', eventType: 'Team Event', category: 'Technical', color: 'bg-[#1f2022]', textColor: 'text-white', border: 'border-0', rotate: 'rotate-2' },
   { id: 'phoenix-protocol', name: 'Phoenix Protocol', venue: 'TRP', day: 'Day 2', description: 'Revive forgotten brands — uncover what went wrong and pitch a comeback strategy stronger than ever.', eventType: 'Team Event', category: 'Technical', color: 'bg-white', textColor: 'text-black', border: 'border-8 border-black', rotate: '-rotate-2' },
-  { id: 'illogical-marketing', name: 'Illogical Marketing', venue: 'Hi-Tech Hall 2', day: 'Day 1', description: 'Market and promote illogical objects. The goal is maximum marketing ability — creativity over logic.', eventType: 'Individual', category: 'Technical', color: 'bg-yellow-400', textColor: 'text-black', border: 'border-0', rotate: 'rotate-2' },
+  { id: 'illogical-marketing', name: 'Illogical Marketing', venue: 'Hi-Tech Hall 2', day: 'Day 1', description: 'Can you sell a product that makes absolutely no sense? In this challenge, participants will be given an illogical or unconventional product and must create a convincing sales pitch to make it desirable to the audience.', eventType: 'Individual', category: 'Technical', color: 'bg-yellow-400', textColor: 'text-black', border: 'border-0', rotate: 'rotate-2' },
   { id: 'junk-to-genius', name: 'Junk to Genius', venue: 'MBA Seminar Hall 1', day: 'Both Days', description: 'Using UN Sustainable Development Goals, build something brilliant from waste items.', eventType: 'Team Event', category: 'Technical', color: 'bg-red-600', textColor: 'text-white', border: 'border-0', rotate: '-rotate-2' },
   // SUBMISSION EVENT
   { id: 'reel-making', name: 'Reel Making', venue: 'Award Show Screening', day: 'Submission', description: 'Create a reel capturing the startup spirit. Top reels screened live during the award show.', eventType: 'Team Event', category: 'Submission', color: 'bg-purple-600', textColor: 'text-white', border: 'border-0', rotate: 'rotate-1' },
@@ -71,9 +71,9 @@ const eventsData = [
   { id: 'stall-expo', name: 'Stall Expo', venue: 'OAT', day: 'Both Days', description: 'Startups, sponsors, and clubs showcase to participants, investors, and students at SRM Ramapuram.', eventType: 'Showcase', category: 'Expo', color: 'bg-orange-500', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1' },
   { id: 'student-project-expo', name: 'Student Project Expo', venue: 'Library', day: 'Both Days', description: 'University students showcase their working projects to relevant stakeholders and a live audience.', eventType: 'Individual/Team', category: 'Expo', color: 'bg-cyan-500', textColor: 'text-black', border: 'border-0', rotate: 'rotate-2' },
   // EXPERT EVENTS
-  { id: 'panel-discussions', name: 'Panel Discussions', venue: 'GEETHAM', day: 'Day 1', description: 'Panelists engage in a curated discussion on relevant topics with a select interactive audience.', eventType: 'Individual', category: 'Expert', color: 'bg-indigo-600', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1' },
+  { id: 'panel-discussions', name: 'Panel Discussions', venue: 'GEETHAM', day: 'Day 1', description: 'A dynamic panel discussion where a diverse set of industry leaders, entrepreneurs and experts share their real-time experiences, insights and perspectives on a given theme. The conversation will explore real-world challenges, different viewpoints, practical experiences and emerging trends, offering the audience an opportunity to learn directly from those with firsthand experience. The session will conclude with an interactive Q&A, allowing the audience to engage with the panelists, ask questions and gain deeper insights.', eventType: 'Individual', category: 'Expert', color: 'bg-indigo-600', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1' },
   { id: 'keynote-speeches', name: 'Keynote Speeches', venue: 'TRP / GEETHAM', day: 'Both Days', description: 'Inspiring keynote sessions alongside inaugurations and the beginning of key events.', eventType: 'Attendance', category: 'Expert', color: 'bg-[#2d3748]', textColor: 'text-white', border: 'border-0', rotate: 'rotate-1' },
-  { id: 'live-podcast', name: 'Live Podcast', venue: 'GEETHAM', day: 'Both Days', description: 'Live podcast sessions with industry leaders, founders, and startup ecosystem builders.', eventType: 'Individual', category: 'Expert', color: 'bg-pink-500', textColor: 'text-white', border: 'border-0', rotate: '-rotate-2' },
+  { id: 'live-podcast', name: 'Live Podcast', venue: 'GEETHAM / TRP', day: 'Both Days', description: 'What really happens behind the success story? Hear directly from successful founders from Tamil Nadu as they share their entrepreneurial journeys — the risks they took, the failures they faced, the decisions that changed everything, and what they did differently to build their ventures. An honest, unfiltered conversation beyond the usual success stories, giving the audience a real look into what it takes to build, fail, adapt and grow a startup. No scripts. No filters. Just real founder stories.', eventType: 'Individual', category: 'Expert', color: 'bg-pink-500', textColor: 'text-white', border: 'border-0', rotate: '-rotate-2' },
   { id: 'pavilions', name: 'Pavilions', venue: 'Wing 3', day: 'Day 1', description: 'StartupTN and other organizations with inquiry spots and scheme explanations.', eventType: 'Attendance', category: 'Expert', color: 'bg-teal-500', textColor: 'text-white', border: 'border-0', rotate: 'rotate-2' },
   // MAIN STAGE
   { id: 'social-impact-awards', name: 'Social Impact Awards', venue: 'GEETHAM', day: 'Day 2', description: 'Recognizing social impact-oriented startups making a real difference in the world.', eventType: 'Award', category: 'Main Stage', color: 'bg-amber-500', textColor: 'text-black', border: 'border-0', rotate: '-rotate-1' },
@@ -219,18 +219,18 @@ const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, 
             </p>
           )}
 
-          <div className={`flex ${secondaryButtonText ? 'gap-3 md:gap-4' : 'gap-4'}`}>
+          <div className={`flex flex-col sm:flex-row items-center justify-center w-full ${secondaryButtonText ? 'gap-2 sm:gap-3 md:gap-4' : 'gap-3 sm:gap-4'}`}>
             {secondaryButtonText && (
               <button
                 onClick={(e) => { e.stopPropagation(); onSecondaryClick?.(); }}
-                className="bg-transparent text-black border-2 border-black/80 px-4 md:px-6 py-2.5 rounded-md font-black uppercase text-[10px] md:text-[11px] tracking-[0.1em] hover:bg-black/5 transition-all whitespace-nowrap"
+                className="bg-transparent text-black border-2 border-black/80 px-4 md:px-6 py-2.5 rounded-md font-black uppercase text-[10px] md:text-[11px] tracking-[0.1em] hover:bg-black/5 transition-all whitespace-nowrap w-full sm:w-auto"
               >
                 {secondaryButtonText}
               </button>
             )}
             <button
               onClick={(e) => { e.stopPropagation(); onClaim?.(); }}
-              className={`bg-black hover:bg-gray-800 text-white border-2 border-black/10 rounded-md font-black uppercase shadow-[3px_3px_0px_rgba(0,0,0,0.2)] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.2)] hover:translate-y-[2px] transition-all whitespace-nowrap ${secondaryButtonText
+              className={`bg-black hover:bg-gray-800 text-white border-2 border-black/10 rounded-md font-black uppercase shadow-[3px_3px_0px_rgba(0,0,0,0.2)] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.2)] hover:translate-y-[2px] transition-all whitespace-nowrap w-full sm:w-auto ${secondaryButtonText
                 ? 'px-4 md:px-6 py-2.5 text-[10px] md:text-[11px] tracking-[0.1em]'
                 : 'px-5 md:px-8 py-3 text-[10px] md:text-xs tracking-[0.15em]'
                 }`}
@@ -886,7 +886,7 @@ const MainLayout = () => {
 
   return (
     <>
-      <div className="w-full min-h-screen pt-3 md:pt-4 pb-24 md:pb-32 px-4 sm:px-6 lg:px-24">
+      <div className="w-full min-h-screen pt-3 md:pt-4 pb-8 md:pb-12 px-4 sm:px-6 lg:px-24">
 
         {/* ── Navbar ── */}
         <motion.nav
@@ -1140,10 +1140,47 @@ const MainLayout = () => {
               </div>
             ))}
           </motion.div>
+
+          {/* ── Partner Logos Marquee ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 1.7, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-16 md:mt-24 w-full overflow-hidden relative"
+          >
+            <p className="text-center font-black uppercase tracking-[0.3em] text-sm md:text-base text-[#1f2022] mb-28 md:mb-10">
+              In Partnership With
+            </p>
+
+            {/* Gradient masks for fading edges */}
+            <div className="absolute left-0 top-10 bottom-0 w-16 md:w-32 z-10 pointer-events-none" style={{ background: 'linear-gradient(to right, #fffefa, transparent)' }} />
+            <div className="absolute right-0 top-10 bottom-0 w-16 md:w-32 z-10 pointer-events-none" style={{ background: 'linear-gradient(to left, #fffefa, transparent)' }} />
+
+            <div className="relative flex overflow-hidden">
+              <motion.div
+                className="flex items-center gap-16 md:gap-24 w-max"
+                animate={{ x: ['0%', '-50%'] }}
+                transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+              >
+                {[...Array(2)].map((_, i) => (
+                  <React.Fragment key={i}>
+                    {['StartupTN.png', 'airtel.png', 'aspireforher.png', 'cumta.png', 'icc.png', 'impacttree.png', 'jetro.png', 'overqualifiedhousewives.png', 'startupsingam.png', 'tnrise.png', 'tnskills.png', 'wesafe.png'].map((logo, index) => (
+                      <img
+                        key={`${i}-${index}`}
+                        src={`/logos/${logo}`}
+                        alt={`Partner ${index}`}
+                        className="h-20 md:h-24 lg:h-28 w-auto shrink-0 object-contain"
+                      />
+                    ))}
+                  </React.Fragment>
+                ))}
+              </motion.div>
+            </div>
+          </motion.div>
         </div>
 
         {/* ── ABOUT PERAVAI ── */}
-        <div id="about" className="relative mt-16 md:mt-24 mb-0 px-4 sm:px-6 lg:px-0 overflow-hidden">
+        <div id="about" className="relative mt-6 md:mt-6 mb-0 px-4 sm:px-6 lg:px-0 overflow-hidden">
           <div aria-hidden className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
             <span className="text-[22vw] font-black uppercase tracking-tighter text-black/[0.025] whitespace-nowrap leading-none">
               PERAVAI
@@ -1351,7 +1388,7 @@ const MainLayout = () => {
               <div className="absolute -top-4 left-6 bg-black text-white px-4 py-1 font-black uppercase tracking-widest text-xs">
                 TERMS & CONDITIONS
               </div>
-              <ul className="space-y-4 text-left">
+              <ul className="space-y-3 text-left">
                 <li className="flex items-start gap-3">
 
                   <p className="font-bold text-gray-800 text-sm md:text-base leading-relaxed">
@@ -1370,7 +1407,7 @@ const MainLayout = () => {
         </motion.div>
       </div>
 
-      <div className="mt-20 md:mt-24 mx-4 sm:mx-6 lg:mx-24 h-[3px]" style={{ background: 'linear-gradient(to right, transparent, #a80d11 20%, #1f2022 50%, #0f50e3 80%, transparent)' }} />
+      <div className="mt-8 md:mt-10 mx-4 sm:mx-6 lg:mx-24 h-[3px]" style={{ background: 'linear-gradient(to right, transparent, #a80d11 20%, #1f2022 50%, #0f50e3 80%, transparent)' }} />
 
       {/*<div id="speakers" className="py-12 md:py-20 relative">
         <div className="text-center mb-10 md:mb-14 relative z-10">
@@ -1576,7 +1613,7 @@ const MainLayout = () => {
 
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6">
             <motion.a
-              href="mailto:contact@peravai.com"
+              href="mailto:office@startupperavai.in"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -1588,12 +1625,12 @@ const MainLayout = () => {
               </div>
               <div>
                 <p className="font-black uppercase tracking-widest text-xs text-gray-500 mb-1">Email</p>
-                <p className="font-bold text-black truncate">contact@peravai.com</p>
+                <p className="font-bold text-black truncate">office@startupperavai.in</p>
               </div>
             </motion.a>
 
             <motion.a
-              href="tel:+919876543210"
+              href="tel:+919789034548"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -1605,12 +1642,12 @@ const MainLayout = () => {
               </div>
               <div>
                 <p className="font-black uppercase tracking-widest text-xs text-gray-500 mb-1">Phone</p>
-                <p className="font-bold text-black">+91 98765 43210</p>
+                <p className="font-bold text-black">+91 97890 34548</p>
               </div>
             </motion.a>
 
             <motion.a
-              href="https://www.instagram.com/startup_peravai/?utm_source=ig_web_button_share_sheet"
+              href="https://www.instagram.com/easwari_startup_peravai?stkn=ZDNlZDc0MzIxNw=="
               target="_blank"
               rel="noreferrer"
               initial={{ opacity: 0, y: 20 }}
@@ -1628,7 +1665,8 @@ const MainLayout = () => {
               </div>
               <div>
                 <p className="font-black uppercase tracking-widest text-xs text-gray-500 mb-1">Instagram</p>
-                <p className="font-bold text-black truncate">@startup_peravai</p>
+                <p className="font-bold text-black truncate">@easwari_startup_peravai
+                </p>
               </div>
             </motion.a>
 
