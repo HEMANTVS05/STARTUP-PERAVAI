@@ -36,6 +36,8 @@ async function upsertRegistration(uid, data) {
   }
 
   const payload = {
+    checkedInDay1: false,
+    checkedInDay2: false,
     ...data,
     uid,
     registeredAt: new Date().toISOString(),
@@ -55,7 +57,12 @@ async function updateRegistration(uid, data) {
   if (!snap.exists) {
     throw Object.assign(new Error('Registration not found.'), { status: 404 });
   }
-  await ref.update({ ...data, updatedAt: new Date().toISOString() });
+  // Automatically mark status as 'active' when payment is confirmed
+  const updatePayload = { ...data, updatedAt: new Date().toISOString() };
+  if (data.paymentStatus === 'paid' || data.paymentStatus === 'free') {
+    updatePayload.status = 'active';
+  }
+  await ref.update(updatePayload);
   const updated = await ref.get();
   return { id: uid, ...updated.data() };
 }

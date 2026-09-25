@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, CheckCircle2, MapPin } from 'lucide-react';
 
-const VisitorDetailsModal = ({ isOpen, onClose }) => {
+const VisitorDetailsModal = ({ isOpen, onClose, onGetPass, hasPass }) => {
   if (!isOpen) return null;
 
   return (
@@ -147,12 +147,14 @@ const VisitorDetailsModal = ({ isOpen, onClose }) => {
             </div>
 
 
-            <div className="mt-auto pt-8 flex justify-end">
+            <div className="mt-auto pt-8 flex flex-col sm:flex-row justify-end gap-4">
               <button
-                onClick={onClose}
-                className="bg-black text-white px-8 py-3 rounded-md font-black uppercase text-sm tracking-widest hover:bg-gray-800 transition-colors"
+                onClick={hasPass ? onClose : onGetPass}
+                className={`text-white border-2 border-black/10 px-6 md:px-8 py-3 rounded-md font-black uppercase text-xs md:text-sm tracking-[0.15em] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.2)] hover:translate-y-[2px] transition-all ${
+                  hasPass ? 'bg-green-700 hover:bg-green-800' : 'bg-black hover:bg-gray-800'
+                }`}
               >
-                GOT IT
+                {hasPass ? 'YOUR PASS' : 'GET YOUR PASS'}
               </button>
             </div>
           </div>

@@ -210,20 +210,19 @@ const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, 
         </svg>
         {/* Content area for Description & Button */}
         <div
-          className="relative z-10 w-full h-full flex flex-col items-center justify-center p-8 md:p-12 text-center gap-5"
-          style={{ paddingLeft: mascotImg ? '160px' : '' }}
+          className={`relative z-10 w-full h-full flex flex-col items-center justify-center p-3 md:p-12 text-center gap-2 md:gap-5 ${mascotImg ? 'pl-24 md:pl-[160px]' : ''}`}
         >
           {descriptionNode ? descriptionNode : (
-            <p className="font-bold text-black/100 text-base md:text-lg max-w-md mx-auto leading-snug">
+            <p className="font-bold text-black/100 text-xs md:text-lg max-w-md mx-auto leading-snug">
               {description}
             </p>
           )}
 
-          <div className={`flex flex-col sm:flex-row items-center justify-center w-full ${secondaryButtonText ? 'gap-2 sm:gap-3 md:gap-4' : 'gap-3 sm:gap-4'}`}>
+          <div className={`flex flex-col sm:flex-row items-center justify-center w-full ${secondaryButtonText ? 'gap-1.5 sm:gap-3 md:gap-4' : 'gap-2 sm:gap-4'}`}>
             {secondaryButtonText && (
               <button
                 onClick={(e) => { e.stopPropagation(); onSecondaryClick?.(); }}
-                className="bg-transparent text-black border-2 border-black/80 px-4 md:px-6 py-2.5 rounded-md font-black uppercase text-[10px] md:text-[11px] tracking-[0.1em] hover:bg-black/5 transition-all whitespace-nowrap w-full sm:w-auto"
+                className="bg-transparent text-black border-2 border-black/80 px-2 md:px-6 py-1.5 md:py-2.5 rounded-md font-black uppercase text-[8px] md:text-[11px] tracking-[0.1em] hover:bg-black/5 transition-all whitespace-nowrap w-full sm:w-auto"
               >
                 {secondaryButtonText}
               </button>
@@ -231,8 +230,8 @@ const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, 
             <button
               onClick={(e) => { e.stopPropagation(); onClaim?.(); }}
               className={`bg-black hover:bg-gray-800 text-white border-2 border-black/10 rounded-md font-black uppercase shadow-[3px_3px_0px_rgba(0,0,0,0.2)] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.2)] hover:translate-y-[2px] transition-all whitespace-nowrap w-full sm:w-auto ${secondaryButtonText
-                ? 'px-4 md:px-6 py-2.5 text-[10px] md:text-[11px] tracking-[0.1em]'
-                : 'px-5 md:px-8 py-3 text-[10px] md:text-xs tracking-[0.15em]'
+                ? 'px-2 md:px-6 py-1.5 md:py-2.5 text-[8px] md:text-[11px] tracking-[0.1em]'
+                : 'px-3 md:px-8 py-2 md:py-3 text-[9px] md:text-xs tracking-[0.15em]'
                 }`}
             >
               {buttonText}
@@ -240,7 +239,7 @@ const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, 
           </div>
 
           {description2Node ? description2Node : description2 && (
-            <p className="font-black text-red-600 text-sm md:text-base leading-snug">
+            <p className="font-black text-red-600 text-xs md:text-base leading-snug">
               {description2}
             </p>
           )}
@@ -592,6 +591,9 @@ const MainLayout = () => {
   const handleVisitorPassClick = () => {
     if (!user) {
       setAuthModal({ open: true, pass: 'VISITOR PASS', source: 'visitor' });
+    } else if (!registration) {
+      setPendingPass('Visitor\'s Pass');
+      setShowRegForm(true);
     } else {
       setShowVisitorPaymentModal(true);
     }
@@ -799,21 +801,19 @@ const MainLayout = () => {
       description: 'Your Gateway into Easwari Startup Peravai',
       descriptionNode: (
         <div style={{ textAlign: 'center', maxWidth: '360px', margin: '0 auto' }}>
-          <p style={{
+          <p className="text-[14px] md:text-[20px]" style={{
             fontFamily: '"Playfair Display", Georgia, serif',
             fontWeight: 700,
             fontStyle: 'italic',
-            fontSize: '20px',
             lineHeight: 1.3,
             letterSpacing: '0.01em',
             color: '#1a1a1a',
             marginBottom: '4px',
           }}>Your Gateway into</p>
-          <p style={{
+          <p className="text-[16px] md:text-[22px]" style={{
             fontFamily: '"Playfair Display", Georgia, serif',
             fontWeight: 1000,
             fontStyle: 'normal',
-            fontSize: '22px',
             lineHeight: 1.2,
             letterSpacing: '0.01em',
             color: '#0f0f0f',
@@ -824,10 +824,8 @@ const MainLayout = () => {
           </p>
         </div>
       ),
-      buttonText: 'GET YOUR PASS',
-      secondaryButtonText: "WHAT’S INSIDE",
-      onSecondaryClick: () => setShowVisitorModal(true),
-      onClaim: () => handleVisitorPassClick(),
+      buttonText: (registration && registration.paymentStatus !== 'pending' && registration.passType !== 'None') ? 'YOUR PASS' : 'WHAT\'S INSIDE',
+      onClaim: () => setShowVisitorModal(true),
       delay: 0.1,
     },
     {
@@ -845,21 +843,19 @@ const MainLayout = () => {
       description: 'Ideas Need Action. Be the Changemaker.',
       descriptionNode: (
         <div style={{ textAlign: 'center', maxWidth: '360px', margin: '0 auto' }}>
-          <p style={{
+          <p className="text-[14px] md:text-[20px]" style={{
             fontFamily: '"Playfair Display", Georgia, serif',
             fontWeight: 700,
             fontStyle: 'italic',
-            fontSize: '20px',
             lineHeight: 1.3,
             letterSpacing: '0.01em',
             color: '#1a1a1a',
             marginBottom: '4px',
           }}>Ideas Need Action.</p>
-          <p style={{
+          <p className="text-[16px] md:text-[22px]" style={{
             fontFamily: '"Playfair Display", Georgia, serif',
             fontWeight: 900,
             fontStyle: 'normal',
-            fontSize: '22px',
             lineHeight: 1.2,
             letterSpacing: '0.01em',
             color: '#0b2140',
@@ -869,11 +865,10 @@ const MainLayout = () => {
       buttonText: 'EXPLORE EVENTS',
       description2: 'Participate in Our Events.',
       description2Node: (
-        <p style={{
+        <p className="text-[16px] md:text-[22px]" style={{
           fontFamily: '"Playfair Display", Georgia, serif',
           fontWeight: 900,
           fontStyle: 'normal',
-          fontSize: '22px',
           lineHeight: 1.2,
           letterSpacing: '0.01em',
           color: '#a80d11',
@@ -895,8 +890,9 @@ const MainLayout = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black uppercase text-blue-600 tracking-tighter leading-none">
-            <img src="peravai_logo.png" alt="Peravai Logo" className="h-30 md:h-30 w-80" />
+          <h1 className="flex items-center gap-4 md:gap-6 text-3xl md:text-4xl lg:text-5xl font-black uppercase text-blue-600 tracking-tighter leading-none">
+            <img src="EEC_text_logo.png" alt="Easwari Logo" className="h-23 md:h-23 w-72 object-contain" />
+            <img src="peravai_logo.png" alt="Peravai Logo" className="h-30 md:h-30 w-75 object-contain" />
           </h1>
 
           {/* Desktop nav */}
@@ -943,10 +939,12 @@ const MainLayout = () => {
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.15 }}
                       className="absolute right-0 top-full mt-2 w-48 border-4 border-black bg-white shadow-[6px_6px_0px_rgba(0,0,0,1)] z-50">
-                      <button onClick={() => { handleOpenHackathon(); setUserMenuOpen(false); }}
-                        className="w-full flex items-center gap-3 px-4 py-3 font-black uppercase tracking-widest text-xs bg-blue-50 text-blue-900 hover:bg-black hover:text-white transition-colors border-b-2 border-black">
-                        <Users className="w-4 h-4 text-blue-600" /> Hackathon Team
-                      </button>
+                      {(!registration || registration.passType !== "Visitor's Pass") && (
+                        <button onClick={() => { handleOpenHackathon(); setUserMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-4 py-3 font-black uppercase tracking-widest text-xs bg-blue-50 text-blue-900 hover:bg-black hover:text-white transition-colors border-b-2 border-black">
+                          <Users className="w-4 h-4 text-blue-600" /> Hackathon Team
+                        </button>
+                      )}
                       {registration && registration.paymentStatus !== 'pending' && (
                         <button onClick={() => { setShowDashboard(true); setUserMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-4 py-3 font-black uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-colors border-b-2 border-black">
@@ -1035,7 +1033,7 @@ const MainLayout = () => {
                   <Ticket className="w-5 h-5" /> Choose Pass
                 </button>
               )}
-              {user && (
+              {user && (!registration || registration.passType !== "Visitor's Pass") && (
                 <button onClick={() => { handleOpenHackathon(); setMenuOpen(false); }}
                   className="w-full flex items-center gap-3 px-8 py-4 font-black uppercase tracking-widest text-blue-900 bg-blue-50 border-b-2 border-black hover:bg-black hover:text-white transition-colors">
                   <Users className="w-5 h-5 text-blue-600" /> Hackathon Team
@@ -1133,7 +1131,7 @@ const MainLayout = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 1.5, ease: [0.22, 1, 0.36, 1] }}
           >
-            {[['10000+', 'Participants'], ['100+', 'Founders & Leaders'], ['2', 'Days of Impact']].map(([num, label], i) => (
+            {[['8000+', 'Participants'], ['100+', 'Founders & Leaders'], ['2', 'Days of Impact']].map(([num, label], i) => (
               <div key={i} className="py-5 px-4 text-center">
                 <p className="font-black text-2xl md:text-3xl text-[#1f2022] leading-none"><AnimatedNumber value={num} delay={1500} /></p>
                 <p className="font-bold text-xs uppercase tracking-[0.2em] text-gray-500 mt-1">{label}</p>
@@ -1160,11 +1158,11 @@ const MainLayout = () => {
               <motion.div
                 className="flex items-center gap-16 md:gap-24 w-max"
                 animate={{ x: ['0%', '-50%'] }}
-                transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+                transition={{ duration: 16, repeat: Infinity, ease: 'linear' }}
               >
                 {[...Array(2)].map((_, i) => (
                   <React.Fragment key={i}>
-                    {['StartupTN.png', 'airtel.png', 'aspireforher.png', 'cumta.png', 'icc.png', 'impacttree.png', 'jetro.png', 'overqualifiedhousewives.png', 'startupsingam.png', 'tnrise.png', 'tnskills.png', 'wesafe.png'].map((logo, index) => (
+                    {['StartupTN.png', 'airtel.png', 'shortfundly.png', 'aspireforher.png', 'cumta.png', 'icc.png', 'impacttree.png', 'jetro.png', 'overqualifiedhousewives.png', 'startupsingam.png', 'tnrise.png', 'tnskills.png', 'wesafe.png'].map((logo, index) => (
                       <img
                         key={`${i}-${index}`}
                         src={`/logos/${logo}`}
@@ -1868,7 +1866,15 @@ const MainLayout = () => {
         )}
       </AnimatePresence>
 
-      <VisitorDetailsModal isOpen={showVisitorModal} onClose={() => setShowVisitorModal(false)} />
+      <VisitorDetailsModal 
+        isOpen={showVisitorModal} 
+        onClose={() => setShowVisitorModal(false)} 
+        onGetPass={() => {
+          setShowVisitorModal(false);
+          handleVisitorPassClick();
+        }}
+        hasPass={!!(registration && registration.paymentStatus !== 'pending' && registration.passType !== 'None')}
+      />
 
       {/* ── Floating Dock Navbar (appears on scroll) ── */}
       <AnimatePresence>

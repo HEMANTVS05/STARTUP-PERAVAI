@@ -63,6 +63,7 @@ const PaymentGateway = ({ passType, setPassType, registrationData, onSuccess, on
       passType,
       ...registrationData,
       paymentStatus: isFree ? 'free' : 'paid',
+      status: 'active',
     });
     await refreshRegistration();
   };

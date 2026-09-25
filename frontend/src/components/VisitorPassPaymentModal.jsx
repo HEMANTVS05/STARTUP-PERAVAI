@@ -29,7 +29,10 @@ const VisitorPassPaymentModal = ({ isOpen, onClose, onSuccess }) => {
       // Update registration to paid in backend
       await api.patch('/api/registrations', {
         passType: "Visitor's Pass",
-        paymentStatus: 'paid'
+        paymentStatus: 'paid',
+        status: 'active',
+        checkedInDay1: false,
+        checkedInDay2: false
       });
       await refreshRegistration();
       

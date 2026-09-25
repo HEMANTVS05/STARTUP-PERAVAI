@@ -178,9 +178,9 @@ const UserDashboard = ({ onClose }) => {
                 {['Day 1', 'Day 2'].map((day, i) => {
                   const checked = i === 0 ? registration.checkedInDay1 : registration.checkedInDay2;
                   return (
-                    <div key={day} className={`flex items-center justify-between p-2 rounded border-2 ${checked ? 'border-green-500' : 'border-transparent'} ${checked ? (isPremium ? 'bg-green-900/30' : 'bg-green-50') : 'opacity-60'}`}>
-                      <p className="font-black text-xs uppercase">{day}</p>
-                      <CheckCircle2 className={`w-4 h-4 ${checked ? 'text-green-500' : 'opacity-30'}`} />
+                    <div key={day} className={`flex items-center justify-between p-2 rounded border-2 transition-all ${checked ? 'bg-green-500 border-green-600 text-white shadow-[2px_2px_0px_rgba(0,100,0,0.3)]' : 'border-transparent opacity-60'}`}>
+                      <p className="font-black text-xs uppercase tracking-wider">{day} {checked && '- SCANNED'}</p>
+                      <CheckCircle2 className={`w-4 h-4 ${checked ? 'text-white' : 'opacity-30'}`} />
                     </div>
                   );
                 })}

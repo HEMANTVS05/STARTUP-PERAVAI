@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-
+import minister from "../assets/minister1.jpeg";
+import team from "../assets/team1.jpeg";
 
 const events = [
   {
@@ -12,13 +13,13 @@ const events = [
       </>
     ),
     description: "An impactful beginning marked by the honorable minister officially launching the Peravai, setting the stage for 2 days of innovation, networking, and growth for the startup ecosystem.",
-    image: null,
+    image: minister,
   },
   {
     id: 2,
-    title: "Junk to Genius",
+    title: "Peravai Team",
     description: "Transform waste into wonder. Join innovative minds as they engineer brilliant solutions from everyday scrap, competing for top honors in sustainable creation.",
-    image: null,
+    image: team,
   },
   {
     id: 3,

@@ -44,9 +44,19 @@ service cloud.firestore {
 
     // ── /registrations ────────────────────────────────────────────────────────
     // Users can read their own registration. Backend handles all writes.
+    // Admins (gate scanner) can read ANY registration to perform check-in.
     match /registrations/{registrationId} {
-      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
-      allow write: if false;
+      allow read: if isAuthenticated() && (
+        resource.data.uid == request.auth.uid ||
+        hasAdminClaim() ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+      // Allow admin to write check-in fields directly from the scanner (Client SDK)
+      allow update: if isAuthenticated() && (
+        hasAdminClaim() ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+      allow create, delete: if false; // All creates/deletes go through backend
     }
 
     // ── /teams ────────────────────────────────────────────────────────────────
@@ -106,6 +116,16 @@ service cloud.firestore {
     // Read-only for authenticated users.
     match /problem_statements/{psId} {
       allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // ── /config ───────────────────────────────────────────────────────────────
+    // Admin-only config (e.g. currentDay for gate scanner).
+    match /config/{configId} {
+      allow read: if isAuthenticated() && (
+        hasAdminClaim() ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
       allow write: if false;
     }
 
