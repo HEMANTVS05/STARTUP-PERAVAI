@@ -16,8 +16,7 @@ export const AuthProvider = ({ children }) => {
       if (firebaseUser) {
         try {
           const res = await api.get('/api/registrations');
-          const reg = await ensureCheckInFields(res.data);
-          setRegistration(reg);
+          setRegistration(res.data);
         } catch (err) {
           // If 404, it just means they haven't registered yet, which is fine.
           setRegistration(null);
@@ -30,34 +29,12 @@ export const AuthProvider = ({ children }) => {
     return unsubscribe;
   }, []);
 
-  // Auto-initialize missing check-in fields for existing registrations
-  const ensureCheckInFields = async (reg) => {
-    if (!reg) return reg;
-    const needsPatch =
-      reg.checkedInDay1 === undefined ||
-      reg.checkedInDay2 === undefined;
-    if (needsPatch) {
-      const patch = {};
-      if (reg.checkedInDay1 === undefined) patch.checkedInDay1 = false;
-      if (reg.checkedInDay2 === undefined) patch.checkedInDay2 = false;
-      try {
-        await api.patch('/api/registrations', patch);
-        return { ...reg, ...patch };
-      } catch (e) {
-        // Non-critical — return original
-        return { ...reg, checkedInDay1: false, checkedInDay2: false };
-      }
-    }
-    return reg;
-  };
-
   // Call this after completing registration so UI refreshes without re-auth
   const refreshRegistration = async () => {
     if (!user) return;
     try {
       const res = await api.get('/api/registrations');
-      const reg = await ensureCheckInFields(res.data);
-      setRegistration(reg);
+      setRegistration(res.data);
     } catch (err) {
       setRegistration(null);
     }
