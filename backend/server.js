@@ -16,7 +16,16 @@ const app = express();
 app.use(helmet());
 
 // ─── CORS ────────────────────────────────────────────────────────────────────
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173').split(',');
+const defaultOrigins = [
+  'http://localhost:5173',
+  'https://startupperavai.in',
+  'https://www.startupperavai.in',
+  'https://startup-peravai-scanner.vercel.app'
+];
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',') 
+  : defaultOrigins;
+
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, curl, Postman in dev)
@@ -59,6 +68,11 @@ app.use(errorMiddleware);
 
 // ─── START ───────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`[PERAVAI backend] ▶  http://localhost:${PORT}  (${process.env.NODE_ENV || 'development'})`);
-});
+if (process.env.NODE_ENV !== 'production' || process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`[PERAVAI backend] ▶  http://localhost:${PORT}  (${process.env.NODE_ENV || 'development'})`);
+  });
+}
+
+// Export for Vercel Serverless Functions
+module.exports = app;
