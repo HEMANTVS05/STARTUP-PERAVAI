@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from '../utils/api';
 
 const RazorpayCheckoutButton = ({
   amount = 100,
@@ -15,17 +16,13 @@ const RazorpayCheckoutButton = ({
     setLoading(true);
     try {
       // Step 1: Create Order
-      const orderResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/payment/create-order`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, currency, receipt: 'receipt_' + Math.random().toString(36).substring(7) }),
+      const orderResponse = await api.post('/api/payment/create-order', {
+        amount,
+        currency,
+        receipt: 'receipt_' + Math.random().toString(36).substring(7),
       });
 
-      const orderData = await orderResponse.json();
-
-      if (!orderResponse.ok) {
-        throw new Error(orderData.error || 'Failed to create order');
-      }
+      const orderData = orderResponse.data;
 
       // Step 2: Open Razorpay Modal
       const options = {
@@ -39,19 +36,15 @@ const RazorpayCheckoutButton = ({
         handler: async function (response) {
           try {
             // Step 3: Verify Payment Signature
-            const verifyResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/payment/verify-payment`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-              }),
+            const verifyResponse = await api.post('/api/payment/verify-payment', {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
             });
 
-            const verifyData = await verifyResponse.json();
+            const verifyData = verifyResponse.data;
 
-            if (verifyResponse.ok && verifyData.success) {
+            if (verifyData.success) {
               if (onSuccess) onSuccess(verifyData);
             } else {
               alert('Payment verification failed!');
