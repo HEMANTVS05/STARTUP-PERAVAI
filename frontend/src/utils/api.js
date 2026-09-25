@@ -6,7 +6,13 @@
 import axios from 'axios';
 import { auth } from '../config/firebase';
 
-const BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+// Single-domain deployment: in production, /api/* is served by the backend
+// on the SAME domain, so we use an empty base URL (relative requests).
+// In local dev, the backend runs separately on port 5000.
+const BASE_URL = import.meta.env.PROD
+  ? ''
+  : (import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000');
+
 
 const api = axios.create({
   baseURL: BASE_URL,
