@@ -6,9 +6,7 @@
 import axios from 'axios';
 import { auth } from '../config/firebase';
 
-// If both frontend and backend are deployed on the same domain (Vercel Monorepo),
-// we can use an empty string as the base URL in production to make relative requests to /api
-const BASE_URL = import.meta.env.VITE_BACKEND_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000');
+const BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
 const api = axios.create({
   baseURL: BASE_URL,
