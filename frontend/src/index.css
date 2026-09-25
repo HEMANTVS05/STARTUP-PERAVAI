@@ -7,6 +7,11 @@
   --color-charcoal: #1f2022;
 }
 
+/* ── Force 90% zoom universally to prevent component breakage on any screen ── */
+html {
+  zoom: 0.9;
+}
+
 body {
   font-family: var(--font-outfit);
   background-color: var(--color-primary);
