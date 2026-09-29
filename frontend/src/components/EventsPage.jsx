@@ -1,28 +1,72 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Zap, Users, User, AlertCircle, MapPin, Calendar, ArrowRight, X, BookOpen, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Zap, Users, User, AlertCircle, MapPin, Calendar, ArrowRight, X, BookOpen, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import EventRegistrationModal from './EventRegistrationModal';
 import HackathonModal from './HackathonModal';
 import AuthModal from './AuthModal';
 import RegistrationForm from './RegistrationForm';
+import hackathonRulesPoster from '../assets/hackathon_rules_poster.jpg';
 
 const GROUP_EVENTS = [
   {
-    id: 'hackathon', name: 'Hackathon', limit: '3–5 Members', desc: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. 24 hours. Details about CUMTA.',
+    id: 'hackathon', name: 'Hackathon', limit: '3–5 Members',
+    cardDesc: (
+      <>
+        <span className="block text-[14px] font-black uppercase tracking-tight text-[#0b2140] mb-2">24 Hours. One Mission. Reimagine the Transportation of Chennai.</span>
+        <span className="block mt-2 font-bold text-black/90">What if you had 24 hours to build an idea that could transform the way Chennai moves?</span>
+        <span className="block mt-2 text-black/75">
+          The <strong>Chennai Unified Metropolitan Transport Authority (CUMTA)</strong> is bringing together young innovators for an intense 24-hour challenge.
+        </span>
+      </>
+    ),
+    desc: (
+      <>
+        <span className="block text-[15px] font-black uppercase tracking-tight text-[#0b2140] mb-2">24 Hours. One Mission. Reimagine the Transportation of Chennai.</span>
+        <span className="block mt-2 font-bold text-black/90">What if you had 24 hours to build an idea that could transform the way Chennai moves?</span>
+        <span className="block mt-2 text-black/75">
+          The <strong>Chennai Unified Metropolitan Transport Authority (CUMTA)</strong> is bringing together young innovators for an intense 24-hour challenge to imagine, create and prototype the future of Chennai’s transportation.
+        </span>
+        <span className="block mt-2 text-black/75">
+          From streets to public transport, from everyday commuters to emerging technology — the future of Chennai’s mobility needs new ideas. Now, it's your turn to rethink it.
+        </span>
+        <span className="block mt-3 font-black text-black/90 uppercase text-[12px] tracking-wide">
+          Gather your team. Bring your ideas. Build under pressure. Reimagine Chennai.
+        </span>
+        <span className="block mt-2 text-black/75">
+          Open to passionate student innovators from across Tamil Nadu, this is your opportunity to build, experiment, collaborate and turn an idea into something that could make a difference.
+        </span>
+        <div className="mt-5 p-4" style={{ background: '#f8fafc', borderLeft: '4px solid #0b2140' }}>
+          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-[13px]">CUMTA 24-Hour Challenge</span>
+          <span className="block text-[12px] font-bold text-black/70 mt-1">Where ideas move Chennai.</span>
+          <span className="block text-[10px] uppercase tracking-[0.2em] font-black mt-3 text-black">Your 24 hours start here.</span>
+          <span className="block text-[11px] italic text-black/60 mt-1">Can you reimagine the transportation of Chennai?</span>
+        </div>
+      </>
+    ),
     venue: 'MLCP labs', day: 'Both Days', accent: '#0b2140', accentLight: '#e8f0ff',
     rules: [
-      { title: '1. Team Size', body: 'Each team must consist of 3–5 members.' },
-      { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
-      { title: '3. Registration & Payment', body: 'The team leader must register and make the payment for all team members. All team members must join the team created by the team leader.' },
-      { title: '4. Reporting Time', body: 'All participants must report to their allocated venue 15 minutes before the start of the event. ID cards are mandatory for all participants.' },
-      { title: '5. Problem Statements', body: 'Problem statements will be revealed on the day of the event.' },
-      { title: '6. Code of Conduct', body: 'Any form of unfair practice or copied work will lead to immediate disqualification. The judges’ decision will be final and will not be open to discussion.' },
+      { title: 'Team Size', body: 'Each team must consist of 3–5 members.' },
+      { title: 'Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
+      { title: 'Registration & Payment', body: 'The team leader must register and make the payment for all team members. All team members must join the team created by the team leader.' },
+      { title: 'Reporting Time', body: 'All participants must report to their allocated venue 15 minutes before the start of the event. ID cards are mandatory for all participants.' },
+      { title: 'Problem Statements', body: 'Problem statements will be revealed on the day of the event.' },
+      { title: 'Code of Conduct', body: 'Any form of unfair practice or copied work will lead to immediate disqualification. The judges’ decision will be final and will not be open to discussion.' },
     ],
+    // Add poster image paths here when ready:
+    // posters: [hackathonPoster, hackathonRulesPoster],
+    posters: [hackathonRulesPoster],
   },
   {
     id: 'shark-tank', name: 'Startup Singam Jr', limit: 'Limit 5',
+    cardDesc: (
+      <>
+        <span>In partnership with <strong>Startup Singam</strong>, this is a <strong>two-day startup pitching competition</strong> for young entrepreneurs.</span>
+        <span className="block mt-2 text-black/75"><strong>Day 1 — Prelims:</strong> Pitch before a preliminary jury and get shortlisted.</span>
+        <span className="block mt-1 text-black/75"><strong>Day 2 — Grand Finale:</strong> Present directly to a distinguished panel of investors.</span>
+      </>
+    ),
     desc: (
       <>
         <span>In partnership with <strong>Startup Singam</strong>, this is a <strong>two-day startup pitching competition</strong> for young entrepreneurs.</span>
@@ -67,6 +111,7 @@ const GROUP_EVENTS = [
 const INDIVIDUAL_EVENTS = [
   {
     id: 'live-podcast', name: 'Live Podcast',
+    cardDesc: 'Hear directly from successful founders from Tamil Nadu as they share their journeys — the risks, the failures, and the decisions that changed everything.',
     desc: (
       <>
         <span><strong>What really happens behind the success story?</strong></span>
@@ -85,6 +130,7 @@ const INDIVIDUAL_EVENTS = [
   },
   {
     id: 'panel-discussions', name: 'Panel Discussion',
+    cardDesc: 'A dynamic panel where industry leaders, entrepreneurs and experts share real-time insights on a given theme, followed by an interactive Q&A.',
     desc: (
       <>
         <span>A dynamic panel where <strong>industry leaders, entrepreneurs and experts</strong> share real-time insights on a given theme.</span>
@@ -102,6 +148,7 @@ const INDIVIDUAL_EVENTS = [
   },
   {
     id: 'illogical-marketing', name: 'Illogical Marketing',
+    cardDesc: 'You\'ll receive an illogical product on the spot and must pitch it convincingly using branding, storytelling and persuasion.',
     desc: (
       <>
         <span><strong>Can you sell a product that makes absolutely no sense?</strong></span>
@@ -134,6 +181,153 @@ const INDIVIDUAL_EVENTS = [
 const cardVariants = {
   hidden: { opacity: 0, y: 30 },
   visible: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] } }),
+};
+
+/* ── Poster Slideshow ──────────────────────────────────────────────────── */
+const PosterSlideshow = ({ posters, accent }) => {
+  const [current, setCurrent] = useState(0);
+  const [dir, setDir] = useState(1);
+
+  const goTo = (idx, direction) => {
+    setDir(direction);
+    setCurrent(idx);
+  };
+
+  const prev = () => posters.length > 1 && goTo((current - 1 + posters.length) % posters.length, -1);
+  const next = () => posters.length > 1 && goTo((current + 1) % posters.length, 1);
+
+  const variants = {
+    enter: (d) => ({ x: d > 0 ? '100%' : '-100%', opacity: 0 }),
+    center: { x: 0, opacity: 1, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+    exit: (d) => ({ x: d > 0 ? '-100%' : '100%', opacity: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } }),
+  };
+
+  return (
+    <div className="mb-6">
+      {/* Section label */}
+      <h3
+        className="text-[11px] font-black uppercase tracking-[0.25em] mb-3 flex items-center gap-2"
+        style={{ color: accent }}
+      >
+        <span className="inline-block w-5 h-[2.5px]" style={{ background: accent }} />
+        Event Posters
+      </h3>
+
+      {/* Slideshow card */}
+      <div
+        style={{
+          background: '#fff',
+          border: '3px solid #111',
+          boxShadow: '6px 6px 0 #111',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Image area */}
+        <div style={{ position: 'relative', width: '100%', background: '#fff' }}>
+          {posters.length === 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: '#bbb', padding: '100px 20px' }}>
+              <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <polyline points="21 15 16 10 5 21" />
+              </svg>
+              <span style={{ fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: 11 }}>Posters Coming Soon</span>
+            </div>
+          ) : (
+            <div style={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
+              <AnimatePresence initial={false} custom={dir} mode="wait">
+                <motion.div
+                  key={current}
+                  custom={dir}
+                  variants={variants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  style={{ width: '100%', display: 'block' }}
+                >
+                  <img
+                    src={posters[current]}
+                    alt={`Poster ${current + 1}`}
+                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
+
+        {/* Bottom bar: arrows + dots */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '10px 16px',
+            borderTop: '2.5px solid #111',
+            background: '#fff',
+          }}
+        >
+          {/* Prev */}
+          <button
+            onClick={prev}
+            style={{
+              border: '2.5px solid #111',
+              background: '#fff',
+              boxShadow: '3px 3px 0 #111',
+              padding: '6px 10px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#111'; e.currentTarget.style.color = '#fff'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#111'; }}
+          >
+            <ChevronLeft size={18} />
+          </button>
+
+          {/* Dots */}
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            {posters.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i, i > current ? 1 : -1)}
+                style={{
+                  width: i === current ? 22 : 8,
+                  height: 8,
+                  borderRadius: 4,
+                  background: i === current ? accent : '#d0d0d0',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s',
+                  padding: 0,
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Next */}
+          <button
+            onClick={next}
+            style={{
+              border: '2.5px solid #111',
+              background: '#111',
+              color: '#fff',
+              boxShadow: '3px 3px 0 #111',
+              padding: '6px 10px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = accent; e.currentTarget.style.borderColor = accent; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#111'; e.currentTarget.style.borderColor = '#111'; }}
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 /* ── Podcast Speakers Data ─────────────────────────────────────────────── */
@@ -832,7 +1026,7 @@ const LearnMoreModal = ({ evt, isGroup, onClose, onRegister }) => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 40, scale: 0.96 }}
           transition={{ type: 'spring', damping: 24, stiffness: 280 }}
-          className="relative flex flex-col w-full max-w-5xl max-h-[88vh] overflow-hidden"
+          className="relative flex flex-col w-full max-w-5xl max-h-[95vh] overflow-hidden"
           style={{
             background: '#fff',
             border: '3px solid #111',
@@ -904,74 +1098,30 @@ const LearnMoreModal = ({ evt, isGroup, onClose, onRegister }) => {
               )}
             </div>
 
-            {/* Event Description & Photo */}
-            <div className="mb-8">
+            {/* Event Description */}
+            <div className="mb-6">
               <div
-                className="mb-6 p-4"
+                className="p-6"
                 style={{
-                  border: '2px solid #e5e5e5',
-                  borderLeft: `4px solid ${evt.accent}`,
-                  background: '#fafafa',
+                  border: '2px solid #e0e0e0',
+                  borderLeft: `5px solid ${evt.accent}`,
+                  background: '#fff',
+                  boxShadow: '4px 4px 0 #e0e0e0',
                 }}
               >
-                <h4 className="text-[12px] font-black uppercase tracking-wide text-black mb-1.5 flex items-center gap-2">
+                <h4 className="text-[11px] font-black uppercase tracking-[0.25em] mb-3 flex items-center gap-2" style={{ color: evt.accent }}>
+                  <span className="inline-block w-5 h-[2.5px]" style={{ background: evt.accent }} />
                   Event Overview
                 </h4>
-                <p className="text-[12px] font-medium text-black/60 leading-relaxed">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                <p className="text-[14px] font-medium text-black/80 leading-relaxed">
+                  {evt.desc}
                 </p>
               </div>
-              <div
-                className="w-full bg-gray-50 flex items-center justify-center overflow-hidden"
-                style={{
-                  height: '280px',
-                  border: '3px solid #111',
-                  boxShadow: '6px 6px 0 #111'
-                }}
-              >
-                {evt.photo ? (
-                  <img src={evt.photo} alt={evt.name} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="flex flex-col items-center gap-3 text-gray-400">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
-                    <span className="font-black uppercase tracking-widest text-xs">Event Photo Placeholder</span>
-                  </div>
-                )}
-              </div>
             </div>
 
-            {/* Rules & Regulations */}
-            <div className="mb-6">
-              <h3
-                className="text-[11px] font-black uppercase tracking-[0.25em] mb-4 flex items-center gap-2"
-                style={{ color: evt.accent }}
-              >
-                <span
-                  className="inline-block w-6 h-[2.5px]"
-                  style={{ background: evt.accent }}
-                />
-                Rules &amp; Regulations
-              </h3>
+            {/* Poster Slideshow — always shown */}
+            <PosterSlideshow posters={evt.posters || []} accent={evt.accent} />
 
-              {(evt.rules || []).map((rule, i) => (
-                <div
-                  key={i}
-                  className="mb-4 p-4"
-                  style={{
-                    border: '2px solid #e5e5e5',
-                    borderLeft: `4px solid ${evt.accent}`,
-                    background: i % 2 === 0 ? '#fafafa' : '#fff',
-                  }}
-                >
-                  <p className="text-[12px] font-black uppercase tracking-wide text-black mb-1.5">
-                    {rule.title}
-                  </p>
-                  <p className="text-[12px] font-medium text-black/60 leading-relaxed">
-                    {rule.body}
-                  </p>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Footer with Register button */}
@@ -980,7 +1130,7 @@ const LearnMoreModal = ({ evt, isGroup, onClose, onRegister }) => {
             style={{ borderTop: '3px solid #111', background: '#fafafa', flexShrink: 0 }}
           >
             <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">
-              Read all rules before registering
+              Spots are limited — secure yours now
             </p>
             <motion.button
               onClick={() => { onClose(); onRegister(evt); }}
@@ -1056,7 +1206,7 @@ const EventCard = ({ evt, idx, onRegister, isGroup, onLoginRequest }) => {
 
           {/* Description */}
           <div className="text-[14.5px] font-medium text-black/90 leading-relaxed flex-1 mb-4">
-            {evt.desc}
+            {evt.cardDesc || evt.desc}
           </div>
 
           {/* Meta pills */}
