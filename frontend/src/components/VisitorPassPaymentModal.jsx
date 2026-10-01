@@ -8,7 +8,7 @@ import api from '../utils/api';
 
 const VisitorPassPaymentModal = ({ isOpen, onClose, onSuccess }) => {
   const { user, registration, refreshRegistration } = useAuth();
-  
+
   // 'info' | 'payment' | 'paid-success'
   const [paymentStep, setPaymentStep] = useState('info');
   const [loading, setLoading] = useState(false);
@@ -35,7 +35,7 @@ const VisitorPassPaymentModal = ({ isOpen, onClose, onSuccess }) => {
         checkedInDay2: false
       });
       await refreshRegistration();
-      
+
       setLoading(false);
       fireConfetti();
       setPaymentStep('paid-success');
@@ -134,10 +134,10 @@ const VisitorPassPaymentModal = ({ isOpen, onClose, onSuccess }) => {
                     <p className="font-black text-4xl text-[#a80d11]">₹50</p>
                     <p className="font-bold text-xs text-gray-400 mt-1">Visitor Pass Registration</p>
                   </div>
-                  
+
                   <div className="flex justify-center mb-4">
                     <RazorpayCheckoutButton
-                      amount={100} // CHANGEEEEEEE (100 paise = 1 INR test amount)
+                      amount={5000} // CHANGEEEEEEE (100 paise = 1 INR test amount)
                       currency="INR"
                       prefillName={registration?.name || user?.displayName || ''}
                       prefillEmail={registration?.email || user?.email || ''}

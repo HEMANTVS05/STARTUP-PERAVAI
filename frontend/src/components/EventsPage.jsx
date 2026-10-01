@@ -8,8 +8,14 @@ import HackathonModal from './HackathonModal';
 import AuthModal from './AuthModal';
 import RegistrationForm from './RegistrationForm';
 import hackathonRulesPoster from '../assets/rules11.png';
+import singamRulesPoster from '../assets/rules22.png';
 import hackathonPoster from '../assets/hackathon_cover.png';
 import singamposter from '../assets/singam_cover.png';
+import rupeesPoster from '../assets/rupees_cover.png';
+import scaleupPoster from '../assets/scaleup_cover.png';
+import rupeesRulesPoster from '../assets/rules33.png';
+import scaleupRulesPoster from '../assets/rules44.png';
+import bootcampPoster from '../assets/bootcamp_cover.png';
 
 const GROUP_EVENTS = [
   {
@@ -25,7 +31,7 @@ const GROUP_EVENTS = [
     ),
     desc: (
       <>
-        <span className="block text-[15px] font-black uppercase tracking-tight text-[#0b2140] mb-2">24 Hours. One Mission. Reimagine the Transportation of Chennai.</span>
+        <span className="block text-xl font-black uppercase tracking-tight text-[#0b2140] mb-3">24 Hours. One Mission. Reimagine the Transportation of Chennai.</span>
         <span className="block mt-2 font-bold text-black/90">What if you had 24 hours to build an idea that could transform the way Chennai moves?</span>
         <span className="block mt-2 text-black/75">
           The <strong>Chennai Unified Metropolitan Transport Authority (CUMTA)</strong> is bringing together young innovators for an intense 24-hour challenge to imagine, create and prototype the future of Chennai’s transportation.
@@ -39,11 +45,10 @@ const GROUP_EVENTS = [
         <span className="block mt-2 text-black/75">
           Open to passionate student innovators from across Tamil Nadu, this is your opportunity to build, experiment, collaborate and turn an idea into something that could make a difference.
         </span>
-        <div className="mt-5 p-4" style={{ background: '#f8fafc', borderLeft: '4px solid #0b2140' }}>
-          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-[13px]">CUMTA 24-Hour Challenge</span>
-          <span className="block text-[12px] font-bold text-black/70 mt-1">Where ideas move Chennai.</span>
-          <span className="block text-[10px] uppercase tracking-[0.2em] font-black mt-3 text-black">Your 24 hours start here.</span>
-          <span className="block text-[11px] italic text-black/60 mt-1">Can you reimagine the transportation of Chennai?</span>
+        <div className="mt-6 p-6" style={{ background: '#f8fafc', borderLeft: '6px solid #0b2140' }}>
+          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-lg">CUMTA 24-Hour Challenge</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">Where ideas move Chennai.</span>
+          <span className="block text-[14px] uppercase tracking-[0.3em] font-black mt-3 text-black">Your 24 hours start here.</span>
         </div>
       </>
     ),
@@ -61,6 +66,38 @@ const GROUP_EVENTS = [
     coverImage: hackathonPoster,
     posters: [hackathonRulesPoster],
   },
+
+  {
+    id: 'rupees-to-reality', name: 'Rupees to Reality', limit: 'Limit 3',
+    cardDesc: 'Rupees to Reality challenges teams to turn an imaginary budget into a real-world solution.',
+    desc: (
+      <>
+        <span className="block text-xl font-black uppercase tracking-tight text-[#0b2140] mb-3">Rupees to Reality challenges teams to turn an imaginary budget into a real-world solution.</span>
+        <span className="block mt-2 text-black/75">
+          Teams will receive a virtual capital fund and a catalogue of Idea Lab equipment with their prices. Using only their given budget, they must choose their resources and design a project that addresses a real-world problem and aligns with one or more <strong>UN Sustainable Development Goals (SDGs)</strong>.
+        </span>
+        <span className="block mt-2 text-black/75">
+          The resources are not physically provided during the challenge. Teams will be judged on their idea, resource planning, creativity, uniqueness and feasibility.
+        </span>
+        <div className="mt-6 p-6" style={{ background: '#f8fafc', borderLeft: '6px solid #0b2140' }}>
+          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-lg">And the best part?</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">The winning team gets the opportunity to bring their idea to life in the Idea Lab at Easwari Engineering College.</span>
+        </div>
+      </>
+    ),
+    venue: 'MBA Seminar Hall 1', day: 'Both Days', accent: '#0b2140', accentLight: '#e8f0ff',
+    rules: [
+      { title: '1. Team Size', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Teams of up to 3 members. All members must be present on both days of the event.' },
+      { title: '2. Materials', body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium. Only materials provided at the venue may be used. No external materials are allowed.' },
+      { title: '3. Build Time', body: 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis. Teams have a fixed window to construct their product from the given junk materials.' },
+      { title: '4. Presentation', body: 'Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit. Each team must present their creation explaining functionality and innovation to the judges.' },
+      { title: '5. Judging Criteria', body: 'Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus. Judged on creativity, structural integrity, utility, and presentation effectiveness.' },
+    ],
+
+    coverImage: rupeesPoster,
+    posters: [rupeesRulesPoster],
+  },
+
   {
     id: 'shark-tank', name: 'Startup Singam Jr', limit: 'Limit 5',
     cardDesc: (
@@ -72,7 +109,7 @@ const GROUP_EVENTS = [
     ),
     desc: (
       <>
-        <span className="block text-[14px] font-black uppercase tracking-tight text-[#0b2140] mb-2">In partnership with Startup Singam, Startup Singam Junior is a two-day startup pitching competition that gives young entrepreneurs the opportunity to take their ideas from the first pitch to the investor stage.</span>
+        <span className="block text-l font-black uppercase tracking-tight text-[#0b2140] mb-2">In partnership with Startup Singam, Startup Singam Junior is a two-day startup pitching competition that gives young entrepreneurs the opportunity to take their ideas from the first pitch to the investor stage.</span>
         <span className="block mt-3 font-bold text-black/90">Day 1 - Prelims</span>
         <span className="block mt-1 text-black/75">
           Participants will pitch their startup ideas before a preliminary jury, presenting their problem statement, solution, business model, market opportunity and growth potential. Based on their pitch and overall potential, the strongest teams will be shortlisted for the grand finale.
@@ -81,10 +118,10 @@ const GROUP_EVENTS = [
         <span className="block mt-1 text-black/75">
           The shortlisted teams will pitch their startups directly in front of a distinguished panel of investors, presenting their ventures, answering investor questions and making their case for why their startup deserves attention and opportunity.
         </span>
-        <div className="mt-5 p-4" style={{ background: '#f8fafc', borderLeft: '4px solid #0b2140' }}>
-          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-[13px]">Startup Singam Junior</span>
-          <span className="block text-[12px] font-bold text-black/70 mt-1">From the first pitch to the investor room.</span>
-          <span className="block text-[11px] italic text-black/60 mt-1">This is where young founders take their ideas one step closer to becoming real ventures.</span>
+        <div className="mt-6 p-6" style={{ background: '#f8fafc', borderLeft: '6px solid #0b2140' }}>
+          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-lg">Startup Singam Junior</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">From the first pitch to the investor room.</span>
+          <span className="block text-[14px] italic text-black/60 mt-2">This is where young founders take their ideas one step closer to becoming real ventures.</span>
         </div>
       </>
     ),
@@ -99,10 +136,30 @@ const GROUP_EVENTS = [
     ],
 
     coverImage: singamposter,
-    posters: [hackathonRulesPoster],
+    posters: [singamRulesPoster],
   },
   {
-    id: 'scale-up-studios', name: 'ScaleUp Studios', limit: 'Limit 3', desc: 'Hema Solraaaa',
+    id: 'scale-up-studio', name: 'ScaleUp Studio', limit: 'Limit 3',
+    cardDesc: 'Teams will select an existing Indian brand and take on the challenge of reimagining it for a new generation.',
+    desc: (
+      <>
+        <span className="block text-xl font-black uppercase tracking-tight text-[#0b2140] mb-3">What if you could rethink a brand from the ground up?</span>
+        <span className="block mt-2 text-black/75">
+          In <strong>Scale Up Studio</strong>, teams will select an existing Indian brand and take on the challenge of reimagining it for a new generation.
+        </span>
+        <span className="block mt-2 text-black/75">
+          Participants will analyse the brand, identify opportunities for improvement and rework its identity, design, technical aspects and business strategy to create a fresh and relevant version of the brand.
+        </span>
+        <span className="block mt-2 text-black/75">
+          From rebranding and customer experience to product design, technology and business models, teams have the freedom to rethink how the brand could evolve in today's market.
+        </span>
+        <div className="mt-6 p-6" style={{ background: '#f8fafc', borderLeft: '6px solid #0b2140' }}>
+          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-lg">Scale Up Studio</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">Teams will present their reimagined brand and strategy to the jury.</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">Showcasing how their ideas can create a stronger, more relevant and future-ready business.</span>
+        </div>
+      </>
+    ),
     venue: 'TRP', day: 'Day 2', accent: '#0b2140', accentLight: '#e8f0ff',
     rules: [
       { title: '1. nee solu', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. A maximum of 3 members per team. Each team must register together prior to the event.' },
@@ -111,33 +168,9 @@ const GROUP_EVENTS = [
       { title: '4. Time Limit', body: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi. Each round will have a strict time limit. Incomplete submissions will be disqualified.' },
       { title: '5. Conduct', body: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa. Fair play is mandatory. Any disruption or unethical behavior results in immediate elimination.' },
     ],
-  },
-  {
-    id: 'rupees-to-reality', name: 'Rupees to Reality', limit: 'Limit 3',
-    cardDesc: 'Rupees to Reality challenges teams to turn an imaginary budget into a real-world solution.',
-    desc: (
-      <>
-        <span className="block text-[14px] font-black uppercase tracking-tight text-[#0b2140] mb-2">Rupees to Reality challenges teams to turn an imaginary budget into a real-world solution.</span>
-        <span className="block mt-2 text-black/75">
-          Teams will receive a virtual capital fund and a catalogue of Idea Lab equipment with their prices. Using only their given budget, they must choose their resources and design a project that addresses a real-world problem and aligns with one or more <strong>UN Sustainable Development Goals (SDGs)</strong>.
-        </span>
-        <span className="block mt-2 text-black/75">
-          The resources are not physically provided during the challenge. Teams will be judged on their idea, resource planning, creativity, uniqueness and feasibility.
-        </span>
-        <div className="mt-5 p-4" style={{ background: '#f8fafc', borderLeft: '4px solid #0b2140' }}>
-          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-[13px]">And the best part?</span>
-          <span className="block text-[12px] font-bold text-black/70 mt-1">The winning team gets the opportunity to bring their idea to life in the Idea Lab at Easwari Engineering College.</span>
-        </div>
-      </>
-    ),
-    venue: 'MBA Seminar Hall 1', day: 'Both Days', accent: '#0b2140', accentLight: '#e8f0ff',
-    rules: [
-      { title: '1. Team Size', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Teams of up to 3 members. All members must be present on both days of the event.' },
-      { title: '2. Materials', body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium. Only materials provided at the venue may be used. No external materials are allowed.' },
-      { title: '3. Build Time', body: 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis. Teams have a fixed window to construct their product from the given junk materials.' },
-      { title: '4. Presentation', body: 'Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit. Each team must present their creation explaining functionality and innovation to the judges.' },
-      { title: '5. Judging Criteria', body: 'Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus. Judged on creativity, structural integrity, utility, and presentation effectiveness.' },
-    ],
+
+    coverImage: scaleupPoster,
+    posters: [scaleupRulesPoster],
   },
 ];
 
@@ -184,7 +217,7 @@ const INDIVIDUAL_EVENTS = [
     cardDesc: 'You\'ll receive an illogical product on the spot and must pitch it convincingly using branding, storytelling and persuasion.',
     desc: (
       <>
-        <span className="block text-[14px] font-black uppercase tracking-tight text-[#a80d11] mb-2">Can you sell a product that makes absolutely no sense?</span>
+        <span className="block text-xl font-black uppercase tracking-tight text-[#a80d11] mb-3">Can you sell a product that makes absolutely no sense?</span>
         <span className="block mt-2 text-black/75">
           In this challenge, participants will be given an illogical or unconventional product and must create a convincing sales pitch to make it desirable to the audience.
         </span>
@@ -196,10 +229,10 @@ const INDIVIDUAL_EVENTS = [
           <li>Use branding, positioning and storytelling effectively</li>
           <li>Handle the challenge with spontaneity and confidence</li>
         </ul>
-        <div className="mt-5 p-4" style={{ background: '#fff0f0', borderLeft: '4px solid #a80d11' }}>
-          <span className="block font-black uppercase tracking-widest text-[#a80d11] text-[13px]">Illogical Marketing</span>
-          <span className="block text-[12px] font-bold text-black/70 mt-1">The product may be illogical.</span>
-          <span className="block text-[11px] italic text-black/60 mt-1">Your marketing strategy cannot be.</span>
+        <div className="mt-6 p-6" style={{ background: '#fff0f0', borderLeft: '6px solid #a80d11' }}>
+          <span className="block font-black uppercase tracking-widest text-[#a80d11] text-lg">Illogical Marketing</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">The product may be illogical.</span>
+          <span className="block text-[14px] italic text-black/60 mt-2">Your marketing strategy cannot be.</span>
         </div>
       </>
     ),
@@ -213,7 +246,27 @@ const INDIVIDUAL_EVENTS = [
     ],
   },
   {
-    id: 'bootcamp', name: 'Bootcamp', desc: 'Hema Solraaaa',
+    id: 'bootcamp', name: 'Design Thinking Bootcamp',
+    cardDesc: 'A hands-on session designed for students and aspiring entrepreneurs who want to transform their ideas into real, user-focused solutions.',
+    desc: (
+      <>
+        <span className="block text-xl font-black uppercase tracking-tight text-[#a80d11] mb-3">Have an idea for a startup but aren't sure where to start?</span>
+        <span className="block mt-2 text-black/75">
+          The <strong>Design Thinking Bootcamp</strong> is a hands-on session designed for students and aspiring entrepreneurs who want to transform their ideas into real, user-focused solutions.
+        </span>
+        <span className="block mt-2 text-black/75">
+          Led by Lavanya G, an experienced entrepreneurship enabler, innovation coach and strategic advisor, the bootcamp will guide participants through the fundamentals of design thinking, problem identification, user understanding, ideation, validation and solution development.
+        </span>
+        <span className="block mt-2 text-black/75">
+          Rather than simply teaching entrepreneurship, the session will help participants think like founders - understand the problem before building the solution, challenge assumptions, identify real user needs and explore whether an idea can become a meaningful venture.
+        </span>
+        <div className="mt-6 p-6" style={{ background: '#fff0f0', borderLeft: '6px solid #a80d11' }}>
+          <span className="block font-black uppercase tracking-widest text-[#a80d11] text-lg">Design Thinking Bootcamp</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">Whether you already have a startup idea or simply have a problem you want to solve.</span>
+          <span className="block text-[14px] italic text-black/60 mt-2">This bootcamp will give you the frameworks and guidance to take your first step.</span>
+        </div>
+      </>
+    ),
     venue: 'MBA Seminar Hall 2', day: 'Both Days', accent: '#a80d11', accentLight: '#fff0f0',
     rules: [
       { title: '1. Attendance', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Full attendance on both days is mandatory. Partial attendance will result in disqualification from certification.' },
@@ -222,6 +275,10 @@ const INDIVIDUAL_EVENTS = [
       { title: '4. Assignments', body: 'Nam libero tempore cum soluta nobis est eligendi optio cumque nihil impedit. Mini-assignments will be given at the end of each session. Completion is required for certification.' },
       { title: '5. Conduct', body: 'Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe. Maintain decorum in the hall. Disruptive behavior may lead to removal from the bootcamp.' },
     ],
+
+    coverImage: bootcampPoster,
+    posters: [null],
+
   },
 ];
 
@@ -533,10 +590,11 @@ const SpeakerCard = ({ speaker, accent, accentLight, index }) => (
 /* ── Panel Discussion Data ─────────────────────────────────────────────── */
 const PANEL_DATA = [
   {
-    id: 'panel-1',
+    id: 'd1p1',
+    day: 'day1',
     label: 'Panel 1',
-    topic: 'The Future of Startup Ecosystems in India',
-    about: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+    topic: 'From Participation to Power: Reimagining the Role of Women in India’s Entrepreneurial Economy',
+    about: 'A conversation on how women are moving beyond participation to leadership, ownership, and decision-making across India’s startup ecosystem. The session explores the barriers, opportunities, networks, and support systems shaping the next generation of women entrepreneurs.',
     guests: [
       { id: 'p1g1', name: 'Guest 01', role: 'CEO, StartupX', photo: null },
       { id: 'p1g2', name: 'Guest 02', role: 'VC Partner', photo: null },
@@ -546,10 +604,11 @@ const PANEL_DATA = [
     ],
   },
   {
-    id: 'panel-2',
+    id: 'd1p2',
+    day: 'day1',
     label: 'Panel 2',
-    topic: 'Funding in the Age of AI & Deep Tech',
-    about: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet consectetur.',
+    topic: 'The New Industrial Revolution: Where Startups, Manufacturing & EmergingTechnologies Converge',
+    about: 'A deep dive into how AI, robotics, semiconductors, automation, and advanced manufacturing are transforming India’s industrial landscape. Industry leaders and founders explore how technology-driven startups can build globally competitive products and reshape the future of manufacturing.',
     guests: [
       { id: 'p2g1', name: 'Guest 01', role: 'AI Researcher', photo: null },
       { id: 'p2g2', name: 'Guest 02', role: 'Deep Tech VC', photo: null },
@@ -559,10 +618,11 @@ const PANEL_DATA = [
     ],
   },
   {
-    id: 'panel-3',
-    label: 'Panel 3',
-    topic: 'Building Sustainable Businesses from Day Zero',
-    about: 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi id est laborum et dolorum fuga.',
+    id: 'd2p1',
+    day: 'day2',
+    label: 'Panel 1',
+    topic: 'Beyond the Metros Building Companies, Capabilities & Capital Across the Next Generation of Indian Cities',
+    about: 'A conversation on the rise of entrepreneurial ecosystems beyond India’s traditional startup hubs, where regional talent, MSMEs, and emerging founders are building ambitious companies. The session explores how access to capital, incubation, infrastructure, and local networks can unlock the potential of Tier-2 and Tier-3 cities.',
     guests: [
       { id: 'p3g1', name: 'Guest 01', role: 'Impact Founder', photo: null },
       { id: 'p3g2', name: 'Guest 02', role: 'ESG Consultant', photo: null },
@@ -572,29 +632,17 @@ const PANEL_DATA = [
     ],
   },
   {
-    id: 'panel-4',
-    label: 'Panel 4',
-    topic: 'Scaling from 0 to 1 Million Users',
-    about: 'Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint molestiae.',
+    id: 'd2p2',
+    day: 'day2',
+    label: 'Panel 2',
+    topic: 'The Road to Investment: How Investor Interest Becomes Conviction, Commitment & Capital',
+    about: 'What makes an investor move from noticing a startup to believing in its potential and committing capital? Founders and investors unpack the journey from first conversation to due diligence, conviction, deal-making, and long-term partnership.',
     guests: [
       { id: 'p4g1', name: 'Guest 01', role: 'Growth Hacker', photo: null },
       { id: 'p4g2', name: 'Guest 02', role: 'CMO, ScaleUp', photo: null },
       { id: 'p4g3', name: 'Guest 03', role: 'Product Manager', photo: null },
       { id: 'p4g4', name: 'Guest 04', role: 'Community Lead', photo: null },
       { id: 'p4g5', name: 'Guest 05', role: 'Retention Expert', photo: null },
-    ],
-  },
-  {
-    id: 'panel-5',
-    label: 'Panel 5',
-    topic: 'Leadership & Culture in High-Growth Teams',
-    about: 'Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur vel illum dolorem eum fugiat quo voluptas nulla pariatur. Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit.',
-    guests: [
-      { id: 'p5g1', name: 'Guest 01', role: 'Exec Coach', photo: null },
-      { id: 'p5g2', name: 'Guest 02', role: 'HR Director', photo: null },
-      { id: 'p5g3', name: 'Guest 03', role: 'Culture Strategist', photo: null },
-      { id: 'p5g4', name: 'Guest 04', role: 'Founder & CEO', photo: null },
-      { id: 'p5g5', name: 'Guest 05', role: 'Leadership Coach', photo: null },
     ],
   },
 ];
@@ -615,7 +663,7 @@ const PanelGuestPortrait = ({ guest, accent, accentLight }) => (
       style={{
         width: '100%',
         aspectRatio: '1',
-        maxWidth: 140,
+        maxWidth: 220,
         border: `3px solid ${accent}`,
         background: accentLight,
         overflow: 'hidden',
@@ -631,14 +679,14 @@ const PanelGuestPortrait = ({ guest, accent, accentLight }) => (
       <div style={{
         position: 'absolute', top: 0, right: 0,
         width: 0, height: 0,
-        borderTop: `24px solid ${accent}`,
-        borderLeft: '24px solid transparent',
+        borderTop: `30px solid ${accent}`,
+        borderLeft: '30px solid transparent',
       }} />
       {guest.photo ? (
         <img src={guest.photo} alt={guest.name}
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', display: 'block' }} />
       ) : (
-        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+        <svg width="80" height="80" viewBox="0 0 56 56" fill="none">
           <circle cx="28" cy="20" r="13" fill={accent} opacity="0.45" />
           <ellipse cx="28" cy="46" rx="20" ry="11" fill={accent} opacity="0.25" />
         </svg>
@@ -661,8 +709,12 @@ const PanelGuestPortrait = ({ guest, accent, accentLight }) => (
 
 /* ── Panel Discussion Modal ───────────────────────────────────────────── */
 const PanelDiscussionModal = ({ evt, onClose, onRegister }) => {
-  const [activePanel, setActivePanel] = useState(0);
-  const panel = PANEL_DATA[activePanel];
+  const [activeDay, setActiveDay] = useState('day1');
+  const [activePanelIdx, setActivePanelIdx] = useState(0);
+
+  const filteredPanels = PANEL_DATA.filter(p => p.day === activeDay);
+  const panel = filteredPanels[activePanelIdx] || filteredPanels[0];
+
   const accent = evt.accent;
   const accentLight = evt.accentLight;
 
@@ -681,9 +733,11 @@ const PanelDiscussionModal = ({ evt, onClose, onRegister }) => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 44, scale: 0.96 }}
           transition={{ type: 'spring', damping: 24, stiffness: 280 }}
-          className="relative flex flex-col w-full max-w-6xl"
+          className="relative flex flex-col w-full"
           style={{
-            maxHeight: '94vh',
+            maxWidth: '1300px',
+            minHeight: '78vh',
+            maxHeight: '100vh',
             background: '#fff',
             border: '3px solid #111',
             boxShadow: '12px 12px 0px #111',
@@ -699,18 +753,7 @@ const PanelDiscussionModal = ({ evt, onClose, onRegister }) => {
             style={{ borderBottom: '3px solid #111', flexShrink: 0 }}
           >
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center p-2"
-                style={{ border: `2px solid ${accent}`, background: accentLight }}>
-                {/* Mic SVG */}
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="3" />
-                  <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
-                </svg>
-              </div>
               <div>
-                <p className="text-[9px] font-black uppercase tracking-[0.22em] mb-0.5" style={{ color: accent }}>
-                  💬 Panel Discussion · Day 1
-                </p>
                 <h2 className="text-2xl font-black uppercase tracking-tighter text-black leading-none">
                   {evt.name}
                 </h2>
@@ -727,25 +770,57 @@ const PanelDiscussionModal = ({ evt, onClose, onRegister }) => {
             </button>
           </div>
 
-          {/* Panel Tabs */}
-          <div className="flex items-center px-7 pt-5 pb-0 gap-2" style={{ flexShrink: 0, flexWrap: 'wrap' }}>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40 mr-3">Select Panel:</p>
-            {PANEL_DATA.map((p, i) => (
+          {/* Day Tabs */}
+          <div
+            className="flex items-center gap-0 px-7 pt-5 pb-0"
+            style={{ flexShrink: 0 }}
+          >
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40 mr-4">
+              Select Day:
+            </p>
+            {['day1', 'day2'].map(day => (
               <button
-                key={p.id}
-                onClick={() => setActivePanel(i)}
-                className="font-black uppercase text-[11px] tracking-widest px-5 py-2 transition-all"
+                key={day}
+                onClick={() => { setActiveDay(day); setActivePanelIdx(0); }}
+                className="font-black uppercase text-[11px] tracking-widest px-6 py-2.5 mr-2 transition-all"
                 style={{
-                  background: activePanel === i ? accent : '#fff',
-                  color: activePanel === i ? '#fff' : '#111',
-                  border: `2.5px solid ${activePanel === i ? accent : '#111'}`,
-                  boxShadow: activePanel === i ? `4px 4px 0 #111` : '2px 2px 0 #ccc',
-                  transform: activePanel === i ? 'translate(-1px,-1px)' : 'translate(0,0)',
+                  background: activeDay === day ? evt.accent : '#fff',
+                  color: activeDay === day ? '#fff' : '#111',
+                  border: `2.5px solid ${activeDay === day ? evt.accent : '#111'}`,
+                  boxShadow: activeDay === day ? `4px 4px 0 #111` : '2px 2px 0 #ccc',
+                  transform: activeDay === day ? 'translate(-1px,-1px)' : 'translate(0,0)',
                 }}
               >
-                {p.label}
+                {day === 'day1' ? 'Day 1' : 'Day 2'}
               </button>
             ))}
+          </div>
+
+          {/* Panel Title & Navigation */}
+          <div className="flex items-center justify-between px-7 pt-7 pb-2" style={{ flexShrink: 0 }}>
+            <h1 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900, textTransform: 'uppercase', color: accent, lineHeight: 1, margin: 0, letterSpacing: '-0.02em' }}>
+              {panel.label}
+            </h1>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setActivePanelIdx(prev => (prev > 0 ? prev - 1 : filteredPanels.length - 1))}
+                className="flex items-center justify-center transition-all"
+                style={{ width: 44, height: 44, background: '#fff', border: '3px solid #111', boxShadow: '4px 4px 0 #111' }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translate(-2px, -2px)'; e.currentTarget.style.boxShadow = '6px 6px 0 #111'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translate(0, 0)'; e.currentTarget.style.boxShadow = '4px 4px 0 #111'; }}
+              >
+                <ArrowLeft size={20} color="#111" strokeWidth={3} />
+              </button>
+              <button
+                onClick={() => setActivePanelIdx(prev => (prev < filteredPanels.length - 1 ? prev + 1 : 0))}
+                className="flex items-center justify-center transition-all"
+                style={{ width: 44, height: 44, background: '#111', border: '3px solid #111', boxShadow: '4px 4px 0 #111' }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translate(-2px, -2px)'; e.currentTarget.style.boxShadow = '6px 6px 0 #111'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translate(0, 0)'; e.currentTarget.style.boxShadow = '4px 4px 0 #111'; }}
+              >
+                <ArrowRight size={20} color="#fff" strokeWidth={3} />
+              </button>
+            </div>
           </div>
 
           {/* Scrollable Body */}
@@ -758,36 +833,9 @@ const PanelDiscussionModal = ({ evt, onClose, onRegister }) => {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.22 }}
               >
-                {/* Panel header badge */}
-                <div className="flex items-center gap-3 mb-6" style={{ borderBottom: '2px dashed #ddd', paddingBottom: 16 }}>
-                  <div
-                    style={{ background: accent, border: '2px solid #111', boxShadow: '3px 3px 0 #111', padding: '4px 14px', display: 'inline-flex', alignItems: 'center' }}
-                  >
-                    <span className="text-white font-black uppercase tracking-[0.3em] text-[11px]">{panel.label}</span>
-                  </div>
-                  <p className="text-[11px] font-bold text-black/50 uppercase tracking-widest">5 Guests · Panel Discussion</p>
-                </div>
-
-                {/* 5 Guests in a row */}
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: 16,
-                    marginBottom: 36,
-                    padding: '20px 20px 24px',
-                    border: '3px solid #111',
-                    borderTop: `5px solid ${accent}`,
-                    background: accentLight,
-                    boxShadow: '6px 6px 0 #111',
-                  }}
-                >
-                  {panel.guests.map(g => (
-                    <PanelGuestPortrait key={g.id} guest={g} accent={accent} accentLight="#fff" />
-                  ))}
-                </div>
 
                 {/* Panel topic - large text */}
-                <div style={{ marginBottom: 20 }}>
+                <div style={{ marginBottom: 36 }}>
                   <p
                     className="text-[10px] font-black uppercase tracking-[0.25em] mb-2 flex items-center gap-2"
                     style={{ color: accent }}
@@ -812,6 +860,24 @@ const PanelDiscussionModal = ({ evt, onClose, onRegister }) => {
                   </h3>
                 </div>
 
+                {/* 5 Guests in a row */}
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: 16,
+                    marginBottom: 36,
+                    padding: '20px 20px 24px',
+                    border: '3px solid #111',
+                    borderTop: `5px solid ${accent}`,
+                    background: accentLight,
+                    boxShadow: '6px 6px 0 #111',
+                  }}
+                >
+                  {panel.guests.map(g => (
+                    <PanelGuestPortrait key={g.id} guest={g} accent={accent} accentLight="#fff" />
+                  ))}
+                </div>
+
                 {/* About the panel */}
                 <div
                   style={{
@@ -828,7 +894,7 @@ const PanelDiscussionModal = ({ evt, onClose, onRegister }) => {
                   >
                     About this Panel
                   </p>
-                  <p style={{ fontSize: 15, fontWeight: 500, color: 'rgba(0,0,0,0.62)', lineHeight: 1.85, margin: 0 }}>
+                  <p style={{ fontSize: 17, fontWeight: 600, color: 'rgba(0,0,0,0.82)', lineHeight: 1.85, margin: 0 }}>
                     {panel.about}
                   </p>
                 </div>
@@ -983,12 +1049,12 @@ const PodcastLearnMoreModal = ({ evt, onClose, onRegister }) => {
               }}
             >
               <p
-                className="text-[10px] font-black uppercase tracking-[0.22em] mb-3"
+                className="text-lg font-black uppercase tracking-[0.22em] mb-4"
                 style={{ color: evt.accent }}
               >
                 Event Overview
               </p>
-              <div style={{ fontSize: 15, fontWeight: 500, color: 'rgba(0,0,0,0.62)', lineHeight: 1.85, margin: 0 }}>
+              <div style={{ fontSize: 18, fontWeight: 500, color: 'rgba(0,0,0,0.62)', lineHeight: 1.85, margin: 0 }}>
                 <span className="block font-bold text-black/90 mb-2">What really happens behind the success story?</span>
                 <span className="block mb-2">
                   Hear directly from successful founders from Tamil Nadu as they share their entrepreneurial journeys — the risks they took, the failures they faced, the decisions that changed everything, and what they did differently to build their ventures.
@@ -1179,11 +1245,11 @@ const LearnMoreModal = ({ evt, isGroup, onClose, onRegister }) => {
                   boxShadow: '4px 4px 0 #e0e0e0',
                 }}
               >
-                <h4 className="text-[11px] font-black uppercase tracking-[0.25em] mb-3 flex items-center gap-2" style={{ color: evt.accent }}>
-                  <span className="inline-block w-5 h-[2.5px]" style={{ background: evt.accent }} />
+                <h4 className="text-lg font-black uppercase tracking-[0.25em] mb-4 flex items-center gap-2" style={{ color: evt.accent }}>
+                  <span className="inline-block w-6 h-[3px]" style={{ background: evt.accent }} />
                   Event Overview
                 </h4>
-                <div className="text-[14px] font-medium text-black/80 leading-relaxed">
+                <div className="text-[18px] font-medium text-black/80 leading-relaxed">
                   {evt.desc}
                 </div>
               </div>
