@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Zap, Users, User, AlertCircle, MapPin, Calendar, ArrowRight, X, BookOpen, ChevronRight, ChevronLeft } from 'lucide-react';
@@ -7,7 +7,9 @@ import EventRegistrationModal from './EventRegistrationModal';
 import HackathonModal from './HackathonModal';
 import AuthModal from './AuthModal';
 import RegistrationForm from './RegistrationForm';
-import hackathonRulesPoster from '../assets/hackathon_rules_poster.jpg';
+import hackathonRulesPoster from '../assets/rules11.png';
+import hackathonPoster from '../assets/hackathon_cover.png';
+import singamposter from '../assets/singam_cover.png';
 
 const GROUP_EVENTS = [
   {
@@ -56,6 +58,7 @@ const GROUP_EVENTS = [
     ],
     // Add poster image paths here when ready:
     // posters: [hackathonPoster, hackathonRulesPoster],
+    coverImage: hackathonPoster,
     posters: [hackathonRulesPoster],
   },
   {
@@ -69,12 +72,23 @@ const GROUP_EVENTS = [
     ),
     desc: (
       <>
-        <span>In partnership with <strong>Startup Singam</strong>, this is a <strong>two-day startup pitching competition</strong> for young entrepreneurs.</span>
-        <span className="block mt-2 text-black/75"><strong>Day 1 — Prelims:</strong> Pitch before a preliminary jury and get shortlisted.</span>
-        <span className="block mt-1 text-black/75"><strong>Day 2 — Grand Finale:</strong> Present directly to a distinguished panel of investors.</span>
+        <span className="block text-[14px] font-black uppercase tracking-tight text-[#0b2140] mb-2">In partnership with Startup Singam, Startup Singam Junior is a two-day startup pitching competition that gives young entrepreneurs the opportunity to take their ideas from the first pitch to the investor stage.</span>
+        <span className="block mt-3 font-bold text-black/90">Day 1 - Prelims</span>
+        <span className="block mt-1 text-black/75">
+          Participants will pitch their startup ideas before a preliminary jury, presenting their problem statement, solution, business model, market opportunity and growth potential. Based on their pitch and overall potential, the strongest teams will be shortlisted for the grand finale.
+        </span>
+        <span className="block mt-3 font-bold text-black/90">Day 2 - Grand Finale</span>
+        <span className="block mt-1 text-black/75">
+          The shortlisted teams will pitch their startups directly in front of a distinguished panel of investors, presenting their ventures, answering investor questions and making their case for why their startup deserves attention and opportunity.
+        </span>
+        <div className="mt-5 p-4" style={{ background: '#f8fafc', borderLeft: '4px solid #0b2140' }}>
+          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-[13px]">Startup Singam Junior</span>
+          <span className="block text-[12px] font-bold text-black/70 mt-1">From the first pitch to the investor room.</span>
+          <span className="block text-[11px] italic text-black/60 mt-1">This is where young founders take their ideas one step closer to becoming real ventures.</span>
+        </div>
       </>
     ),
-    venue: 'Civil Block 3rd Floor - Computer labs', day: 'Day 1 & 2', accent: '#0b2140', accentLight: '#e8f0ff',
+    venue: 'Civil Block 3rd Floor', day: 'Day 1 & 2', accent: '#0b2140', accentLight: '#e8f0ff',
     rules: [
       { title: '1. Team Size', body: 'Each team can have a maximum of 5 members.' },
       { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
@@ -83,9 +97,12 @@ const GROUP_EVENTS = [
       { title: '5. Finale Eligibility', body: 'Only teams selected from the prelims will be eligible to present in the finale. All teams must adhere to the presentation time allotted by the organizing committee.' },
       { title: '6. Code of Conduct', body: 'Any form of unfair practice or copied work will lead to immediate disqualification. The judges’ decision will be final and will not be open to discussion.' },
     ],
+
+    coverImage: singamposter,
+    posters: [hackathonRulesPoster],
   },
   {
-    id: 'phoenix-protocol', name: 'Phoenix Protocol', limit: 'Limit 3', desc: 'Hema Solraaaa',
+    id: 'scale-up-studios', name: 'ScaleUp Studios', limit: 'Limit 3', desc: 'Hema Solraaaa',
     venue: 'TRP', day: 'Day 2', accent: '#0b2140', accentLight: '#e8f0ff',
     rules: [
       { title: '1. nee solu', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. A maximum of 3 members per team. Each team must register together prior to the event.' },
@@ -96,7 +113,23 @@ const GROUP_EVENTS = [
     ],
   },
   {
-    id: 'junk-to-genius', name: 'Junk to Genius', limit: 'Limit 3', desc: 'Hema Solraaaa',
+    id: 'rupees-to-reality', name: 'Rupees to Reality', limit: 'Limit 3',
+    cardDesc: 'Rupees to Reality challenges teams to turn an imaginary budget into a real-world solution.',
+    desc: (
+      <>
+        <span className="block text-[14px] font-black uppercase tracking-tight text-[#0b2140] mb-2">Rupees to Reality challenges teams to turn an imaginary budget into a real-world solution.</span>
+        <span className="block mt-2 text-black/75">
+          Teams will receive a virtual capital fund and a catalogue of Idea Lab equipment with their prices. Using only their given budget, they must choose their resources and design a project that addresses a real-world problem and aligns with one or more <strong>UN Sustainable Development Goals (SDGs)</strong>.
+        </span>
+        <span className="block mt-2 text-black/75">
+          The resources are not physically provided during the challenge. Teams will be judged on their idea, resource planning, creativity, uniqueness and feasibility.
+        </span>
+        <div className="mt-5 p-4" style={{ background: '#f8fafc', borderLeft: '4px solid #0b2140' }}>
+          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-[13px]">And the best part?</span>
+          <span className="block text-[12px] font-bold text-black/70 mt-1">The winning team gets the opportunity to bring their idea to life in the Idea Lab at Easwari Engineering College.</span>
+        </div>
+      </>
+    ),
     venue: 'MBA Seminar Hall 1', day: 'Both Days', accent: '#0b2140', accentLight: '#e8f0ff',
     rules: [
       { title: '1. Team Size', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Teams of up to 3 members. All members must be present on both days of the event.' },
@@ -151,9 +184,23 @@ const INDIVIDUAL_EVENTS = [
     cardDesc: 'You\'ll receive an illogical product on the spot and must pitch it convincingly using branding, storytelling and persuasion.',
     desc: (
       <>
-        <span><strong>Can you sell a product that makes absolutely no sense?</strong></span>
-        <span className="block mt-2">You'll receive an illogical product on the spot and must pitch it convincingly — using <strong>branding, storytelling and persuasion</strong>.</span>
-        <span className="block mt-2 text-black/75 italic">The product may be illogical. Your marketing strategy cannot be.</span>
+        <span className="block text-[14px] font-black uppercase tracking-tight text-[#a80d11] mb-2">Can you sell a product that makes absolutely no sense?</span>
+        <span className="block mt-2 text-black/75">
+          In this challenge, participants will be given an illogical or unconventional product and must create a convincing sales pitch to make it desirable to the audience.
+        </span>
+        <span className="block mt-3 font-bold text-black/90">Participants will be evaluated on their ability to:</span>
+        <ul className="list-disc pl-5 mt-1 text-black/75 space-y-1">
+          <li>Understand the product and target audience</li>
+          <li>Present a convincing sales pitch</li>
+          <li>Demonstrate communication and persuasion skills</li>
+          <li>Use branding, positioning and storytelling effectively</li>
+          <li>Handle the challenge with spontaneity and confidence</li>
+        </ul>
+        <div className="mt-5 p-4" style={{ background: '#fff0f0', borderLeft: '4px solid #a80d11' }}>
+          <span className="block font-black uppercase tracking-widest text-[#a80d11] text-[13px]">Illogical Marketing</span>
+          <span className="block text-[12px] font-bold text-black/70 mt-1">The product may be illogical.</span>
+          <span className="block text-[11px] italic text-black/60 mt-1">Your marketing strategy cannot be.</span>
+        </div>
       </>
     ),
     venue: 'Hi-Tech Hall 2', day: 'Day 1', accent: '#a80d11', accentLight: '#fff0f0',
@@ -872,7 +919,7 @@ const PodcastLearnMoreModal = ({ evt, onClose, onRegister }) => {
                   className="text-[9px] font-black uppercase tracking-[0.22em] mb-0.5"
                   style={{ color: evt.accent }}
                 >
-                  🎙️ Live Podcast · Both Days
+                  🎙️ Live Podcast
                 </p>
                 <h2 className="text-2xl font-black uppercase tracking-tighter text-black leading-none">
                   {evt.name}
@@ -924,20 +971,43 @@ const PodcastLearnMoreModal = ({ evt, onClose, onRegister }) => {
 
           {/* Scrollable Body */}
           <div className="flex-1 overflow-y-auto px-7 py-6" style={{ overflowY: 'auto' }}>
-            {/* Day label */}
-            <div className="flex items-center gap-3 mb-5" style={{ borderBottom: '2px dashed #ddd', paddingBottom: '16px' }}>
-              <div
-                className="flex items-center justify-center px-4 py-1.5"
-                style={{ background: evt.accent, border: '2px solid #111', boxShadow: '3px 3px 0 #111' }}
+            {/* Event Overview */}
+            <div
+              className="mb-8"
+              style={{
+                padding: '20px 24px',
+                border: '2px solid #e5e5e5',
+                borderLeft: `5px solid ${evt.accent}`,
+                background: '#fafafa',
+                boxShadow: '4px 4px 0 #e5e5e5',
+              }}
+            >
+              <p
+                className="text-[10px] font-black uppercase tracking-[0.22em] mb-3"
+                style={{ color: evt.accent }}
               >
-                <span className="text-white font-black uppercase tracking-[0.3em] text-[11px]">
-                  {activeDay === 'day1' ? 'DAY 1' : 'DAY 2'}
+                Event Overview
+              </p>
+              <div style={{ fontSize: 15, fontWeight: 500, color: 'rgba(0,0,0,0.62)', lineHeight: 1.85, margin: 0 }}>
+                <span className="block font-bold text-black/90 mb-2">What really happens behind the success story?</span>
+                <span className="block mb-2">
+                  Hear directly from successful founders from Tamil Nadu as they share their entrepreneurial journeys — the risks they took, the failures they faced, the decisions that changed everything, and what they did differently to build their ventures.
+                </span>
+                <span className="block mb-3">
+                  An honest, unfiltered conversation beyond the usual success stories, giving the audience a real look into what it takes to build, fail, adapt and grow a startup.
+                </span>
+                <span className="block italic text-black/75 mb-4">
+                  No scripts. No filters. Just real founder stories.
+                </span>
+                <span
+                  className="inline-block font-black uppercase text-[11px] tracking-[0.2em]"
+                  style={{ background: evt.accentLight, color: evt.accent, border: `2px solid ${evt.accent}`, padding: '4px 10px' }}
+                >
+                  Join Live
                 </span>
               </div>
-              <p className="text-[11px] font-bold text-black/50 uppercase tracking-widest">
-                {activeDay === 'day1' ? 'Speakers & Guests' : 'Speakers & Guests'} · {speakers.length} Sessions
-              </p>
             </div>
+
 
             {/* Speakers section label */}
             <h3
@@ -1113,9 +1183,9 @@ const LearnMoreModal = ({ evt, isGroup, onClose, onRegister }) => {
                   <span className="inline-block w-5 h-[2.5px]" style={{ background: evt.accent }} />
                   Event Overview
                 </h4>
-                <p className="text-[14px] font-medium text-black/80 leading-relaxed">
+                <div className="text-[14px] font-medium text-black/80 leading-relaxed">
                   {evt.desc}
-                </p>
+                </div>
               </div>
             </div>
 
@@ -1250,8 +1320,8 @@ const EventCard = ({ evt, idx, onRegister, isGroup, onLoginRequest }) => {
   );
 };
 
-const SectionHeader = ({ icon: Icon, label, accent }) => (
-  <div className="flex items-end gap-4 mb-8">
+const SectionHeader = ({ icon: Icon, label, accent, className = "mb-8" }) => (
+  <div className={`flex items-end gap-4 ${className}`}>
     <div className="relative">
       <div
         className="absolute inset-0 -z-10"
@@ -1270,9 +1340,165 @@ const SectionHeader = ({ icon: Icon, label, accent }) => (
   </div>
 );
 
+const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister, isGroup }) => {
+  const [current, setCurrent] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [showLearnMore, setShowLearnMore] = useState(false);
+
+  const next = () => {
+    setDirection(1);
+    setCurrent((p) => (p + 1) % events.length);
+  };
+
+  const prev = () => {
+    setDirection(-1);
+    setCurrent((p) => (p - 1 + events.length) % events.length);
+  };
+
+  const slideVariants = {
+    enter: (dir) => ({ x: dir > 0 ? '100%' : '-100%', opacity: 1 }),
+    center: { x: 0, opacity: 1, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+    exit: (dir) => ({ x: dir > 0 ? '-100%' : '100%', opacity: 1, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }),
+  };
+
+  const event = events[current];
+
+  return (
+    <div className="mb-16">
+      {/* Section Header & Arrows */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 md:mb-8 gap-4">
+        <SectionHeader icon={Icon} label={label} accent={accent} className="mb-0" />
+
+        {/* Navigation Arrows for Slideshow */}
+        <div className="flex gap-2 md:gap-4 z-10">
+          <button
+            onClick={prev}
+            className="w-10 h-10 md:w-14 md:h-14 border-4 border-black bg-white hover:bg-black hover:text-white flex items-center justify-center transition-all duration-200 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1"
+          >
+            <ArrowLeft className="w-4 h-4 md:w-6 md:h-6" />
+          </button>
+          <button
+            onClick={next}
+            className="w-10 h-10 md:w-14 md:h-14 border-4 border-black bg-black text-white hover:bg-[#a80d11] hover:border-[#a80d11] flex items-center justify-center transition-all duration-200 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1"
+          >
+            <ArrowRight className="w-4 h-4 md:w-6 md:h-6" />
+          </button>
+        </div>
+      </div>
+
+      <div className="w-full flex justify-center">
+        <div
+          className="relative w-full max-w-[95%] xl:max-w-6xl h-[450px] md:h-[600px] lg:h-[600px] bg-gray-200 overflow-hidden border-4 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_rgba(0,0,0,1)] group cursor-pointer"
+          onClick={() => setShowLearnMore(true)}
+        >
+          <AnimatePresence initial={false} custom={direction}>
+            <motion.div
+              key={current}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              className="absolute inset-0 w-full h-full"
+            >
+              {/* Event poster/image */}
+              {event.coverImage ? (
+                <img
+                  src={event.coverImage}
+                  alt={event.name}
+                  className="w-full h-full object-cover absolute inset-0"
+                  style={{ objectPosition: 'center top' }}
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: event.accentLight }}>
+                  {/* Background pattern */}
+                  <div className="w-full h-full opacity-30"
+                    style={{
+                      backgroundImage: 'repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 0, transparent 50%)',
+                      backgroundSize: '20px 20px'
+                    }}
+                  />
+                  <p className="absolute font-black text-4xl text-black/20 uppercase tracking-widest text-center px-4">{event.name}</p>
+                </div>
+              )}
+
+
+              {/* Badges top left */}
+              <div className="absolute top-0 left-0 p-6 flex flex-wrap gap-2 z-10 pointer-events-none">
+                <span
+                  className="text-[11px] font-black uppercase tracking-[0.2em] px-3 py-1.5"
+                  style={{ background: event.accent, color: '#fff', border: `2px solid #111` }}
+                >
+                  {isGroup ? '👥 Team Event' : '👤 Individual'}
+                </span>
+                {event.limit && (
+                  <span className="text-[11px] font-black uppercase tracking-[0.2em] px-3 py-1.5 bg-white text-black border-2 border-black">
+                    {event.limit}
+                  </span>
+                )}
+              </div>
+
+              {/* Title and Description Overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 lg:p-12 text-white flex flex-col justify-end pointer-events-none">
+                <div className="flex flex-wrap items-center gap-3 mb-3 drop-shadow-md">
+                  <span className="flex items-center gap-3 text-[9px] sm:text-[11px] font-black uppercase tracking-widest px-2.5 py-1 bg-white text-black border-2 border-black">
+                    <MapPin size={12} strokeWidth={2.5} /> {event.venue}
+                  </span>
+                  <span className="flex items-center gap-3 text-[9px] sm:text-[11px] font-black uppercase tracking-widest px-2.5 py-1 bg-white text-black border-2 border-black">
+                    <Calendar size={12} strokeWidth={2.5} /> {event.day}
+                  </span>
+                </div>
+
+                <h3 className="text-2xl sm:text-4xl lg:text-5xl text-black font-black uppercase tracking-tighter leading-none drop-shadow-md">
+                  {event.id === 'shark-tank' ? (
+                    <>
+                      Startup Singam<br />
+                      <span style={{ paddingLeft: '0em' }}>Junior</span>
+                    </>
+                  ) : event.name}
+                </h3>
+
+                {/* Action Buttons (Learn More / Register) */}
+                <div className="mt-4 flex gap-3 pointer-events-auto">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setShowLearnMore(true); }}
+                    className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-5 py-2.5 bg-white text-black border-4 border-black hover:bg-gray-200 transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1"
+                  >
+                    Learn More <ChevronRight size={14} />
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onRegister(event); }}
+                    className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-5 py-2.5 text-white border-4 border-black hover:opacity-90 transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1"
+                    style={{ background: event.accent }}
+                  >
+                    Register <ArrowRight size={14} />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {showLearnMore && (
+        <LearnMoreModal
+          evt={event}
+          isGroup={isGroup}
+          onClose={() => setShowLearnMore(false)}
+          onRegister={onRegister}
+        />
+      )}
+    </div>
+  );
+};
+
 const EventsPage = () => {
   const navigate = useNavigate();
   const { user, registration } = useAuth();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showPaymentAlert, setShowPaymentAlert] = useState(false);
@@ -1298,7 +1524,11 @@ const EventsPage = () => {
   const closeModals = () => setSelectedEvent(null);
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 30 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className="w-full min-h-screen pb-32 px-4 sm:px-6 lg:px-24 pt-8"
     >
       {/* Header */}
@@ -1357,24 +1587,24 @@ const EventsPage = () => {
       </AnimatePresence>
 
       {/* Group Events */}
-      <div className="mb-16">
-        <SectionHeader icon={Users} label="Group Events" accent="#0b2140" />
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          {GROUP_EVENTS.map((evt, idx) => (
-            <EventCard key={evt.id} evt={evt} idx={idx} onRegister={handleRegisterClick} isGroup={true} onLoginRequest={() => setAuthModal({ open: true, pass: 'EVENT PASS', source: 'event-browse' })} />
-          ))}
-        </div>
-      </div>
+      <EventCategorySlideshow
+        events={GROUP_EVENTS}
+        label="Group Events"
+        icon={Users}
+        accent="#0b2140"
+        onRegister={handleRegisterClick}
+        isGroup={true}
+      />
 
       {/* Individual Events */}
-      <div className="mb-12">
-        <SectionHeader icon={User} label="Individual Events" accent="#a80d11" />
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          {INDIVIDUAL_EVENTS.map((evt, idx) => (
-            <EventCard key={evt.id} evt={evt} idx={idx} onRegister={handleRegisterClick} isGroup={false} onLoginRequest={() => setAuthModal({ open: true, pass: 'EVENT PASS', source: 'event-browse' })} />
-          ))}
-        </div>
-      </div>
+      <EventCategorySlideshow
+        events={INDIVIDUAL_EVENTS}
+        label="Individual Events"
+        icon={User}
+        accent="#a80d11"
+        onRegister={handleRegisterClick}
+        isGroup={false}
+      />
 
       {/* Modals */}
       {selectedEvent?.id === 'hackathon' && (
@@ -1406,7 +1636,7 @@ const EventsPage = () => {
           }}
         />
       )}
-    </div>
+    </motion.div>
   );
 };
 

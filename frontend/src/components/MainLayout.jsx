@@ -1825,9 +1825,7 @@ const MainLayout = () => {
                   To register for events, you need an{' '}
                   <span className="text-black font-black">Event Pass</span>.
                 </p>
-                <p className="font-bold text-gray-400 text-sm mb-8">
-                  Upgrade your pass to unlock registration access to all 22+ events.
-                </p>
+
                 <div className="flex flex-col gap-3">
                   <button
                     id="event-gate-view-passes"
