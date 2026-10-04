@@ -29,10 +29,9 @@ service cloud.firestore {
     }
 
     // ── /users ────────────────────────────────────────────────────────────────
-    // Users can read their own profile. Only backend (Admin SDK) can write.
+    // Users can read/write their own profile (temporarily opened for frontend Team logic).
     match /users/{uid} {
-      allow read: if isOwner(uid) || hasAdminClaim();
-      allow write: if false; // All writes go through the Express backend
+      allow read, write: if isOwner(uid) || hasAdminClaim();
     }
 
     // ── /events ───────────────────────────────────────────────────────────────
@@ -60,17 +59,14 @@ service cloud.firestore {
     }
 
     // ── /teams ────────────────────────────────────────────────────────────────
-    // Authenticated users can read teams (needed for team discovery/joining).
-    // All writes go through the backend to enforce business rules.
+    // Authenticated users can read/write teams (temporarily opened for frontend Team logic).
     match /teams/{teamId} {
-      allow read: if isAuthenticated();
-      allow write: if false;
+      allow read, write: if isAuthenticated();
     }
 
     // ── /team_members ─────────────────────────────────────────────────────────
     match /team_members/{memberId} {
-      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
-      allow write: if false;
+      allow read, write: if isAuthenticated();
     }
 
     // ── /tickets ──────────────────────────────────────────────────────────────

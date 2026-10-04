@@ -12,6 +12,7 @@ import {
   onSnapshot
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import api from '../utils/api';
 
 // ── Default Problem Statements Seed ──────────────────────────────────────────
 export const DEFAULT_PROBLEM_STATEMENTS = [
@@ -148,85 +149,11 @@ export async function getUserProfile(uid) {
 }
 
 /**
- * Create a new team in Firestore:
- * Writes to: `users`, `teams`, `team_members`
+ * Create a new team via Backend API:
  */
 export async function createTeamInFirestore(leaderUser, formData) {
-  const {
-    teamName,
-    college,
-    department,
-    problemStatement,
-    leaderName,
-    leaderEmail,
-    maxMembers, // 2, 3, or 4
-    invitedEmails // Array of strings (emails)
-  } = formData;
-
-  // 1. Double check team name uniqueness
-  const isUnique = await checkTeamNameUnique(teamName);
-  if (!isUnique) {
-    throw new Error(`Team name "${teamName}" is already taken. Please choose another name.`);
-  }
-
-  // 2. Generate Team Code
-  const teamCode = await generateUniqueTeamCode();
-
-  // 3. Create document reference in `teams` collection
-  const teamDocRef = doc(collection(db, 'teams'));
-  const teamId = teamDocRef.id;
-
-  const cleanInvitedEmails = (invitedEmails || [])
-    .map(e => e.trim().toLowerCase())
-    .filter(Boolean);
-
-  const teamData = {
-    teamId,
-    teamCode,
-    teamName: teamName.trim(),
-    teamNameLower: teamName.trim().toLowerCase(),
-    college: college.trim(),
-    department: department.trim(),
-    problemStatement: problemStatement.trim(),
-    leaderUid: leaderUser.uid,
-    leaderName: leaderName.trim(),
-    leaderEmail: leaderEmail.trim().toLowerCase(),
-    maxMembers: Number(maxMembers),
-    invitedEmails: cleanInvitedEmails,
-    joinedMemberUids: [leaderUser.uid],
-    status: 'active',
-    createdAt: serverTimestamp(),
-  };
-
-  // Save team doc
-  await setDoc(teamDocRef, teamData);
-
-  // 4. Create Leader entry in `team_members` collection
-  const memberDocRef = doc(db, 'team_members', `${teamId}_${leaderUser.uid}`);
-  await setDoc(memberDocRef, {
-    teamId,
-    teamCode,
-    uid: leaderUser.uid,
-    role: 'leader',
-    name: leaderName.trim(),
-    email: leaderEmail.trim().toLowerCase(),
-    department: department.trim(),
-    college: college.trim(),
-    joinedAt: serverTimestamp(),
-  });
-
-  // 5. Update Leader profile in `users` collection
-  await updateUserProfile(leaderUser.uid, {
-    name: leaderName.trim(),
-    email: leaderEmail.trim().toLowerCase(),
-    department: department.trim(),
-    college: college.trim(),
-    teamId,
-    teamCode,
-    teamRole: 'leader',
-  });
-
-  return { teamId, teamCode, teamName: teamName.trim() };
+  const { data } = await api.post('/api/teams', formData);
+  return data; // returns { teamId, teamCode, teamName }
 }
 
 /**
@@ -305,63 +232,14 @@ export async function findTeamByCode(teamCode) {
 }
 
 /**
- * Join an existing team using team code
+ * Join an existing team using team code via Backend API
  */
 export async function joinTeamInFirestore(user, teamCode, userProfileData) {
-  const cleanCode = teamCode.trim().toUpperCase();
-  const team = await findTeamByCode(cleanCode);
-
-  if (!team) {
-    throw new Error('Invalid Team Code. Please check the code and try again.');
-  }
-
-  if (team.joinedMemberUids?.includes(user.uid)) {
-    throw new Error('You are already a member of this team.');
-  }
-
-  if ((team.joinedMemberUids?.length || 0) >= team.maxMembers) {
-    throw new Error('This team has already reached its maximum member limit.');
-  }
-
-  const userEmail = (user.email || userProfileData.email || '').toLowerCase();
-  
-  // Update User profile in `users` collection
-  await updateUserProfile(user.uid, {
-    name: userProfileData.name,
-    email: userEmail,
-    department: userProfileData.department,
-    college: userProfileData.college,
-    phone: userProfileData.phone || '',
-    teamId: team.teamId,
-    teamCode: team.teamCode,
-    teamRole: 'member'
+  const { data } = await api.post('/api/teams/join', {
+    teamCode,
+    ...userProfileData
   });
-
-  // Add entry to `team_members` collection
-  const memberDocRef = doc(db, 'team_members', `${team.teamId}_${user.uid}`);
-  await setDoc(memberDocRef, {
-    teamId: team.teamId,
-    teamCode: team.teamCode,
-    uid: user.uid,
-    role: 'member',
-    name: userProfileData.name,
-    email: userEmail,
-    department: userProfileData.department,
-    college: userProfileData.college,
-    joinedAt: serverTimestamp(),
-  });
-
-  // Update `teams` collection
-  const teamRef = doc(db, 'teams', team.teamId);
-  const updatedJoined = [...(team.joinedMemberUids || []), user.uid];
-  const isFull = updatedJoined.length >= team.maxMembers;
-
-  await updateDoc(teamRef, {
-    joinedMemberUids: arrayUnion(user.uid),
-    status: isFull ? 'full' : 'active'
-  });
-
-  return { teamId: team.teamId, teamCode: team.teamCode, teamName: team.teamName };
+  return data;
 }
 
 /**

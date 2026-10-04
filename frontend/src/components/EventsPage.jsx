@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Zap, Users, User, AlertCircle, MapPin, Calendar, ArrowRight, X, BookOpen, ChevronRight, ChevronLeft } from 'lucide-react';
+import { ArrowLeft, Zap, Users, User, AlertCircle, MapPin, Calendar, ArrowRight, X, BookOpen, ChevronRight, ChevronLeft, Clock, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import EventRegistrationModal from './EventRegistrationModal';
 import HackathonModal from './HackathonModal';
@@ -16,6 +16,9 @@ import scaleupPoster from '../assets/scaleup_cover.png';
 import rupeesRulesPoster from '../assets/rules33.png';
 import scaleupRulesPoster from '../assets/rules44.png';
 import bootcampPoster from '../assets/bootcamp_cover.png';
+import artPoster from '../assets/art_cover.png';
+import lavanya from '../assets/lavanya.png';
+import artRulesPoster from '../assets/rules55.png';
 
 const GROUP_EVENTS = [
   {
@@ -34,10 +37,10 @@ const GROUP_EVENTS = [
         <span className="block text-xl font-black uppercase tracking-tight text-[#0b2140] mb-3">24 Hours. One Mission. Reimagine the Transportation of Chennai.</span>
         <span className="block mt-2 font-bold text-black/90">What if you had 24 hours to build an idea that could transform the way Chennai moves?</span>
         <span className="block mt-2 text-black/75">
-          The <strong>Chennai Unified Metropolitan Transport Authority (CUMTA)</strong> is bringing together young innovators for an intense 24-hour challenge to imagine, create and prototype the future of Chennai’s transportation.
+          The <strong>Chennai Unified Metropolitan Transport Authority (CUMTA)</strong> is bringing together young innovators for an intense 24-hour challenge to imagine, create and prototype the future of Chennai\'s transportation.
         </span>
         <span className="block mt-2 text-black/75">
-          From streets to public transport, from everyday commuters to emerging technology — the future of Chennai’s mobility needs new ideas. Now, it's your turn to rethink it.
+          From streets to public transport, from everyday commuters to emerging technology — the future of Chennai\'s mobility needs new ideas. Now, it\'s your turn to rethink it.
         </span>
         <span className="block mt-3 font-black text-black/90 uppercase text-[12px] tracking-wide">
           Gather your team. Bring your ideas. Build under pressure. Reimagine Chennai.
@@ -52,14 +55,14 @@ const GROUP_EVENTS = [
         </div>
       </>
     ),
-    venue: 'MLCP labs', day: 'Both Days', accent: '#0b2140', accentLight: '#e8f0ff',
+    venue: 'MLCP labs', day: 'Both Days', time: '1 PM Onwards', accent: '#0b2140', accentLight: '#e8f0ff',
     rules: [
       { title: 'Team Size', body: 'Each team must consist of 3–5 members.' },
       { title: 'Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
       { title: 'Registration & Payment', body: 'The team leader must register and make the payment for all team members. All team members must join the team created by the team leader.' },
       { title: 'Reporting Time', body: 'All participants must report to their allocated venue 15 minutes before the start of the event. ID cards are mandatory for all participants.' },
       { title: 'Problem Statements', body: 'Problem statements will be revealed on the day of the event.' },
-      { title: 'Code of Conduct', body: 'Any form of unfair practice or copied work will lead to immediate disqualification. The judges’ decision will be final and will not be open to discussion.' },
+      { title: 'Code of Conduct', body: 'Any form of unfair practice or copied work will lead to immediate disqualification. The judges\' decision will be final and will not be open to discussion.' },
     ],
     // Add poster image paths here when ready:
     // posters: [hackathonPoster, hackathonRulesPoster],
@@ -85,7 +88,7 @@ const GROUP_EVENTS = [
         </div>
       </>
     ),
-    venue: 'MBA Seminar Hall 1', day: 'Both Days', accent: '#0b2140', accentLight: '#e8f0ff',
+    venue: 'Academic Block', day: 'Day 1', time: '12 PM Onwards', accent: '#0b2140', accentLight: '#e8f0ff',
     rules: [
       { title: '1. Team Size', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Teams of up to 3 members. All members must be present on both days of the event.' },
       { title: '2. Materials', body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium. Only materials provided at the venue may be used. No external materials are allowed.' },
@@ -96,47 +99,6 @@ const GROUP_EVENTS = [
 
     coverImage: rupeesPoster,
     posters: [rupeesRulesPoster],
-  },
-
-  {
-    id: 'shark-tank', name: 'Startup Singam Jr', limit: 'Limit 5',
-    cardDesc: (
-      <>
-        <span>In partnership with <strong>Startup Singam</strong>, this is a <strong>two-day startup pitching competition</strong> for young entrepreneurs.</span>
-        <span className="block mt-2 text-black/75"><strong>Day 1 — Prelims:</strong> Pitch before a preliminary jury and get shortlisted.</span>
-        <span className="block mt-1 text-black/75"><strong>Day 2 — Grand Finale:</strong> Present directly to a distinguished panel of investors.</span>
-      </>
-    ),
-    desc: (
-      <>
-        <span className="block text-l font-black uppercase tracking-tight text-[#0b2140] mb-2">In partnership with Startup Singam, Startup Singam Junior is a two-day startup pitching competition that gives young entrepreneurs the opportunity to take their ideas from the first pitch to the investor stage.</span>
-        <span className="block mt-3 font-bold text-black/90">Day 1 - Prelims</span>
-        <span className="block mt-1 text-black/75">
-          Participants will pitch their startup ideas before a preliminary jury, presenting their problem statement, solution, business model, market opportunity and growth potential. Based on their pitch and overall potential, the strongest teams will be shortlisted for the grand finale.
-        </span>
-        <span className="block mt-3 font-bold text-black/90">Day 2 - Grand Finale</span>
-        <span className="block mt-1 text-black/75">
-          The shortlisted teams will pitch their startups directly in front of a distinguished panel of investors, presenting their ventures, answering investor questions and making their case for why their startup deserves attention and opportunity.
-        </span>
-        <div className="mt-6 p-6" style={{ background: '#f8fafc', borderLeft: '6px solid #0b2140' }}>
-          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-lg">Startup Singam Junior</span>
-          <span className="block text-[16px] font-bold text-black/70 mt-2">From the first pitch to the investor room.</span>
-          <span className="block text-[14px] italic text-black/60 mt-2">This is where young founders take their ideas one step closer to becoming real ventures.</span>
-        </div>
-      </>
-    ),
-    venue: 'Civil Block 3rd Floor', day: 'Day 1 & 2', accent: '#0b2140', accentLight: '#e8f0ff',
-    rules: [
-      { title: '1. Team Size', body: 'Each team can have a maximum of 5 members.' },
-      { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
-      { title: '3. Registration & Payment', body: 'The team leader must register and make the payment for all team members. All team members must join the team created by the team leader.' },
-      { title: '4. Reporting Time', body: 'All participants must report to their allocated venue 15 minutes before the start of the event. ID cards are mandatory for all participants.' },
-      { title: '5. Finale Eligibility', body: 'Only teams selected from the prelims will be eligible to present in the finale. All teams must adhere to the presentation time allotted by the organizing committee.' },
-      { title: '6. Code of Conduct', body: 'Any form of unfair practice or copied work will lead to immediate disqualification. The judges’ decision will be final and will not be open to discussion.' },
-    ],
-
-    coverImage: singamposter,
-    posters: [singamRulesPoster],
   },
   {
     id: 'scale-up-studio', name: 'ScaleUp Studio', limit: 'Limit 3',
@@ -160,7 +122,7 @@ const GROUP_EVENTS = [
         </div>
       </>
     ),
-    venue: 'TRP', day: 'Day 2', accent: '#0b2140', accentLight: '#e8f0ff',
+    venue: 'Academic Block', day: 'Day 2', time: '9 AM Onwards', accent: '#0b2140', accentLight: '#e8f0ff',
     rules: [
       { title: '1. nee solu', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. A maximum of 3 members per team. Each team must register together prior to the event.' },
       { title: '2. Round Structure', body: 'Duis aute irure dolor in reprehenderit in voluptate velit esse. The event consists of multiple elimination rounds. Teams must clear each round to advance.' },
@@ -175,45 +137,13 @@ const GROUP_EVENTS = [
 ];
 
 const INDIVIDUAL_EVENTS = [
+  // Live Podcast — commented out until guests are confirmed
+  // { id: 'live-podcast', name: 'Live Podcast', ... }
+  // Panel Discussion — commented out until guests are confirmed
+  // { id: 'panel-discussions', name: 'Panel Discussion', ... }
+
   {
-    id: 'live-podcast', name: 'Live Podcast',
-    cardDesc: 'Hear directly from successful founders from Tamil Nadu as they share their journeys — the risks, the failures, and the decisions that changed everything.',
-    desc: (
-      <>
-        <span><strong>What really happens behind the success story?</strong></span>
-        <span className="block mt-2">Hear directly from <strong>successful founders from Tamil Nadu</strong> as they share their journeys — the risks, the failures, and the decisions that changed everything.</span>
-        <span className="block mt-2 text-black/75 italic">No scripts. No filters. Just real founder stories.</span>
-      </>
-    ),
-    venue: 'GEETHAM / TRP', day: 'Both Days', accent: '#a80d11', accentLight: '#fff0f0',
-    rules: [
-      { title: '1. Eligibility', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Open to all registered participants. Each participant will be given a topic 15 minutes before going live.' },
-      { title: '2. Duration', body: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Each podcast session will last a maximum of 8 minutes. Going overtime will incur point deduction.' },
-      { title: '3. Content Guidelines', body: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. Content must be appropriate, respectful, and relevant to the assigned topic. No offensive material.' },
-      { title: '4. Scoring', body: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum. Scored on voice clarity, content depth, confidence, and audience engagement.' },
-      { title: '5. Code of Conduct', body: 'Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia. Respect for the audience and co-participants is mandatory throughout the session.' },
-    ],
-  },
-  {
-    id: 'panel-discussions', name: 'Panel Discussion',
-    cardDesc: 'A dynamic panel where industry leaders, entrepreneurs and experts share real-time insights on a given theme, followed by an interactive Q&A.',
-    desc: (
-      <>
-        <span>A dynamic panel where <strong>industry leaders, entrepreneurs and experts</strong> share real-time insights on a given theme.</span>
-        <span className="block mt-2 text-black/75">Expect real-world challenges, diverse viewpoints, and practical experiences — followed by an <strong>interactive Q&amp;A</strong> with the panelists.</span>
-      </>
-    ),
-    venue: 'GEETHAM / TRP', day: 'Day 1', accent: '#a80d11', accentLight: '#fff0f0',
-    rules: [
-      { title: '1. Participation', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Individual participation only. Participants will be grouped into panels of 5 on the day of the event.' },
-      { title: '2. Topic Disclosure', body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem. Topics will be revealed 10 minutes before the discussion begins. No prior preparation is allowed.' },
-      { title: '3. Speaking Time', body: 'Nemo enim ipsam voluptatem quia voluptas sit aspernatur. Each participant gets equal speaking time. Interrupting others will result in penalty points.' },
-      { title: '4. Judging', body: 'At vero eos et accusamus et iusto odio dignissimos ducimus. Judged on argument strength, factual accuracy, communication skills, and active listening.' },
-      { title: '5. Conduct', body: 'Nam libero tempore cum soluta nobis est eligendi optio. All discussions must remain civil and constructive. Personal attacks or disrespectful language is not permitted.' },
-    ],
-  },
-  {
-    id: 'illogical-marketing', name: 'Illogical Marketing',
+    id: 'illogical-marketing', name: 'The Art of Selling Nothing',
     cardDesc: 'You\'ll receive an illogical product on the spot and must pitch it convincingly using branding, storytelling and persuasion.',
     desc: (
       <>
@@ -230,23 +160,25 @@ const INDIVIDUAL_EVENTS = [
           <li>Handle the challenge with spontaneity and confidence</li>
         </ul>
         <div className="mt-6 p-6" style={{ background: '#fff0f0', borderLeft: '6px solid #a80d11' }}>
-          <span className="block font-black uppercase tracking-widest text-[#a80d11] text-lg">Illogical Marketing</span>
+          <span className="block font-black uppercase tracking-widest text-[#a80d11] text-lg">The Art of Selling Nothing</span>
           <span className="block text-[16px] font-bold text-black/70 mt-2">The product may be illogical.</span>
           <span className="block text-[14px] italic text-black/60 mt-2">Your marketing strategy cannot be.</span>
         </div>
       </>
     ),
-    venue: 'Hi-Tech Hall 2', day: 'Day 1', accent: '#a80d11', accentLight: '#fff0f0',
+    venue: 'Hi-Tech Hall 2', day: 'Day 2', time: '9 AM Onwards', accent: '#a80d11', accentLight: '#fff0f0',
     rules: [
       { title: '1. Solo Event', body: 'This is a solo event.' },
       { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
       { title: '3. Reporting Time', body: 'All participants must report to their allocated venue 15 minutes before the start of the event. ID cards are mandatory for all participants.' },
       { title: '4. Format', body: 'Participants will be given an illogical product and must come up with convincing marketing strategies to sell it. The judges will provide the product on the spot.' },
-      { title: '5. Code of Conduct', body: 'Any form of unfair practice or copied work will lead to immediate disqualification. The judges’ decision will be final and will not be open to discussion.' },
+      { title: '5. Code of Conduct', body: 'Any form of unfair practice or copied work will lead to immediate disqualification. The judges\' decision will be final and will not be open to discussion.' },
     ],
+    coverImage: artPoster,
+    posters: [artRulesPoster],
   },
   {
-    id: 'bootcamp', name: 'Design Thinking Bootcamp',
+    id: 'design-thinking-bootcamp', name: 'Design Thinking Bootcamp',
     cardDesc: 'A hands-on session designed for students and aspiring entrepreneurs who want to transform their ideas into real, user-focused solutions.',
     desc: (
       <>
@@ -267,7 +199,7 @@ const INDIVIDUAL_EVENTS = [
         </div>
       </>
     ),
-    venue: 'MBA Seminar Hall 2', day: 'Both Days', accent: '#a80d11', accentLight: '#fff0f0',
+    venue: 'MBA Seminar Hall 2', day: 'Both Days', time: '11:30 AM Onwards', accent: '#a80d11', accentLight: '#fff0f0',
     rules: [
       { title: '1. Attendance', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Full attendance on both days is mandatory. Partial attendance will result in disqualification from certification.' },
       { title: '2. Prerequisites', body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium. No prior experience is required. Bring your own laptop and a willingness to learn.' },
@@ -277,7 +209,7 @@ const INDIVIDUAL_EVENTS = [
     ],
 
     coverImage: bootcampPoster,
-    posters: [null],
+    posters: [lavanya],
 
   },
 ];
@@ -287,24 +219,9 @@ const cardVariants = {
   visible: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] } }),
 };
 
-/* ── Poster Slideshow ──────────────────────────────────────────────────── */
+/* ── Event Poster (single image, no slideshow) ─────────────────────────── */
 const PosterSlideshow = ({ posters, accent }) => {
-  const [current, setCurrent] = useState(0);
-  const [dir, setDir] = useState(1);
-
-  const goTo = (idx, direction) => {
-    setDir(direction);
-    setCurrent(idx);
-  };
-
-  const prev = () => posters.length > 1 && goTo((current - 1 + posters.length) % posters.length, -1);
-  const next = () => posters.length > 1 && goTo((current + 1) % posters.length, 1);
-
-  const variants = {
-    enter: (d) => ({ x: d > 0 ? '100%' : '-100%', opacity: 0 }),
-    center: { x: 0, opacity: 1, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
-    exit: (d) => ({ x: d > 0 ? '-100%' : '100%', opacity: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } }),
-  };
+  const poster = posters?.[0];
 
   return (
     <div className="mb-6">
@@ -314,121 +231,33 @@ const PosterSlideshow = ({ posters, accent }) => {
         style={{ color: accent }}
       >
         <span className="inline-block w-5 h-[2.5px]" style={{ background: accent }} />
-        Event Posters
+        Event Poster
       </h3>
 
-      {/* Slideshow card */}
       <div
         style={{
           background: '#fff',
           border: '3px solid #111',
           boxShadow: '6px 6px 0 #111',
-          position: 'relative',
           overflow: 'hidden',
         }}
       >
-        {/* Image area */}
-        <div style={{ position: 'relative', width: '100%', background: '#fff' }}>
-          {posters.length === 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: '#bbb', padding: '100px 20px' }}>
-              <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <circle cx="8.5" cy="8.5" r="1.5" />
-                <polyline points="21 15 16 10 5 21" />
-              </svg>
-              <span style={{ fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: 11 }}>Posters Coming Soon</span>
-            </div>
-          ) : (
-            <div style={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
-              <AnimatePresence initial={false} custom={dir} mode="wait">
-                <motion.div
-                  key={current}
-                  custom={dir}
-                  variants={variants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  style={{ width: '100%', display: 'block' }}
-                >
-                  <img
-                    src={posters[current]}
-                    alt={`Poster ${current + 1}`}
-                    style={{ width: '100%', height: 'auto', display: 'block' }}
-                  />
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          )}
-        </div>
-
-        {/* Bottom bar: arrows + dots */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '10px 16px',
-            borderTop: '2.5px solid #111',
-            background: '#fff',
-          }}
-        >
-          {/* Prev */}
-          <button
-            onClick={prev}
-            style={{
-              border: '2.5px solid #111',
-              background: '#fff',
-              boxShadow: '3px 3px 0 #111',
-              padding: '6px 10px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#111'; e.currentTarget.style.color = '#fff'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#111'; }}
-          >
-            <ChevronLeft size={18} />
-          </button>
-
-          {/* Dots */}
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            {posters.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goTo(i, i > current ? 1 : -1)}
-                style={{
-                  width: i === current ? 22 : 8,
-                  height: 8,
-                  borderRadius: 4,
-                  background: i === current ? accent : '#d0d0d0',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s',
-                  padding: 0,
-                }}
-              />
-            ))}
+        {!poster ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: '#bbb', padding: '100px 20px' }}>
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg>
+            <span style={{ fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: 11 }}>Poster Coming Soon</span>
           </div>
-
-          {/* Next */}
-          <button
-            onClick={next}
-            style={{
-              border: '2.5px solid #111',
-              background: '#111',
-              color: '#fff',
-              boxShadow: '3px 3px 0 #111',
-              padding: '6px 10px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = accent; e.currentTarget.style.borderColor = accent; }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#111'; e.currentTarget.style.borderColor = '#111'; }}
-          >
-            <ChevronRight size={18} />
-          </button>
-        </div>
+        ) : (
+          <img
+            src={poster}
+            alt="Event Poster"
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
+        )}
       </div>
     </div>
   );
@@ -593,8 +422,8 @@ const PANEL_DATA = [
     id: 'd1p1',
     day: 'day1',
     label: 'Panel 1',
-    topic: 'From Participation to Power: Reimagining the Role of Women in India’s Entrepreneurial Economy',
-    about: 'A conversation on how women are moving beyond participation to leadership, ownership, and decision-making across India’s startup ecosystem. The session explores the barriers, opportunities, networks, and support systems shaping the next generation of women entrepreneurs.',
+    topic: 'From Participation to Power: Reimagining the Role of Women in India\'s Entrepreneurial Economy',
+    about: 'A conversation on how women are moving beyond participation to leadership, ownership, and decision-making across India\'s startup ecosystem. The session explores the barriers, opportunities, networks, and support systems shaping the next generation of women entrepreneurs.',
     guests: [
       { id: 'p1g1', name: 'Guest 01', role: 'CEO, StartupX', photo: null },
       { id: 'p1g2', name: 'Guest 02', role: 'VC Partner', photo: null },
@@ -608,7 +437,7 @@ const PANEL_DATA = [
     day: 'day1',
     label: 'Panel 2',
     topic: 'The New Industrial Revolution: Where Startups, Manufacturing & EmergingTechnologies Converge',
-    about: 'A deep dive into how AI, robotics, semiconductors, automation, and advanced manufacturing are transforming India’s industrial landscape. Industry leaders and founders explore how technology-driven startups can build globally competitive products and reshape the future of manufacturing.',
+    about: 'A deep dive into how AI, robotics, semiconductors, automation, and advanced manufacturing are transforming India\'s industrial landscape. Industry leaders and founders explore how technology-driven startups can build globally competitive products and reshape the future of manufacturing.',
     guests: [
       { id: 'p2g1', name: 'Guest 01', role: 'AI Researcher', photo: null },
       { id: 'p2g2', name: 'Guest 02', role: 'Deep Tech VC', photo: null },
@@ -622,7 +451,7 @@ const PANEL_DATA = [
     day: 'day2',
     label: 'Panel 1',
     topic: 'Beyond the Metros Building Companies, Capabilities & Capital Across the Next Generation of Indian Cities',
-    about: 'A conversation on the rise of entrepreneurial ecosystems beyond India’s traditional startup hubs, where regional talent, MSMEs, and emerging founders are building ambitious companies. The session explores how access to capital, incubation, infrastructure, and local networks can unlock the potential of Tier-2 and Tier-3 cities.',
+    about: 'A conversation on the rise of entrepreneurial ecosystems beyond India\'s traditional startup hubs, where regional talent, MSMEs, and emerging founders are building ambitious companies. The session explores how access to capital, incubation, infrastructure, and local networks can unlock the potential of Tier-2 and Tier-3 cities.',
     guests: [
       { id: 'p3g1', name: 'Guest 01', role: 'Impact Founder', photo: null },
       { id: 'p3g2', name: 'Guest 02', role: 'ESG Consultant', photo: null },
@@ -985,7 +814,7 @@ const PodcastLearnMoreModal = ({ evt, onClose, onRegister }) => {
                   className="text-[9px] font-black uppercase tracking-[0.22em] mb-0.5"
                   style={{ color: evt.accent }}
                 >
-                  🎙️ Live Podcast
+                  ðŸŽ™ï¸ Live Podcast
                 </p>
                 <h2 className="text-2xl font-black uppercase tracking-tighter text-black leading-none">
                   {evt.name}
@@ -1224,6 +1053,11 @@ const LearnMoreModal = ({ evt, isGroup, onClose, onRegister }) => {
               <span className="flex items-center gap-1.5 text-[11px] font-bold text-black/60 uppercase tracking-wider">
                 <Calendar size={12} /> {evt.day}
               </span>
+              {evt.time && (
+                <span className="flex items-center gap-1.5 text-[11px] font-bold text-black/60 uppercase tracking-wider">
+                  <Clock size={12} /> {evt.time}
+                </span>
+              )}
               {evt.limit && (
                 <span
                   className="text-[11px] font-black uppercase tracking-widest px-2 py-0.5"
@@ -1354,6 +1188,14 @@ const EventCard = ({ evt, idx, onRegister, isGroup, onLoginRequest }) => {
             <span className="flex items-center gap-1 text-[10px] font-bold text-black/50 uppercase tracking-wider">
               <Calendar size={10} /> {evt.day}
             </span>
+            {evt.time && (
+              <>
+                <span className="text-black/30">•</span>
+                <span className="flex items-center gap-1 text-[10px] font-bold text-black/50 uppercase tracking-wider">
+                  <Clock size={10} /> {evt.time}
+                </span>
+              </>
+            )}
           </div>
 
           {/* Price + Learn More CTA */}
@@ -1410,6 +1252,7 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const [showLearnMore, setShowLearnMore] = useState(false);
+  const { registration } = useAuth();
 
   const next = () => {
     setDirection(1);
@@ -1513,6 +1356,11 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
                   <span className="flex items-center gap-3 text-[9px] sm:text-[11px] font-black uppercase tracking-widest px-2.5 py-1 bg-white text-black border-2 border-black">
                     <Calendar size={12} strokeWidth={2.5} /> {event.day}
                   </span>
+                  {event.time && (
+                    <span className="flex items-center gap-3 text-[9px] sm:text-[11px] font-black uppercase tracking-widest px-2.5 py-1 bg-white text-black border-2 border-black">
+                      <Clock size={12} strokeWidth={2.5} /> {event.time}
+                    </span>
+                  )}
                 </div>
 
                 <h3 className="text-2xl sm:text-4xl lg:text-5xl text-black font-black uppercase tracking-tighter leading-none drop-shadow-md">
@@ -1520,6 +1368,11 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
                     <>
                       Startup Singam<br />
                       <span style={{ paddingLeft: '0em' }}>Junior</span>
+                    </>
+                  ) : event.id === 'illogical-marketing' ? (
+                    <>
+                      The Art of<br />
+                      Selling Nothing
                     </>
                   ) : event.name}
                 </h3>
@@ -1532,13 +1385,25 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
                   >
                     Learn More <ChevronRight size={14} />
                   </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onRegister(event); }}
-                    className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-5 py-2.5 text-white border-4 border-black hover:opacity-90 transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1"
-                    style={{ background: event.accent }}
-                  >
-                    Register <ArrowRight size={14} />
-                  </button>
+                  {(() => {
+                    const isRegistered = registration?.registeredEvents?.includes(event.id);
+                    return (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onRegister(event); }}
+                        className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-5 py-2.5 text-white border-4 transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1"
+                        style={{
+                          background: isRegistered ? '#16a34a' : event.accent,
+                          borderColor: isRegistered ? '#15803d' : '#111',
+                        }}
+                      >
+                        {isRegistered ? (
+                          <><CheckCircle2 size={14} /> Registered</>
+                        ) : (
+                          <>Register <ArrowRight size={14} /></>
+                        )}
+                      </button>
+                    );
+                  })()}
                 </div>
               </div>
             </motion.div>
@@ -1571,6 +1436,9 @@ const EventsPage = () => {
   const [authModal, setAuthModal] = useState({ open: false, pass: '', source: '' });
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [pendingEventAfterProfile, setPendingEventAfterProfile] = useState(null);
+  const [showGeneralPassWarning, setShowGeneralPassWarning] = useState(false);
+  const [showMultipleEventWarning, setShowMultipleEventWarning] = useState(false);
+  const [pendingEventAfterWarning, setPendingEventAfterWarning] = useState(null);
 
   const handleRegisterClick = (event) => {
     if (!user) {
@@ -1583,7 +1451,13 @@ const EventsPage = () => {
       setShowProfileForm(true);
       return;
     }
-    // Profile complete — open event modal directly
+    // Already registered for THIS event — open the modal directly (no warning)
+    const alreadyRegisteredForThis = registration.registeredEvents?.includes(event.id);
+    if (alreadyRegisteredForThis) {
+      setSelectedEvent(event);
+      return;
+    }
+    // All clear — open event modal
     setSelectedEvent(event);
   };
 
@@ -1690,7 +1564,6 @@ const EventsPage = () => {
           passType="Visitor's Pass"
           onSuccess={() => {
             setShowProfileForm(false);
-            // After profile done, open the event they originally wanted
             if (pendingEventAfterProfile) {
               setSelectedEvent(pendingEventAfterProfile);
               setPendingEventAfterProfile(null);
@@ -1702,6 +1575,48 @@ const EventsPage = () => {
           }}
         />
       )}
+
+      {/* General Pass Warning Modal */}
+      {showGeneralPassWarning && (
+        <motion.div
+          className="fixed inset-0 z-[80] flex items-center justify-center p-4"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        >
+          <div
+            className="fixed inset-0"
+            style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}
+            onClick={() => setShowGeneralPassWarning(false)}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="relative z-10 w-full max-w-md border-4 border-black bg-white shadow-[14px_14px_0px_rgba(0,0,0,1)]"
+          >
+            <div className="h-3" style={{ background: 'linear-gradient(to right, #a80d11, #d82221 45%, #0b2140 55%, #0f50e3)' }} />
+            <div className="p-8">
+              <div className="flex justify-end mb-4">
+                <button onClick={() => setShowGeneralPassWarning(false)} className="text-gray-400 hover:text-black transition-colors">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="w-16 h-16 bg-red-500 border-4 border-black flex items-center justify-center mb-6 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+                <AlertCircle className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-black uppercase tracking-tight mb-3">Already Have General Pass</h3>
+              <p className="font-bold text-gray-600 mb-6 leading-relaxed">
+                You have already bought the General Pass, try with a different account.
+              </p>
+              <button
+                onClick={() => setShowGeneralPassWarning(false)}
+                className="w-full py-4 border-4 border-black bg-[#1f2022] text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
+              >
+                Got It
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
     </motion.div>
   );
 };

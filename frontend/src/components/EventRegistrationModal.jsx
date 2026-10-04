@@ -10,6 +10,7 @@ import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import RazorpayCheckoutButton from './RazorpayCheckoutButton';
 import confetti from 'canvas-confetti';
+import { PassCard } from './UserDashboard';
 
 // ── Shared UI ─────────────────────────────────────────────────────────────────
 const inputCls =
@@ -496,36 +497,41 @@ const SuccessScreen = ({ event, onClose }) => (
 );
 
 // ── Already registered screen ─────────────────────────────────────────────────
-const AlreadyRegisteredScreen = ({ event, onClose }) => (
-  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-8 space-y-5">
-    <div className="w-20 h-20 bg-green-600 border-4 border-black flex items-center justify-center mx-auto">
-      <CheckCircle2 className="w-10 h-10 text-white" />
+const AlreadyRegisteredScreen = ({ event, user, registration, onClose }) => (
+  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full flex flex-col items-center pt-2 pb-6">
+    <div className="w-full max-w-sm">
+      <div className="flex justify-between items-center mb-4 px-1">
+        <h3 className="font-black text-lg uppercase tracking-tight">Your Event Pass</h3>
+        <button onClick={onClose} className="text-gray-400 hover:text-black transition-colors p-1 bg-gray-100 rounded-full hover:bg-gray-200">
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+      <PassCard
+        registration={registration}
+        user={user}
+        passType="Event Pass"
+        eventName={event.name}
+        qrSuffix={event.id}
+        onClose={onClose}
+      />
     </div>
-    <div>
-      <p className="font-black uppercase tracking-widest text-xs text-gray-400 mb-1">Already Registered</p>
-      <h3 className="text-2xl font-black uppercase">{event.name}</h3>
-      <p className="font-bold text-sm text-gray-500 mt-1">You've already signed up for this event!</p>
-    </div>
-    <button
-      onClick={onClose}
-      className="w-full py-4 border-4 border-black bg-[#1f2022] text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
-    >
-      Close →
-    </button>
   </motion.div>
 );
 
 // ── Main component ────────────────────────────────────────────────────────────
 const EventRegistrationModal = ({ event, onClose }) => {
-  const { user, registration } = useAuth();
+  const { user, registration, refreshRegistration } = useAuth();
   const [formData, setFormData]           = useState({});
   const [submitting, setSubmitting]       = useState(false);
   const [submitted, setSubmitted]         = useState(false);
   const [alreadyRegistered, setAlready]   = useState(false);
   const [error, setError]                 = useState('');
   const [checking, setChecking]           = useState(true);
+  
+  const isAlreadyPaid = Array.isArray(registration?.paidEvents) && registration.paidEvents.includes(event?.id);
+
   // 'info' | 'payment' | 'paid-success' | 'form'
-  const [paymentStep, setPaymentStep]     = useState('info');
+  const [paymentStep, setPaymentStep]     = useState(isAlreadyPaid ? 'form' : 'info');
 
   const getEventAmount = (eventId) => {
     switch (eventId) {
@@ -555,9 +561,9 @@ const EventRegistrationModal = ({ event, onClose }) => {
       setChecking(false);
     };
     check();
-    // Default to 'form' directly if no amount needed
-    if (amountRequired === 0) setPaymentStep('form');
-  }, [user, event]);
+    // Default to 'form' directly if no amount needed or already paid
+    if (amountRequired === 0 || isAlreadyPaid) setPaymentStep('form');
+  }, [user, event, amountRequired, isAlreadyPaid]);
 
   const fireConfetti = () => {
     // Left cannon
@@ -585,7 +591,18 @@ const EventRegistrationModal = ({ event, onClose }) => {
     }, 250);
   };
 
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = async () => {
+    try {
+      const currentPaid = registration?.paidEvents || [];
+      if (!currentPaid.includes(event.id)) {
+        await api.patch('/api/registrations', {
+          paidEvents: [...currentPaid, event.id]
+        });
+        await refreshRegistration();
+      }
+    } catch (err) {
+      console.error("Failed to record payment:", err);
+    }
     fireConfetti();
     setPaymentStep('paid-success');
   };
@@ -657,7 +674,7 @@ const EventRegistrationModal = ({ event, onClose }) => {
               <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
             </div>
           ) : alreadyRegistered ? (
-            <AlreadyRegisteredScreen event={event} onClose={onClose} />
+            <AlreadyRegisteredScreen event={event} user={user} registration={registration} onClose={onClose} />
           ) : submitted ? (
             <SuccessScreen event={event} onClose={onClose} />
           ) : (

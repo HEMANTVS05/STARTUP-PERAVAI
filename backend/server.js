@@ -19,6 +19,7 @@ const app = express();
 // under helmet or auth restrictions.
 const defaultOrigins = [
   'http://localhost:5173',
+  'http://localhost:5174',
   'http://localhost:3000',
   'https://startupperavai.in',
   'https://www.startupperavai.in',

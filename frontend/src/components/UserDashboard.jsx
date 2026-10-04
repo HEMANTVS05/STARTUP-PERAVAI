@@ -1,44 +1,254 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Ticket, Calendar, MapPin, User, Briefcase, GraduationCap, Building2, Zap, ShieldCheck } from 'lucide-react';
+import {
+  CheckCircle2, Ticket, Calendar, MapPin,
+  Briefcase, GraduationCap, Building2, Zap, ShieldCheck,
+  ChevronLeft, ChevronRight, X
+} from 'lucide-react';
 import QRCode from 'react-qr-code';
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
+import { fetchUserTeamData } from '../services/hackathonService';
 
 const passThemes = {
-  'Visitor\'s Pass': {
-    bg: '#ffffff',
-    text: 'text-gray-900',
-    border: 'border-gray-900',
-    strip: 'linear-gradient(135deg, #2563eb, #9333ea)',
-    accent: '#2563eb',
-    badgeBg: '#f0fdf4',
-    badgeText: '#15803d',
-    shadow: 'shadow-[16px_16px_0px_rgba(0,0,0,1)]'
+  "Visitor's Pass": {
+    cardBg: '#f6f4ee',
+    cardBorder: '4px solid #111',
+    cardShadow: '12px 12px 0px #111',
+    stripColors: 'linear-gradient(135deg, #0b2140, #a80d11)',
+    accent: '#a80d11',
+    accentText: '#a80d11',
+    headerText: '#111111',
+    subText: '#444444',
+    badgeBg: '#0b2140',
+    badgeText: '#f6f4ee',
+    sectionBg: '#ffffff',
+    sectionBorder: '2px solid #111',
+    monogramBg: '#111111',
+    monogramText: '#f6f4ee',
+    monogramBorder: '#a80d11',
+    entryBorder: '2px solid #111',
+    footerText: '#444',
   },
   'Event Pass': {
-    bg: '#0f172a',
-    text: 'text-white',
-    border: 'border-gray-700',
-    strip: 'linear-gradient(135deg, #e11d48, #f59e0b)',
-    accent: '#f59e0b',
-    badgeBg: '#451a03',
-    badgeText: '#fcd34d',
-    shadow: 'shadow-[16px_16px_0px_rgba(225,29,72,0.8)]'
+    cardBg: '#f6f4ee',
+    cardBorder: '4px solid #111',
+    cardShadow: '12px 12px 0px #111',
+    stripColors: 'linear-gradient(135deg, #0b2140, #a80d11)',
+    accent: '#a80d11',
+    accentText: '#a80d11',
+    headerText: '#111111',
+    subText: '#444444',
+    badgeBg: '#0b2140',
+    badgeText: '#f6f4ee',
+    sectionBg: '#ffffff',
+    sectionBorder: '2px solid #111',
+    monogramBg: '#111111',
+    monogramText: '#f6f4ee',
+    monogramBorder: '#a80d11',
+    entryBorder: '2px solid #111',
+    footerText: '#444',
   },
 };
 
-const UserDashboard = ({ onClose }) => {
+// ── Single pass card ────────────────────────────────────────────────────────────
+export const PassCard = ({ registration, user, passType, eventName, qrSuffix, onClose, onOpenHackathon, overrideQrValue }) => {
+  const t = passThemes[passType] || passThemes["Visitor's Pass"];
+  const isEvent = passType !== "Visitor's Pass";
+  const name = registration.name || user?.displayName || 'Attendee';
+  const monogram = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  const qrValue = overrideQrValue || (qrSuffix ? `${user?.uid}::${qrSuffix}` : (user?.uid || 'invalid'));
+
+  const passLabel = isEvent ? (eventName?.toUpperCase() || 'EVENT') : "VISITOR'S PASS";
+  const passSubLabel = isEvent ? eventName : (registration.sessionChoice || 'General Access');
+  const passTag = isEvent ? 'All-Access Granted' : 'Open Entry Valid';
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9, y: 30 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+      style={{
+        background: t.cardBg,
+        border: t.cardBorder,
+        boxShadow: t.cardShadow,
+        color: t.headerText,
+        borderRadius: '12px',
+        overflow: 'hidden',
+        width: '100%',
+        position: 'relative',
+      }}
+    >
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.04]"
+        style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '22px 22px' }} />
+
+      {/* Top gradient strip */}
+      <div style={{ height: '6px', background: t.stripColors, width: '100%', position: 'relative', zIndex: 1 }} />
+
+      <div style={{ padding: '28px 28px 24px', position: 'relative', zIndex: 1 }}>
+
+        {/* ── Header ── */}
+        <div style={{ marginBottom: '20px' }}>
+          <p style={{ fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.35em', color: t.subText, marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <ShieldCheck style={{ width: '13px', height: '13px', color: t.accent }} />
+            Easwari Startup Peravai
+          </p>
+          <h2 style={{ fontSize: '28px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.03em', lineHeight: 1, color: t.headerText }}>
+            Your Pass
+          </h2>
+        </div>
+
+        {/* ── Pass type badge ── */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', background: t.sectionBg, border: t.sectionBorder, borderRadius: '10px', padding: '14px 16px', marginBottom: '18px', boxShadow: isEvent ? '3px 3px 0 #334155' : '3px 3px 0 #111' }}>
+          <div style={{ width: '46px', height: '46px', borderRadius: '50%', background: t.stripColors, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            {isEvent ? <Zap style={{ width: '22px', height: '22px', color: '#fff' }} /> : <Ticket style={{ width: '22px', height: '22px', color: '#fff' }} />}
+          </div>
+          <div>
+            <p style={{ fontSize: '20px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.02em', color: t.accentText, lineHeight: 1 }}>
+              {isEvent ? 'Event Pass' : "Visitor's Pass"}
+            </p>
+            <p style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: t.headerText, marginTop: '4px', opacity: 0.85 }}>
+              {passSubLabel}
+            </p>
+            <span style={{ display: 'inline-block', background: t.badgeBg, color: t.badgeText, fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', padding: '2px 8px', borderRadius: '4px', marginTop: '6px' }}>
+              {passTag}
+            </span>
+          </div>
+        </div>
+
+        {/* ── Session Info (Visitor Pass only — podcast or panel) ── */}
+        {!isEvent && registration.sessionType && (registration.sessionType === 'podcast' || registration.sessionType === 'panel') && (
+          <div style={{ background: registration.sessionType === 'podcast' ? '#222222ff' : '#0b2140', border: '2px solid #111', borderRadius: '10px', padding: '14px 16px', marginBottom: '18px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <span style={{ fontSize: '16px' }}>{registration.sessionType === 'podcast' ? '🎙️' : '🎤'}</span>
+              <span style={{ fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.25em', color: registration.sessionType === 'podcast' ? '#ffffffff' : '#a78bfa' }}>
+                {registration.sessionType === 'podcast' ? 'Live Podcast' : 'Panel Discussion'}
+              </span>
+            </div>
+            <p style={{ fontSize: '14px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.01em', color: '#f6f4ee', lineHeight: 1.2, marginBottom: registration.sessionSubtitle ? '6px' : 0 }}>
+              {registration.sessionChoice?.replace(/\s*\(Day \d\)$/, '') || 'Session'}
+            </p>
+            {registration.sessionSubtitle && (
+              <p style={{ fontSize: '11px', fontWeight: 700, color: registration.sessionType === 'podcast' ? '#93c5fd' : '#c4b5fd', letterSpacing: '0.05em' }}>
+                {registration.sessionType === 'podcast' ? '🎤 ' : '💬 '}{registration.sessionSubtitle}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* ── Passholder info ── */}
+        <div style={{ background: t.sectionBg, border: t.sectionBorder, borderRadius: '10px', padding: '16px', marginBottom: '18px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', paddingBottom: '14px', borderBottom: t.entryBorder, marginBottom: '14px' }}>
+            <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: t.monogramBg, border: `3px solid ${t.monogramBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 900, color: t.monogramText, flexShrink: 0 }}>
+              {monogram}
+            </div>
+            <div>
+              <p style={{ fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.25em', color: t.subText, marginBottom: '2px' }}>Passholder</p>
+              <p style={{ fontSize: '20px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.02em', lineHeight: 1, color: t.headerText }}>{name}</p>
+              <p style={{ fontSize: '11px', fontWeight: 700, color: t.subText, marginTop: '3px' }}>{registration.email || user?.email}</p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {[
+              registration.role === 'startup'
+                ? { Icon: Briefcase, label: 'Company', value: registration.companyName }
+                : { Icon: Building2, label: 'Institution', value: registration.college },
+              registration.role === 'startup'
+                ? { Icon: MapPin, label: 'City', value: registration.location }
+                : { Icon: GraduationCap, label: 'Academics', value: (registration.year && registration.department) ? `${registration.year} · ${registration.department}` : '' },
+            ].map(({ Icon, label, value }, i) => {
+              if (!value || typeof value !== 'string' || value.includes('undefined') || value.trim() === '') return null;
+              return (
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                  <Icon style={{ width: '15px', height: '15px', color: t.subText, marginTop: '1px', flexShrink: 0 }} />
+                  <div>
+                    <p style={{ fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', color: t.subText, marginBottom: '1px' }}>{label}</p>
+                    <span style={{ fontSize: '14px', fontWeight: 700, color: t.headerText }}>{value}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── Gate Entry + QR ── */}
+        <div style={{ display: 'flex', gap: '14px', marginBottom: '18px' }}>
+          {/* Gate entry */}
+          <div style={{ flex: 1, background: t.sectionBg, border: t.sectionBorder, borderRadius: '10px', padding: '14px' }}>
+            <p style={{ fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', color: t.subText, marginBottom: '10px' }}>Gate Entry</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {['Day 1', 'Day 2'].map((day, i) => {
+                const checked = i === 0 ? registration.checkedInDay1 : registration.checkedInDay2;
+                return (
+                  <div key={day} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 10px', borderRadius: '6px', border: checked ? 'none' : t.entryBorder, background: checked ? '#22c55e' : 'transparent', transition: 'all 0.2s' }}>
+                    <p style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', color: checked ? '#fff' : t.subText }}>
+                      {day}{checked && ' — Scanned'}
+                    </p>
+                    <CheckCircle2 style={{ width: '14px', height: '14px', color: checked ? '#fff' : t.subText, opacity: checked ? 1 : 0.3 }} />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* QR code */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#ffffff', border: t.sectionBorder, borderRadius: '10px', padding: '12px', flexShrink: 0 }}>
+            <QRCode value={qrValue} size={88} bgColor="#ffffff" fgColor="#000000" level="Q" />
+            <p style={{ fontSize: '8px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#000', marginTop: '8px', textAlign: 'center', maxWidth: '90px' }}>
+              Scan at Gate
+            </p>
+          </div>
+        </div>
+
+        {/* ── Team Portal Button (Hackathon only) ── */}
+        {passType === 'Event Pass' && eventName?.toLowerCase() === 'hackathon' && onOpenHackathon && (
+          <div style={{ marginBottom: '18px' }}>
+            <button
+              onClick={onOpenHackathon}
+              style={{ width: '100%', padding: '12px 20px', background: '#111', color: '#f6f4ee', border: '2px solid #111', borderRadius: '8px', fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.2s' }}
+              onMouseEnter={e => { e.target.style.background = '#a80d11'; e.target.style.borderColor = '#a80d11'; }}
+              onMouseLeave={e => { e.target.style.background = '#111'; e.target.style.borderColor = '#111'; }}
+            >
+              <Zap style={{ width: '16px', height: '16px' }} />
+              View Hackathon Team Portal
+            </button>
+          </div>
+        )}
+
+        {/* ── Footer ── */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: t.entryBorder, paddingTop: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Calendar style={{ width: '13px', height: '13px', color: t.subText }} />
+            <span style={{ fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.12em', color: t.footerText }}>Oct 30 & 31, 2026</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <MapPin style={{ width: '13px', height: '13px', color: t.subText }} />
+            <span style={{ fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.12em', color: t.footerText }}>Easwari Engineering College</span>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// ── Main UserDashboard ──────────────────────────────────────────────────────────
+const UserDashboard = ({ onClose, onOpenHackathon }) => {
   const { user, registration } = useAuth();
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [hackathonLeaderUid, setHackathonLeaderUid] = React.useState(null);
 
-  // Handle fallback if passType is 'None' or empty
-  const displayPassType = (!registration?.passType || registration?.passType === 'None')
-    ? "Visitor's Pass"
-    : registration.passType;
-
-  const theme = passThemes[displayPassType] || passThemes['Visitor\'s Pass'];
-  const isPremium = displayPassType !== 'Visitor\'s Pass';
+  React.useEffect(() => {
+    if (user && registration?.registeredEvents?.includes('hackathon')) {
+      fetchUserTeamData(user.uid).then(data => {
+        if (data?.team?.leaderUid) {
+          setHackathonLeaderUid(data.team.leaderUid);
+        }
+      }).catch(err => console.error("Error fetching hackathon team:", err));
+    }
+  }, [user, registration]);
 
   const handleSignOut = async () => {
     await signOut(auth);
@@ -48,9 +258,38 @@ const UserDashboard = ({ onClose }) => {
 
   if (!registration) return null;
 
-  // Generate Monogram
-  const name = registration.name || user?.displayName || 'Attendee';
-  const monogram = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  // ── Determine which passes to show ──────────────────────────────────────────
+  const passes = [];
+
+  const hasVisitorPass =
+    registration.passType === "Visitor's Pass" && registration.paymentStatus === 'paid';
+
+  if (hasVisitorPass) {
+    passes.push({ passType: "Visitor's Pass", eventName: registration.sessionChoice || null, qrSuffix: null });
+  }
+
+  // Event passes — one per registered event
+  const registeredEvents = registration.registeredEvents || [];
+  if (registeredEvents.length > 0) {
+    registeredEvents.forEach((evt) => {
+      passes.push({ passType: 'Event Pass', eventName: evt, qrSuffix: evt });
+    });
+  }
+
+  // If no passes at all, show a fallback visitor pass (unpaid / pending state)
+  if (passes.length === 0) {
+    passes.push({ passType: "Visitor's Pass", eventName: null, qrSuffix: null });
+  }
+
+  const nextPass = () => {
+    setCurrentIndex((prev) => (prev + 1) % passes.length);
+  };
+
+  const prevPass = () => {
+    setCurrentIndex((prev) => (prev - 1 + passes.length) % passes.length);
+  };
+
+  const currentPass = passes[currentIndex];
 
   return (
     <motion.div
@@ -58,165 +297,70 @@ const UserDashboard = ({ onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      {/* Dynamic Backdrop */}
+      {/* Backdrop */}
       <motion.div
         className="fixed inset-0 z-40"
-        style={{
-          background: isPremium ? 'radial-gradient(circle at center, rgba(30,0,10,0.8) 0%, rgba(0,0,0,0.95) 100%)' : 'rgba(0,0,0,0.7)',
-          backdropFilter: 'blur(12px)'
-        }}
+        style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(12px)' }}
         onClick={onClose}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       />
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 40, rotateX: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 40, rotateX: -10 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className={`relative z-50 w-full max-w-md max-h-[92vh] flex flex-col border-4 ${theme.border} ${theme.shadow} overflow-hidden rounded-xl`}
-        style={{ background: theme.bg }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Background Grid Pattern */}
-        <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
-          style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, black 1px, transparent 0)', backgroundSize: '24px 24px' }}
-        />
-
-        {/* Animated Glow for Premium Pass */}
-        {isPremium && (
-          <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-rose-500/20 to-transparent pointer-events-none z-0" />
+      <div className="relative z-50 flex items-center justify-center w-full gap-3 sm:gap-4 px-1 sm:px-0">
+        {/* Left Arrow */}
+        {passes.length > 1 && (
+          <button
+            onClick={prevPass}
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 flex items-center justify-center border-2 border-white/20 text-white hover:bg-white hover:text-black transition-all shrink-0"
+          >
+            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+          </button>
         )}
 
-        {/* Top gradient strip */}
-        <div className="h-3 shrink-0 relative z-10 w-full" style={{ background: theme.strip }} />
-
-        <div className={`p-6 md:p-8 overflow-y-auto ${theme.text} relative z-10`}>
-          {/* Header */}
-          <div className="flex items-start justify-between mb-8 relative">
-            <div>
-              <p className="font-black uppercase tracking-[0.4em] text-[10px] opacity-70 mb-2 flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4" style={{ color: theme.accent }} />
-                Easwari Startup Peravai
-              </p>
-              <h2 className="text-4xl font-black uppercase tracking-tighter leading-none">
-                Your Pass
-              </h2>
-            </div>
+        {/* Current Pass Container */}
+        <div className="flex-1 min-w-0 max-w-[340px] sm:max-w-sm md:max-w-md">
+          {/* Close button */}
+          <div className="flex justify-end mb-3">
+            <button
+              onClick={onClose}
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/25 text-white text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all"
+            >
+              <X className="w-4 h-6.5" />
+            </button>
           </div>
-
-          {/* Pass type badge (Bigger and better!) */}
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            className={`flex items-center gap-4 border-4 ${theme.border} p-5 mb-8 rounded-lg overflow-hidden relative group`}
-            style={{
-              background: isPremium ? 'rgba(255,255,255,0.05)' : '#ffffff',
-              boxShadow: `4px 4px 0 ${isPremium ? '#334155' : '#000'}`
-            }}
-          >
-            {/* Hover shine effect */}
-            <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12" />
-
-            <div className={`p-3 rounded-full shrink-0 flex items-center justify-center`} style={{ background: theme.strip }}>
-              {isPremium ? <Zap className="w-8 h-8 text-white" /> : <Ticket className="w-8 h-8 text-white" />}
-            </div>
-            <div>
-              <p className="font-black text-3xl uppercase tracking-tighter leading-none mb-1" style={{ color: isPremium ? theme.accent : 'inherit' }}>
-                {displayPassType}
-              </p>
-              <div className="inline-block px-2 py-0.5 mt-1 rounded text-[10px] font-black uppercase tracking-widest" style={{ background: theme.badgeBg, color: theme.badgeText }}>
-                {displayPassType === 'Visitor\'s Pass' ? 'Open Entry Valid' : displayPassType === 'Event Pass' ? 'All-Access Granted' : 'VIP Access'}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* User info - Redesigned as ID Card style */}
-          <div className={`mb-8 p-5 border-4 ${theme.border} rounded-lg`} style={{ background: isPremium ? 'rgba(0,0,0,0.3)' : '#f8fafc' }}>
-            <div className="flex items-center gap-4 mb-5 pb-5 border-b-2 border-current border-opacity-10">
-              <div className="w-16 h-16 rounded-full border-4 flex items-center justify-center text-xl font-black shadow-inner" style={{ borderColor: theme.accent, color: theme.accent, background: isPremium ? '#1e293b' : '#fff' }}>
-                {monogram}
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1">Passholder</p>
-                <p className="text-xl font-black uppercase leading-tight">{name}</p>
-                <p className="text-xs font-bold opacity-70 mt-1">{registration.email || user?.email}</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-y-3">
-              {[
-                registration.role === 'startup'
-                  ? { icon: Briefcase, label: 'Company', value: registration.companyName }
-                  : { icon: Building2, label: 'Institution', value: registration.college },
-                registration.role === 'startup'
-                  ? { icon: MapPin, label: 'City', value: registration.location }
-                  : { icon: GraduationCap, label: 'Academics', value: (registration.year && registration.department) ? `${registration.year} · ${registration.department}` : '' },
-              ].map(({ icon: Icon, label, value }, i) => {
-                if (!value || typeof value !== 'string' || value.includes('undefined') || value.trim() === '') return null;
-                return (
-                  <div key={i} className="flex items-start gap-3">
-                    <Icon className="w-4 h-4 mt-0.5 opacity-50 shrink-0" />
-                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest opacity-50">{label}</p>
-                      <span className="font-bold text-sm">{value}</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* QR code and Gate Status side-by-side */}
-          <div className="flex gap-4 mb-8">
-            {/* Check-in status */}
-            <div className={`flex-1 border-4 ${theme.border} p-4 rounded-lg flex flex-col`} style={{ background: isPremium ? 'rgba(0,0,0,0.3)' : '#f8fafc' }}>
-              <p className="font-black uppercase tracking-[0.2em] text-[10px] opacity-60 mb-3">
-                Gate Entry
-              </p>
-              <div className="flex flex-col gap-2 flex-1 justify-center">
-                {['Day 1', 'Day 2'].map((day, i) => {
-                  const checked = i === 0 ? registration.checkedInDay1 : registration.checkedInDay2;
-                  return (
-                    <div key={day} className={`flex items-center justify-between p-2 rounded border-2 transition-all ${checked ? 'bg-green-500 border-green-600 text-white shadow-[2px_2px_0px_rgba(0,100,0,0.3)]' : 'border-transparent opacity-60'}`}>
-                      <p className="font-black text-xs uppercase tracking-wider">{day} {checked && '- SCANNED'}</p>
-                      <CheckCircle2 className={`w-4 h-4 ${checked ? 'text-white' : 'opacity-30'}`} />
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* QR code */}
-            <div className={`flex flex-col items-center justify-center border-4 ${theme.border} p-4 rounded-lg bg-white shrink-0 shadow-inner`}>
-              <div className="p-1">
-                <QRCode
-                  value={user?.uid || 'invalid'}
-                  size={90}
-                  bgColor="#ffffff"
-                  fgColor="#000000"
-                  level="Q"
+          <PassCard
+            registration={registration}
+            user={user}
+            passType={currentPass.passType}
+            eventName={currentPass.eventName}
+            qrSuffix={currentPass.qrSuffix}
+            onClose={onClose}
+            onOpenHackathon={currentPass.eventName?.toLowerCase() === 'hackathon' ? onOpenHackathon : undefined}
+            overrideQrValue={currentPass.qrSuffix === 'hackathon' && hackathonLeaderUid ? `${hackathonLeaderUid}::hackathon` : undefined}
+          />
+          {/* Pagination indicators */}
+          {passes.length > 1 && (
+            <div className="flex justify-center gap-2 mt-4">
+              {passes.map((_, idx) => (
+                <div
+                  key={idx}
+                  className={`h-2 rounded-full transition-all ${idx === currentIndex ? 'w-8 bg-[#a80d11]' : 'w-2 bg-white/30'}`}
                 />
-              </div>
-              <p className="font-black uppercase tracking-[0.2em] text-[8px] text-black mt-3 text-center max-w-[90px]">
-                Scan at Gate
-              </p>
+              ))}
             </div>
-          </div>
-
-          {/* Event details */}
-          <div className={`mt-2 flex items-center justify-between border-t-2 border-current border-opacity-10 pt-5`}>
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 opacity-50" />
-              <span className="font-black text-[11px] uppercase tracking-widest opacity-80">Oct 15 & 16, 2026</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 opacity-50" />
-              <span className="font-black text-[11px] uppercase tracking-widest opacity-80">Hiran Soluva</span>
-            </div>
-          </div>
+          )}
         </div>
-      </motion.div>
+
+        {/* Right Arrow */}
+        {passes.length > 1 && (
+          <button
+            onClick={nextPass}
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 flex items-center justify-center border-2 border-white/20 text-white hover:bg-white hover:text-black transition-all shrink-0"
+          >
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+          </button>
+        )}
+      </div>
     </motion.div>
   );
 };

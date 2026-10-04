@@ -6,6 +6,7 @@ import {
   GraduationCap, Mail, User, BookOpen, Hash, Share2, Link as LinkIcon
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import api from '../utils/api';
 import {
   fetchProblemStatements,
   checkTeamNameUnique,
@@ -14,7 +15,8 @@ import {
   joinTeamInFirestore,
   subscribeToTeamDetails,
   fetchUserTeamData,
-  updateTeamInFirestore
+  updateTeamInFirestore,
+  getUserProfile
 } from '../services/hackathonService';
 import RazorpayCheckoutButton from './RazorpayCheckoutButton';
 import confetti from 'canvas-confetti';
@@ -43,16 +45,19 @@ const ErrorMsg = ({ msg }) => msg
   : null;
 
 const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
-  const { user, registration } = useAuth();
+  const { user, registration, refreshRegistration } = useAuth();
 
   // Navigation states: 'loading' | 'choice' | 'create' | 'join' | 'success' | 'dashboard'
   const [view, setView] = useState('loading');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  // Initialize hasPaid from backend state
+  const isAlreadyPaid = Array.isArray(registration?.paidEvents) && registration.paidEvents.includes('hackathon');
+  const [hasPaid, setHasPaid] = useState(isAlreadyPaid);
   // 'info' | 'payment' | 'paid-success' — then hasPaid switches to choice
-  const [paymentStep, setPaymentStep] = useState('info');
-  const [hasPaid, setHasPaid] = useState(false);
+  const [paymentStep, setPaymentStep] = useState(isAlreadyPaid ? 'paid-success' : 'info');
 
   // Loaded problem statements
   const [problemStatements, setProblemStatements] = useState([]);
@@ -187,7 +192,7 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
         return;
       }
     }
-    
+
     const numSize = Number(size); // Total members (including leader)
     const neededInvites = numSize - 1;
 
@@ -324,6 +329,19 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
         invitedEmails: formData.memberEmails,
       });
 
+      // Add hackathon to registeredEvents in the registration doc
+      try {
+        const currentEvents = registration?.registeredEvents || [];
+        if (!currentEvents.includes('hackathon')) {
+          await api.patch('/api/registrations', {
+            registeredEvents: [...currentEvents, 'hackathon']
+          });
+          await refreshRegistration();
+        }
+      } catch (passErr) {
+        console.error('Failed to add hackathon event pass:', passErr);
+      }
+
       setCreatedTeam(result);
       setView('success');
     } catch (err) {
@@ -435,6 +453,19 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
         department: memberProfile.department.trim(),
       });
 
+      // Add hackathon to registeredEvents in the registration doc
+      try {
+        const currentEvents = registration?.registeredEvents || [];
+        if (!currentEvents.includes('hackathon')) {
+          await api.patch('/api/registrations', {
+            registeredEvents: [...currentEvents, 'hackathon']
+          });
+          await refreshRegistration();
+        }
+      } catch (passErr) {
+        console.error('Failed to add hackathon event pass:', passErr);
+      }
+
       // Refresh team data and switch view to dashboard
       const updatedData = await fetchUserTeamData(user.uid);
       setActiveTeamData(updatedData);
@@ -540,13 +571,26 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
               <p className="text-center text-xs font-bold text-gray-500">
                 Complete your payment to enter the Hackathon Team Portal.
               </p>
-              <button
-                onClick={() => setPaymentStep('payment')}
-                className="w-full py-4 border-4 border-black bg-[#a80d11] text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-3"
-              >
-                Continue to Payment <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-              </button>
-              <button onClick={onClose} className="w-full py-2 text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-black transition-colors">Cancel</button>
+              
+              <div className="flex flex-col gap-3 mt-4">
+                <button
+                  onClick={() => setPaymentStep('payment')}
+                  className="w-full py-4 border-4 border-black bg-[#a80d11] text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-3"
+                >
+                  Continue to Payment <ArrowRight className="w-5 h-5" />
+                </button>
+                
+                <button
+                  onClick={() => setView('join')}
+                  className="w-full py-3 border-4 border-black bg-white text-black font-black uppercase tracking-[0.15em] text-xs hover:bg-gray-50 transition-all flex items-center justify-center gap-2 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
+                >
+                  <Users className="w-4 h-4" /> Already have a team? Join Here
+                </button>
+                
+                <button onClick={onClose} className="w-full py-2 mt-2 text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-black transition-colors">
+                  Cancel
+                </button>
+              </div>
             </motion.div>
           )}
 
@@ -569,16 +613,29 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
               </div>
               <div className="flex justify-center pt-2">
                 <RazorpayCheckoutButton
-                  amount={120000}
+                  amount={100}
                   currency="INR"
                   prefillName={registration?.name || user?.displayName || ''}
                   prefillEmail={registration?.email || user?.email || ''}
                   prefillContact={registration?.phone || ''}
-                  onSuccess={() => {
-                    confetti({ particleCount: 120, spread: 70, origin: { x: 0, y: 0.6 }, colors: ['#a80d11','#d82221','#0b2140','#f59e0b','#fff'] });
-                    confetti({ particleCount: 120, spread: 70, origin: { x: 1, y: 0.6 }, colors: ['#a80d11','#d82221','#0b2140','#f59e0b','#fff'] });
-                    setTimeout(() => confetti({ particleCount: 80, spread: 100, origin: { x: 0.5, y: 0.4 }, colors: ['#a80d11','#fbbf24','#fff','#0f50e3'] }), 250);
+                  onSuccess={async () => {
+                    try {
+                      // Save payment immediately to backend so they don't lose it if they close the modal
+                      const currentPaid = registration?.paidEvents || [];
+                      if (!currentPaid.includes('hackathon')) {
+                        await api.patch('/api/registrations', {
+                          paidEvents: [...currentPaid, 'hackathon']
+                        });
+                        await refreshRegistration();
+                      }
+                    } catch (err) {
+                      console.error("Failed to record payment in profile:", err);
+                    }
+                    confetti({ particleCount: 120, spread: 70, origin: { x: 0, y: 0.6 }, colors: ['#a80d11', '#d82221', '#0b2140', '#f59e0b', '#fff'] });
+                    confetti({ particleCount: 120, spread: 70, origin: { x: 1, y: 0.6 }, colors: ['#a80d11', '#d82221', '#0b2140', '#f59e0b', '#fff'] });
+                    setTimeout(() => confetti({ particleCount: 80, spread: 100, origin: { x: 0.5, y: 0.4 }, colors: ['#a80d11', '#fbbf24', '#fff', '#0f50e3'] }), 250);
                     setPaymentStep('paid-success');
+                    setHasPaid(true); // Optional: if you want to skip the success screen and go straight to dashboard/choice
                   }}
                 />
               </div>
@@ -1039,7 +1096,7 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
                   <div className="flex items-center gap-3">
                     <h4 className="text-3xl font-black uppercase tracking-tight">{activeTeamData.team.teamName}</h4>
                     {activeTeamData.team.leaderUid === user?.uid && (
-                      <button 
+                      <button
                         onClick={handleEditClick}
                         className="px-3 py-1 text-xs border-2 border-black bg-white hover:bg-black hover:text-white transition-colors font-black uppercase tracking-widest shadow-[2px_2px_0px_rgba(0,0,0,1)]"
                       >

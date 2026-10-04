@@ -59,6 +59,22 @@ async function registerForEvent(uid, eventId, extraData = {}) {
       txn.update(eventRef, { seatsBooked: FieldValue.increment(1) });
     }
 
+    // Update main registration document to include this event
+    const userRegRef = db.collection('registrations').doc(uid);
+    const userRegDoc = await txn.get(userRegRef);
+    if (userRegDoc.exists) {
+      const userRegData = userRegDoc.data();
+      const existingEvents = userRegData.registeredEvents || [];
+      const eventName = event.name;
+      if (!existingEvents.includes(eventName)) {
+        txn.update(userRegRef, {
+          registeredEvents: [...existingEvents, eventName],
+          passType: 'Event Pass',
+          paymentStatus: 'completed'
+        });
+      }
+    }
+
     return { id: registrationDocId, ...payload };
   });
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Menu, X, Check, Zap, Crown, Ticket, MapPin, Clock, LogOut, QrCode, UserCircle, ChevronDown, Users, Download, Mail, Phone, ExternalLink, Lightbulb, Globe, Rocket, Hammer, Network, TrendingUp, Trophy, Home, BookOpen, Layers } from 'lucide-react';
+import { Star, Menu, X, Check, Zap, Crown, Ticket, MapPin, Clock, LogOut, QrCode, UserCircle, ChevronDown, Users, Download, Mail, Phone, ExternalLink, Lightbulb, Globe, Rocket, Hammer, Network, TrendingUp, Trophy, Home, BookOpen, Layers, AlertCircle } from 'lucide-react';
 import EventSlideshow from './EventSlideshow';
 import AuthModal from './AuthModal';
 import RegistrationForm from './RegistrationForm';
@@ -14,9 +14,11 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { useNavigate } from 'react-router-dom';
 import VisitorDetailsModal from './VisitorDetailsModal';
+import { fetchUserTeamData } from '../services/hackathonService';
 
 import speaker1 from '../assets/speaker1.jpeg';
 import eventBrochure from '../assets/EVENT_BROCHURE.pdf';
+import landingMascot from '../assets/landing_page_mascot.png';
 
 const AnimatedNumber = ({ value, delay = 0 }) => {
   const numMatch = value.match(/\d+/);
@@ -63,7 +65,7 @@ const eventsData = [
   { id: 'hackathon', name: 'Hackathon', venue: 'MLCP labs', day: 'Both Days', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. 24 hours. Details about CUMTA.', eventType: 'Team Event', category: 'Technical', color: 'bg-blue-700', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1', useHackathonModal: true },
   { id: 'shark-tank', name: 'Startup Singam Jr', venue: 'Civil Block 3rd Floor - Computer labs', day: 'Day 1 & 2', description: 'In partnership with Startup Singam, Startup Singam Junior is a two-day startup pitching competition that gives young entrepreneurs the opportunity to take their ideas from the first pitch to the investor stage. Day 1 — Prelims: Participants pitch before a preliminary jury. Day 2 — Grand Finale: Shortlisted teams pitch to investors.', eventType: 'Team Event', category: 'Technical', color: 'bg-[#1f2022]', textColor: 'text-white', border: 'border-0', rotate: 'rotate-2' },
   { id: 'phoenix-protocol', name: 'Phoenix Protocol', venue: 'TRP', day: 'Day 2', description: 'Revive forgotten brands — uncover what went wrong and pitch a comeback strategy stronger than ever.', eventType: 'Team Event', category: 'Technical', color: 'bg-white', textColor: 'text-black', border: 'border-8 border-black', rotate: '-rotate-2' },
-  { id: 'illogical-marketing', name: 'Illogical Marketing', venue: 'Hi-Tech Hall 2', day: 'Day 1', description: 'Can you sell a product that makes absolutely no sense? In this challenge, participants will be given an illogical or unconventional product and must create a convincing sales pitch to make it desirable to the audience.', eventType: 'Individual', category: 'Technical', color: 'bg-yellow-400', textColor: 'text-black', border: 'border-0', rotate: 'rotate-2' },
+  { id: 'illogical-marketing', name: 'The Art of Selling Nothing', venue: 'Hi-Tech Hall 2', day: 'Day 1', description: 'Can you sell a product that makes absolutely no sense? In this challenge, participants will be given an illogical or unconventional product and must create a convincing sales pitch to make it desirable to the audience.', eventType: 'Individual', category: 'Technical', color: 'bg-yellow-400', textColor: 'text-black', border: 'border-0', rotate: 'rotate-2' },
   { id: 'junk-to-genius', name: 'Junk to Genius', venue: 'MBA Seminar Hall 1', day: 'Both Days', description: 'Using UN Sustainable Development Goals, build something brilliant from waste items.', eventType: 'Team Event', category: 'Technical', color: 'bg-red-600', textColor: 'text-white', border: 'border-0', rotate: '-rotate-2' },
   // SUBMISSION EVENT
   { id: 'reel-making', name: 'Reel Making', venue: 'Award Show Screening', day: 'Submission', description: 'Create a reel capturing the startup spirit. Top reels screened live during the award show.', eventType: 'Team Event', category: 'Submission', color: 'bg-purple-600', textColor: 'text-white', border: 'border-0', rotate: 'rotate-1' },
@@ -71,23 +73,23 @@ const eventsData = [
   { id: 'stall-expo', name: 'Stall Expo', venue: 'OAT', day: 'Both Days', description: 'Startups, sponsors, and clubs showcase to participants, investors, and students at SRM Ramapuram.', eventType: 'Showcase', category: 'Expo', color: 'bg-orange-500', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1' },
   { id: 'student-project-expo', name: 'Student Project Expo', venue: 'Library', day: 'Both Days', description: 'University students showcase their working projects to relevant stakeholders and a live audience.', eventType: 'Individual/Team', category: 'Expo', color: 'bg-cyan-500', textColor: 'text-black', border: 'border-0', rotate: 'rotate-2' },
   // EXPERT EVENTS
-  { id: 'panel-discussions', name: 'Panel Discussions', venue: 'GEETHAM', day: 'Day 1', description: 'A dynamic panel discussion where a diverse set of industry leaders, entrepreneurs and experts share their real-time experiences, insights and perspectives on a given theme. The conversation will explore real-world challenges, different viewpoints, practical experiences and emerging trends, offering the audience an opportunity to learn directly from those with firsthand experience. The session will conclude with an interactive Q&A, allowing the audience to engage with the panelists, ask questions and gain deeper insights.', eventType: 'Individual', category: 'Expert', color: 'bg-indigo-600', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1' },
+  // { id: 'panel-discussions', name: 'Panel Discussions', venue: 'GEETHAM', day: 'Day 1', description: 'A dynamic panel discussion where a diverse set of industry leaders, entrepreneurs and experts share their real-time experiences, insights and perspectives on a given theme. The conversation will explore real-world challenges, different viewpoints, practical experiences and emerging trends, offering the audience an opportunity to learn directly from those with firsthand experience. The session will conclude with an interactive Q&A, allowing the audience to engage with the panelists, ask questions and gain deeper insights.', eventType: 'Individual', category: 'Expert', color: 'bg-indigo-600', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1' },
   { id: 'keynote-speeches', name: 'Keynote Speeches', venue: 'TRP / GEETHAM', day: 'Both Days', description: 'Inspiring keynote sessions alongside inaugurations and the beginning of key events.', eventType: 'Attendance', category: 'Expert', color: 'bg-[#2d3748]', textColor: 'text-white', border: 'border-0', rotate: 'rotate-1' },
-  { id: 'live-podcast', name: 'Live Podcast', venue: 'GEETHAM / TRP', day: 'Both Days', description: 'What really happens behind the success story? Hear directly from successful founders from Tamil Nadu as they share their entrepreneurial journeys — the risks they took, the failures they faced, the decisions that changed everything, and what they did differently to build their ventures. An honest, unfiltered conversation beyond the usual success stories, giving the audience a real look into what it takes to build, fail, adapt and grow a startup. No scripts. No filters. Just real founder stories.', eventType: 'Individual', category: 'Expert', color: 'bg-pink-500', textColor: 'text-white', border: 'border-0', rotate: '-rotate-2' },
+  // { id: 'live-podcast', name: 'Live Podcast', venue: 'GEETHAM / TRP', day: 'Both Days', description: 'What really happens behind the success story? Hear directly from successful founders from Tamil Nadu as they share their entrepreneurial journeys — the risks they took, the failures they faced, the decisions that changed everything, and what they did differently to build their ventures. An honest, unfiltered conversation beyond the usual success stories, giving the audience a real look into what it takes to build, fail, adapt and grow a startup. No scripts. No filters. Just real founder stories.', eventType: 'Individual', category: 'Expert', color: 'bg-pink-500', textColor: 'text-white', border: 'border-0', rotate: '-rotate-2' },
   { id: 'pavilions', name: 'Pavilions', venue: 'Wing 3', day: 'Day 1', description: 'StartupTN and other organizations with inquiry spots and scheme explanations.', eventType: 'Attendance', category: 'Expert', color: 'bg-teal-500', textColor: 'text-white', border: 'border-0', rotate: 'rotate-2' },
   // MAIN STAGE
   { id: 'social-impact-awards', name: 'Social Impact Awards', venue: 'GEETHAM', day: 'Day 2', description: 'Recognizing social impact-oriented startups making a real difference in the world.', eventType: 'Award', category: 'Main Stage', color: 'bg-amber-500', textColor: 'text-black', border: 'border-0', rotate: '-rotate-1' },
   { id: 'sponsor-promotions', name: 'Sponsor Promotions', venue: 'Along with Awards', day: 'Day 2', description: 'Startup companies launch new products or technology in front of stakeholders for maximum reach.', eventType: 'Showcase', category: 'Main Stage', color: 'bg-lime-400', textColor: 'text-black', border: 'border-0', rotate: 'rotate-2' },
   { id: 'valedictory', name: 'Valedictory', venue: 'Along with Awards', day: 'Day 2', description: 'Grand closing ceremony honouring the Hackathon and Shark Tank winners.', eventType: 'Attendance', category: 'Main Stage', color: 'bg-rose-600', textColor: 'text-white', border: 'border-0', rotate: '-rotate-2' },
   { id: 'easwari-startups-launch', name: 'Easwari Startups Launch', venue: 'Main Stage', day: 'Day 2', description: 'Identifying and honouring student startups incubated by Dr. R Shivakumar Foundation.', eventType: 'Award', category: 'Main Stage', color: 'bg-violet-600', textColor: 'text-white', border: 'border-0', rotate: 'rotate-1' },
-  { id: 'standup', name: 'Standup', venue: 'Main Stage', day: 'Day 1', description: 'Lightning standup sessions — share your startup idea with the audience in 60 seconds.', eventType: 'Individual', category: 'Main Stage', color: 'bg-emerald-500', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1' },
+  // { id: 'standup', name: 'Standup', venue: 'Main Stage', day: 'Day 1', description: 'Lightning standup sessions — share your startup idea with the audience in 60 seconds.', eventType: 'Individual', category: 'Main Stage', color: 'bg-emerald-500', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1' },
   // WORKSHOP / MENTORSHIP
   { id: 'design-thinking-bootcamp', name: 'Design Thinking Bootcamp', venue: 'MBA Seminar Hall 2', day: 'Both Days', description: 'A hands-on workshop to develop human-centric, real-world problem-solving skills.', eventType: 'Individual', category: 'Workshop', color: 'bg-sky-500', textColor: 'text-white', border: 'border-0', rotate: 'rotate-2' },
-  { id: 'startup-dating', name: 'Startup Dating', venue: 'Hi-Tech 1', day: 'Both Days', description: 'Students with identified problems get guidance to transform their idea into a real startup.', eventType: 'Individual', category: 'Workshop', color: 'bg-fuchsia-500', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1' },
+  // { id: 'startup-dating', name: 'Startup Dating', venue: 'Hi-Tech 1', day: 'Both Days', description: 'Students with identified problems get guidance to transform their idea into a real startup.', eventType: 'Individual', category: 'Workshop', color: 'bg-fuchsia-500', textColor: 'text-white', border: 'border-0', rotate: '-rotate-1' },
   { id: 'incubation-hub-pavilions', name: 'Incubation Hub Pavilions', venue: 'Wing 3', day: 'Both Days', description: 'Pavilions for incubation organizations — inquiry spots and scheme explanations.', eventType: 'Attendance', category: 'Workshop', color: 'bg-yellow-600', textColor: 'text-white', border: 'border-0', rotate: 'rotate-1' },
   // ADD-ONS
-  { id: 'one-to-one-mentorship', name: 'One-to-One Mentorship', venue: 'Library Panels', day: 'Both Days', description: 'Get personalized one-on-one guidance from industry experts and successful founders.', eventType: 'Individual', category: 'Mentorship', color: 'bg-[#374151]', textColor: 'text-white', border: 'border-0', rotate: '-rotate-2' },
-  { id: 'fireside-chat', name: 'Fireside Chat', venue: 'CIVIL Ground Floor', day: 'Both Days', description: 'Intimate conversations with successful entrepreneurs and innovators in a relaxed setting.', eventType: 'Individual', category: 'Mentorship', color: 'bg-red-800', textColor: 'text-white', border: 'border-0', rotate: 'rotate-2' },
+  // { id: 'one-to-one-mentorship', name: 'One-to-One Mentorship', venue: 'Library Panels', day: 'Both Days', description: 'Get personalized one-on-one guidance from industry experts and successful founders.', eventType: 'Individual', category: 'Mentorship', color: 'bg-[#374151]', textColor: 'text-white', border: 'border-0', rotate: '-rotate-2' },
+  // { id: 'fireside-chat', name: 'Fireside Chat', venue: 'CIVIL Ground Floor', day: 'Both Days', description: 'Intimate conversations with successful entrepreneurs and innovators in a relaxed setting.', eventType: 'Individual', category: 'Mentorship', color: 'bg-red-800', textColor: 'text-white', border: 'border-0', rotate: 'rotate-2' },
 ];
 
 const EventCard = ({ title, date, color, textColor, border, rotate, onClick }) => (
@@ -521,6 +523,7 @@ const MainLayout = () => {
   const [showHackathonModal, setShowHackathonModal] = useState(false);
   const [hackathonJoinCode, setHackathonJoinCode] = useState('');
   const [profileWarning, setProfileWarning] = useState(false);
+  const [userHasHackathonTeam, setUserHasHackathonTeam] = useState(false);
 
   // Event registration modal state
   const [showEventModal, setShowEventModal] = useState(false);
@@ -530,10 +533,23 @@ const MainLayout = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showVisitorModal, setShowVisitorModal] = useState(false);
   const [showVisitorPaymentModal, setShowVisitorPaymentModal] = useState(false);
+  const [showGeneralPassWarning, setShowGeneralPassWarning] = useState(false);
+  const [showMultipleEventWarning, setShowMultipleEventWarning] = useState(false);
 
   const userMenuRef = useRef(null);
   const { user, registration, loadingAuth } = useAuth();
   const navigate = useNavigate();
+
+  // Fetch hackathon team membership to conditionally show nav button
+  useEffect(() => {
+    if (user && registration?.registeredEvents?.includes('hackathon')) {
+      fetchUserTeamData(user.uid)
+        .then(data => setUserHasHackathonTeam(!!(data?.team)))
+        .catch(() => setUserHasHackathonTeam(false));
+    } else {
+      setUserHasHackathonTeam(false);
+    }
+  }, [user, registration]);
 
   // Handle URL joinCode parameter on load
   useEffect(() => {
@@ -599,7 +615,6 @@ const MainLayout = () => {
     }
   };
 
-  // ── Event card "Join Now" — gates on Event Pass ───────────────────────────────
   const handleEventJoin = (event) => {
     if (!user) {
       setPendingEvent(event);
@@ -612,13 +627,22 @@ const MainLayout = () => {
       setShowRegForm(true);
       return;
     }
-    const hasEventPass = registration.paymentStatus !== 'pending' &&
-      registration.passType !== 'None' &&
-      registration.passType !== 'Visitor\'s Pass';
-    if (!hasEventPass) {
-      setShowEventPassGate(true);
+
+    if (registration.passType === "Visitor's Pass" && registration.paymentStatus !== 'pending') {
+      setShowGeneralPassWarning(true);
       return;
     }
+
+    if (registration.registeredEvents && registration.registeredEvents.length > 0) {
+      setPendingEvent(event);
+      setShowMultipleEventWarning(true);
+      return;
+    }
+
+    proceedWithEventJoin(event);
+  };
+
+  const proceedWithEventJoin = (event) => {
     if (event.useHackathonModal) {
       setShowHackathonModal(true);
     } else {
@@ -699,7 +723,6 @@ const MainLayout = () => {
       return;
     }
 
-    // ── Event source ──
     if (authModal.source === 'event') {
       setAuthModal(prev => ({ ...prev, source: '' }));
       const evt = pendingEvent;
@@ -707,13 +730,12 @@ const MainLayout = () => {
       if (!registration) {
         setPendingPass('Visitor\'s Pass');
         setShowRegForm(true);
-      } else if (!hasEventPass) {
-        setShowEventPassGate(true);
-      } else if (evt.useHackathonModal) {
-        setShowHackathonModal(true);
+      } else if (registration.passType === "Visitor's Pass" && registration.paymentStatus !== 'pending') {
+        setShowGeneralPassWarning(true);
+      } else if (registration.registeredEvents && registration.registeredEvents.length > 0) {
+        setShowMultipleEventWarning(true);
       } else {
-        setSelectedEvent(evt);
-        setShowEventModal(true);
+        proceedWithEventJoin(evt);
         setPendingEvent(null);
       }
       return;
@@ -893,6 +915,7 @@ const MainLayout = () => {
           <h1 className="flex items-center gap-4 md:gap-6 text-3xl md:text-4xl lg:text-5xl font-black uppercase text-blue-600 tracking-tighter leading-none">
             <img src="EEC_text_logo.png" alt="Easwari Logo" className="h-25 md:h-23 w-60 object-contain" />
             <img src="peravai_logo.png" alt="Peravai Logo" className="h-30 md:h-30 w-60 object-contain" />
+            <img src="tn_govt.png" alt="tn_govt" className="h-35 md:h-30 w-28 object-contain" />
           </h1>
 
           {/* Desktop nav */}
@@ -939,12 +962,7 @@ const MainLayout = () => {
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.15 }}
                       className="absolute right-0 top-full mt-2 w-48 border-4 border-black bg-white shadow-[6px_6px_0px_rgba(0,0,0,1)] z-50">
-                      {(!registration || registration.passType !== "Visitor's Pass") && (
-                        <button onClick={() => { handleOpenHackathon(); setUserMenuOpen(false); }}
-                          className="w-full flex items-center gap-3 px-4 py-3 font-black uppercase tracking-widest text-xs bg-blue-50 text-blue-900 hover:bg-black hover:text-white transition-colors border-b-2 border-black">
-                          <Users className="w-4 h-4 text-blue-600" /> Hackathon Team
-                        </button>
-                      )}
+
                       {registration && registration.paymentStatus !== 'pending' && (
                         <button onClick={() => { setShowDashboard(true); setUserMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-4 py-3 font-black uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-colors border-b-2 border-black">
@@ -1033,12 +1051,7 @@ const MainLayout = () => {
                   <Ticket className="w-5 h-5" /> Choose Pass
                 </button>
               )}
-              {user && (!registration || registration.passType !== "Visitor's Pass") && (
-                <button onClick={() => { handleOpenHackathon(); setMenuOpen(false); }}
-                  className="w-full flex items-center gap-3 px-8 py-4 font-black uppercase tracking-widest text-blue-900 bg-blue-50 border-b-2 border-black hover:bg-black hover:text-white transition-colors">
-                  <Users className="w-5 h-5 text-blue-600" /> Hackathon Team
-                </button>
-              )}
+
               {!user ? (
                 <button onClick={() => { handleRegisterHereClick(); setMenuOpen(false); }}
                   className="w-full px-8 py-4 font-black uppercase tracking-widest bg-[#1f2022] text-white hover:bg-black transition-colors text-left">
@@ -1057,6 +1070,40 @@ const MainLayout = () => {
         {/* ── Hero Headline ── */}
         <div className="text-center mb-20 md:mb-32 relative z-10">
           <div className="relative w-full px-4 mb-2">
+            {/* ── Mascot Wrapper ── */}
+            <div
+              className="absolute pointer-events-none z-20 w-full"
+              style={{
+                bottom: 'calc(clamp(1.5rem, 5vw, 4.5rem) + 4px)',
+                fontSize: 'clamp(3rem, 9vw, 8rem)',
+              }}
+            >
+              <motion.img
+                initial={{ opacity: 0, scale: 0.8, x: -40, rotate: -10 }}
+                animate={{ opacity: 1, scale: 1, x: 0, rotate: 0 }}
+                transition={{
+                  delay: 1.1,
+                  type: 'spring',
+                  stiffness: 180,
+                  damping: 14,
+                }}
+                src={landingMascot}
+                alt="Easwari Startup Peravai Mascot"
+                className="
+      absolute
+      bottom-[0.59em]
+      left-[calc(50%-6.2em)]
+      h-[1.42em]
+      md:left-[calc(50%-3.7em)]
+      md:h-[1.38em]
+    "
+                style={{
+                  width: 'auto',
+                  objectFit: 'contain',
+                  userSelect: 'none',
+                }}
+              />
+            </div>
             <h2 className="font-black uppercase tracking-tighter text-center w-full leading-none">
               <span className="block overflow-hidden mb-1">
                 <motion.span
@@ -1194,12 +1241,38 @@ const MainLayout = () => {
               className="mb-10 md:mb-14"
             >
               <div className="h-[4.5px] mb-6 w-full" style={{ background: 'linear-gradient(to right, #000000ff, #000000ff 35%, #000000ff 100%, #0f50e3)' }} />
-              <p className="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-gray-400 mb-3">Who We Are</p>
-              <h2 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase text-black tracking-tighter leading-none">
-                About<br /><span style={blueGrad}>Peravai.</span>
-              </h2>
-            </motion.div>
+              <div className="flex flex-col xl:flex-row justify-between xl:items-stretch gap-8 relative pb-2 md:pb-0">
+                <div className="flex-shrink-0 flex flex-col justify-end">
+                  <p className="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-gray-400 mb-3">Who We Are</p>
+                  <h2 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase text-black tracking-tighter leading-none">
+                    About<br /><span style={blueGrad}>Peravai.</span>
+                  </h2>
+                </div>
 
+                <div className="flex-1 flex xl:justify-end">
+                  <div className="w-full border-4 border-black bg-[#f6f4ee] p-4 shadow-[6px_6px_0px_rgba(0,0,0,1)] flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-7">
+
+                    <img src="shivakumar.png" alt="shivakumar" className="h-16 md:h-24 w-auto object-contain shrink-0" />
+
+                    <div className="flex items-start gap-4 flex-1">
+                      <div className="w-11 h-11 shrink-0 border-black items-center justify-center hidden sm:flex">
+                        <TrendingUp className="w-7 h-7 text-black" />
+                      </div>
+                      <div>
+                        <p className="font-black uppercase tracking-[0.2em] text-[10px] text-gray-500 mb-1">Investment</p>
+                        <p className="font-black text-sm md:text-base leading-snug text-[#a80d11]">
+                          Upto 1 Crore Investment Commitment
+                        </p>
+                        <p className="font-black text-[13px] md:text-sm leading-snug text-[#1f2022] mt-1 text-justify">
+                          Through our in-house Dr. R. Sivakumar Research and Innovation Foundation, Government grants, and our network of investors and ecosystem partners, promising startups will gain access to funding, incubation, mentorship and investment opportunities.
+                        </p>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </motion.div>
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
               <motion.div
                 initial={{ opacity: 0, x: -40 }}
@@ -1224,7 +1297,7 @@ const MainLayout = () => {
                   </p>
                 </div>
                 <div className="border-t-2 border-white/10 pt-6">
-                  <p className="font-black text-sm md:text-base leading-relaxed text-gray-500">
+                  <p className="font-black text-sm md:text-base leading-relaxed text-gray-800">
                     Every breakthrough begins with an idea. But ideas become reality when they meet the right people, opportunities, resources, and support.{' '}
                     <span className="text-black">Peravai exists to build that bridge.</span>
                   </p>
@@ -1766,7 +1839,13 @@ const MainLayout = () => {
 
       <AnimatePresence>
         {showDashboard && registration && (
-          <UserDashboard onClose={() => setShowDashboard(false)} />
+          <UserDashboard
+            onClose={() => setShowDashboard(false)}
+            onOpenHackathon={() => {
+              setShowDashboard(false);
+              setShowHackathonModal(true);
+            }}
+          />
         )}
       </AnimatePresence>
 
@@ -1851,6 +1930,115 @@ const MainLayout = () => {
         )}
       </AnimatePresence>
 
+      <AnimatePresence>
+        {showGeneralPassWarning && (
+          <motion.div
+            className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          >
+            <div
+              className="fixed inset-0"
+              style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}
+              onClick={() => setShowGeneralPassWarning(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="relative z-10 w-full max-w-md border-4 border-black bg-[#fffefa] shadow-[14px_14px_0px_rgba(0,0,0,1)]"
+            >
+              <div className="h-3" style={{ background: 'linear-gradient(to right, #a80d11, #d82221 45%, #0b2140 55%, #0f50e3)' }} />
+              <div className="p-8">
+                <div className="flex justify-end mb-4">
+                  <button onClick={() => setShowGeneralPassWarning(false)} className="text-gray-400 hover:text-black transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="w-16 h-16 bg-red-500 border-4 border-black flex items-center justify-center mb-6 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+                  <AlertCircle className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-black uppercase tracking-tight mb-3">Already Have General Pass</h3>
+                <p className="font-bold text-gray-600 mb-6 leading-relaxed">
+                  Like you have already bought a general pass try with a diff account.
+                </p>
+
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => setShowGeneralPassWarning(false)}
+                    className="w-full py-4 border-4 border-black bg-[#1f2022] text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
+                  >
+                    Got It
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showMultipleEventWarning && (
+          <motion.div
+            className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          >
+            <div
+              className="fixed inset-0"
+              style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}
+              onClick={() => setShowMultipleEventWarning(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="relative z-10 w-full max-w-md border-4 border-black bg-[#fffefa] shadow-[14px_14px_0px_rgba(0,0,0,1)]"
+            >
+              <div className="h-3" style={{ background: 'linear-gradient(to right, #a80d11, #d82221 45%, #0b2140 55%, #0f50e3)' }} />
+              <div className="p-8">
+                <div className="flex justify-end mb-4">
+                  <button onClick={() => setShowMultipleEventWarning(false)} className="text-gray-400 hover:text-black transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="w-16 h-16 bg-blue-500 border-4 border-black flex items-center justify-center mb-6 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+                  <AlertCircle className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-black uppercase tracking-tight mb-3">Notice</h3>
+                <p className="font-bold text-gray-600 mb-6 leading-relaxed">
+                  You have already registered for {registration?.registeredEvents?.join(', ')}. Please check the timings before registering for this event.
+                </p>
+
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => {
+                      setShowMultipleEventWarning(false);
+                      if (pendingEvent) {
+                        proceedWithEventJoin(pendingEvent);
+                        setPendingEvent(null);
+                      }
+                    }}
+                    className="w-full py-4 border-4 border-black bg-[#1f2022] text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
+                  >
+                    Continue
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowMultipleEventWarning(false);
+                      setPendingEvent(null);
+                    }}
+                    className="w-full py-3 border-4 border-black bg-white font-black uppercase tracking-widest text-xs hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Event Registration Modal ── */}
       <AnimatePresence>
         {showEventModal && selectedEvent && (
@@ -1870,6 +2058,10 @@ const MainLayout = () => {
         onGetPass={() => {
           setShowVisitorModal(false);
           handleVisitorPassClick();
+        }}
+        onShowPass={() => {
+          setShowVisitorModal(false);
+          setShowDashboard(true);
         }}
         hasPass={!!(registration && registration.paymentStatus !== 'pending' && registration.passType !== 'None')}
       />
