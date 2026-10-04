@@ -1072,7 +1072,7 @@ const MainLayout = () => {
           <div className="relative w-full px-4 mb-2">
             <h2 className="font-black uppercase tracking-tighter text-center w-full leading-none flex flex-col items-center">
               <div className="inline-flex items-center justify-center mb-1 relative">
-                <div className="hidden md:block absolute pointer-events-none z-20" style={{ height: '1.20em', left: '-0.9em', bottom: '0.2em', fontSize: 'clamp(3rem, 9vw, 8rem)' }}>
+                <div className="hidden md:block absolute pointer-events-none z-20" style={{ height: '1.20em', left: '-0.9em', bottom: '0.15em', fontSize: 'clamp(3rem, 9vw, 8rem)' }}>
                   <motion.img
                     initial={{ opacity: 0, scale: 0.8, x: -40, rotate: -10 }}
                     animate={{ opacity: 1, scale: 1, x: 0, rotate: 0 }}
