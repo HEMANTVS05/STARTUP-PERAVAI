@@ -565,13 +565,13 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
               </div>
               <div className="border-4 border-black p-6 bg-[#fff5f5] text-center">
                 <p className="font-black uppercase tracking-[0.25em] text-xs text-gray-500 mb-2">Registration Fee</p>
-                <p className="font-black text-5xl text-[#a80d11] mb-1">₹1200</p>
+                <p className="font-black text-5xl text-[#a80d11] mb-1">₹1500</p>
                 <p className="font-bold text-xs text-gray-500 uppercase tracking-wider">Hackathon</p>
               </div>
               <p className="text-center text-xs font-bold text-gray-500">
                 Complete your payment to enter the Hackathon Team Portal.
               </p>
-              
+
               <div className="flex flex-col gap-3 mt-4">
                 <button
                   onClick={() => setPaymentStep('payment')}
@@ -579,14 +579,14 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
                 >
                   Continue to Payment <ArrowRight className="w-5 h-5" />
                 </button>
-                
+
                 <button
                   onClick={() => setView('join')}
                   className="w-full py-3 border-4 border-black bg-white text-black font-black uppercase tracking-[0.15em] text-xs hover:bg-gray-50 transition-all flex items-center justify-center gap-2 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
                 >
                   <Users className="w-4 h-4" /> Already have a team? Join Here
                 </button>
-                
+
                 <button onClick={onClose} className="w-full py-2 mt-2 text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-black transition-colors">
                   Cancel
                 </button>
@@ -599,7 +599,7 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-5 text-center">
               <div className="border-4 border-black p-5 bg-[#fff5f5]">
                 <p className="font-black uppercase tracking-[0.25em] text-xs text-gray-500 mb-2">Amount</p>
-                <p className="font-black text-4xl text-[#a80d11]">₹1200</p>
+                <p className="font-black text-4xl text-[#a80d11]">₹1500</p>
                 <p className="font-bold text-xs text-gray-400 mt-1">Hackathon Registration</p>
               </div>
               <div className="border-4 border-black p-4 bg-[#f0f9ff] flex items-center gap-3">
@@ -613,7 +613,7 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
               </div>
               <div className="flex justify-center pt-2">
                 <RazorpayCheckoutButton
-                  amount={100}
+                  amount={150000}
                   currency="INR"
                   prefillName={registration?.name || user?.displayName || ''}
                   prefillEmail={registration?.email || user?.email || ''}

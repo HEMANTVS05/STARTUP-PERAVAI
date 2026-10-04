@@ -62,7 +62,7 @@ export const PassCard = ({ registration, user, passType, eventName, qrSuffix, on
 
   const passLabel = isEvent ? (eventName?.toUpperCase() || 'EVENT') : "VISITOR'S PASS";
   const passSubLabel = isEvent ? eventName : (registration.sessionChoice || 'General Access');
-  const passTag = isEvent ? 'All-Access Granted' : 'Open Entry Valid';
+  const passTag = isEvent ? 'Registered' : 'Registered';
 
   return (
     <motion.div

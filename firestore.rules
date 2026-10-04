@@ -59,8 +59,17 @@ service cloud.firestore {
     }
 
     // ── /teams ────────────────────────────────────────────────────────────────
-    // Authenticated users can read/write teams (temporarily opened for frontend Team logic).
+    // Authenticated users can read/write hackathon teams (temporarily opened for frontend Team logic).
     match /teams/{teamId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // ── /eventTeams ───────────────────────────────────────────────────────────
+    // Authenticated users can read/write their group event teams.
+    match /eventTeams/{eventId}/teams/{teamId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /eventTeams/{eventId}/team_members/{memberId} {
       allow read, write: if isAuthenticated();
     }
 

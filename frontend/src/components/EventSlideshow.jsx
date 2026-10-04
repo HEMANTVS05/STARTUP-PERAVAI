@@ -4,6 +4,8 @@ import { ArrowLeft, ArrowRight, Play, Volume2, VolumeX, Maximize2, X } from 'luc
 import minister from "../assets/minister1.jpeg";
 import team from "../assets/team1.jpeg";
 import video1 from "../assets/video_1.mp4";
+import msme from "../assets/MSME.jpeg";
+import awards from "../assets/awards.jpeg";
 
 const events = [
   {
@@ -24,15 +26,15 @@ const events = [
   },
   {
     id: 3,
-    title: "Founder's Networking",
-    description: "Connect with the brightest minds in the ecosystem. An exclusive evening of high-value conversations, partnership building, and knowledge sharing among top founders.",
-    image: null,
+    title: "MSME Minister",
+    description: "A meaningful discussion with the Hon’ble MSME Minister and StartupTN CEO on expanding Peravai’s vision, reach, and opportunities for young entrepreneurs across Tamil Nadu.",
+    image: msme,
   },
   {
     id: 4,
-    title: "Startup Hackathon",
+    title: "Social Impact Awards",
     description: "A 48-hour sprint to build the future. Collaborate with developers, designers, and visionaries to prototype groundbreaking products and pitch to top investors.",
-    image: null,
+    image: awards,
   }
 ];
 

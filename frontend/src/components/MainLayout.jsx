@@ -919,7 +919,7 @@ const MainLayout = () => {
           </h1>
 
           {/* Desktop nav */}
-          <div className="hidden lg:flex items-center gap-6 xl:gap-10 text-sm font-black text-gray-500 uppercase tracking-widest">
+          <div className="hidden 2xl:flex items-center gap-6 xl:gap-10 text-sm font-black text-gray-500 uppercase tracking-widest">
             {['Insights', 'Passes', 'Speakers', 'Brochure', 'Contact'].map(item => (
               <a key={item}
                 href={`#${item === 'Insights' ? 'whats-happening' : item.toLowerCase()}`}
@@ -998,7 +998,7 @@ const MainLayout = () => {
 
           {/* Mobile menu toggle */}
           <button
-            className="lg:hidden w-12 h-12 border-4 border-black flex items-center justify-center bg-white shadow-[4px_4px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all"
+            className="2xl:hidden w-12 h-12 border-4 border-black flex items-center justify-center bg-white shadow-[4px_4px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all"
             onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -1018,7 +1018,7 @@ const MainLayout = () => {
           {menuOpen && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}
-              className="overflow-hidden lg:hidden border-4 border-black bg-white mb-10 shadow-[6px_6px_0px_rgba(0,0,0,1)]">
+              className="overflow-hidden 2xl:hidden border-4 border-black bg-white mb-10 shadow-[6px_6px_0px_rgba(0,0,0,1)]">
               {['Insights', 'Events', 'Passes', 'Speakers', 'Contact'].map((item) => (
                 <a key={item}
                   href={`#${item === 'Insights' ? 'whats-happening' : item.toLowerCase()}`}
@@ -1070,52 +1070,30 @@ const MainLayout = () => {
         {/* ── Hero Headline ── */}
         <div className="text-center mb-20 md:mb-32 relative z-10">
           <div className="relative w-full px-4 mb-2">
-            {/* ── Mascot Wrapper ── */}
-            <div
-              className="absolute pointer-events-none z-20 w-full"
-              style={{
-                bottom: 'calc(clamp(1.5rem, 5vw, 4.5rem) + 4px)',
-                fontSize: 'clamp(3rem, 9vw, 8rem)',
-              }}
-            >
-              <motion.img
-                initial={{ opacity: 0, scale: 0.8, x: -40, rotate: -10 }}
-                animate={{ opacity: 1, scale: 1, x: 0, rotate: 0 }}
-                transition={{
-                  delay: 1.1,
-                  type: 'spring',
-                  stiffness: 180,
-                  damping: 14,
-                }}
-                src={landingMascot}
-                alt="Easwari Startup Peravai Mascot"
-                className="
-      absolute
-      bottom-[0.59em]
-      left-[calc(50%-6.2em)]
-      h-[1.42em]
-      md:left-[calc(50%-3.7em)]
-      md:h-[1.38em]
-    "
-                style={{
-                  width: 'auto',
-                  objectFit: 'contain',
-                  userSelect: 'none',
-                }}
-              />
-            </div>
-            <h2 className="font-black uppercase tracking-tighter text-center w-full leading-none">
-              <span className="block overflow-hidden mb-1">
-                <motion.span
-                  className="block whitespace-nowrap"
-                  style={{ ...logoGrad, fontSize: 'clamp(3rem, 9vw, 8rem)' }}
-                  initial={{ y: '110%', opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.75, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  Easwari
-                </motion.span>
-              </span>
+            <h2 className="font-black uppercase tracking-tighter text-center w-full leading-none flex flex-col items-center">
+              <div className="inline-flex items-center justify-center mb-1 relative">
+                <div className="hidden md:block absolute pointer-events-none z-20" style={{ height: '1.20em', left: '-0.9em', bottom: '0.2em', fontSize: 'clamp(3rem, 9vw, 8rem)' }}>
+                  <motion.img
+                    initial={{ opacity: 0, scale: 0.8, x: -40, rotate: -10 }}
+                    animate={{ opacity: 1, scale: 1, x: 0, rotate: 0 }}
+                    transition={{ delay: 1.1, type: 'spring', stiffness: 180, damping: 14 }}
+                    src={landingMascot}
+                    alt="Easwari Startup Peravai Mascot"
+                    className="w-auto h-full object-contain"
+                  />
+                </div>
+                <span className="block overflow-hidden relative z-10">
+                  <motion.span
+                    className="block whitespace-nowrap"
+                    style={{ ...logoGrad, fontSize: 'clamp(3rem, 9vw, 8rem)' }}
+                    initial={{ y: '110%', opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.75, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    Easwari
+                  </motion.span>
+                </span>
+              </div>
               <span className="flex items-baseline justify-center gap-[2vw] overflow-hidden">
                 <span className="overflow-hidden">
                   <motion.span
@@ -1204,10 +1182,10 @@ const MainLayout = () => {
             <div className="relative flex overflow-hidden">
               <motion.div
                 className="flex items-center gap-16 md:gap-24 w-max"
-                animate={{ x: ['0%', '-50%'] }}
+                animate={{ x: ['0%', '-25%'] }}
                 transition={{ duration: 16, repeat: Infinity, ease: 'linear' }}
               >
-                {[...Array(2)].map((_, i) => (
+                {[...Array(4)].map((_, i) => (
                   <React.Fragment key={i}>
                     {['StartupTN.png', 'airtel.png', 'shortfundly.png', 'aspireforher.png', 'cumta.png', 'icc.png', 'impacttree.png', 'jetro.png', 'overqualifiedhousewives.png', 'startupsingam.png', 'tnrise.png', 'tnskills.png', 'wesafe.png'].map((logo, index) => (
                       <img

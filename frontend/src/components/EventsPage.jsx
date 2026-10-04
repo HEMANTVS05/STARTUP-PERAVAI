@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Zap, Users, User, AlertCircle, MapPin, Calendar, ArrowRight, X, BookOpen, ChevronRight, ChevronLeft, Clock, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import EventRegistrationModal from './EventRegistrationModal';
 import HackathonModal from './HackathonModal';
+import GroupEventModal from './GroupEventModal';
 import AuthModal from './AuthModal';
 import RegistrationForm from './RegistrationForm';
 import hackathonRulesPoster from '../assets/rules11.png';
@@ -55,7 +56,7 @@ const GROUP_EVENTS = [
         </div>
       </>
     ),
-    venue: 'MLCP labs', day: 'Both Days', time: '1 PM Onwards', accent: '#0b2140', accentLight: '#e8f0ff',
+    venue: 'MLCP labs', day: 'Both Days', time: '1 PM Onwards', accent: '#0b2140', accentLight: '#e8f0ff', fee: 1500,
     rules: [
       { title: 'Team Size', body: 'Each team must consist of 3–5 members.' },
       { title: 'Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
@@ -99,6 +100,7 @@ const GROUP_EVENTS = [
 
     coverImage: rupeesPoster,
     posters: [rupeesRulesPoster],
+    fee: 600,
   },
   {
     id: 'scale-up-studio', name: 'ScaleUp Studio', limit: 'Limit 3',
@@ -133,6 +135,7 @@ const GROUP_EVENTS = [
 
     coverImage: scaleupPoster,
     posters: [scaleupRulesPoster],
+    fee: 600,
   },
 ];
 
@@ -166,7 +169,7 @@ const INDIVIDUAL_EVENTS = [
         </div>
       </>
     ),
-    venue: 'Hi-Tech Hall 2', day: 'Day 2', time: '9 AM Onwards', accent: '#a80d11', accentLight: '#fff0f0',
+    venue: 'Hi-Tech Hall 2', day: 'Day 1', time: '9 AM Onwards', accent: '#a80d11', accentLight: '#fff0f0',
     rules: [
       { title: '1. Solo Event', body: 'This is a solo event.' },
       { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
@@ -1432,6 +1435,8 @@ const EventsPage = () => {
   }, []);
 
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showGroupModal, setShowGroupModal] = useState(false);
+  const [selectedGroupEvent, setSelectedGroupEvent] = useState(null);
   const [showPaymentAlert, setShowPaymentAlert] = useState(false);
   const [authModal, setAuthModal] = useState({ open: false, pass: '', source: '' });
   const [showProfileForm, setShowProfileForm] = useState(false);
@@ -1445,23 +1450,40 @@ const EventsPage = () => {
       setAuthModal({ open: true, pass: 'EVENT PASS', source: 'event-browse' });
       return;
     }
-    // Profile not completed yet — prompt them to complete it first
     if (!registration) {
       setPendingEventAfterProfile(event);
       setShowProfileForm(true);
       return;
     }
-    // Already registered for THIS event — open the modal directly (no warning)
-    const alreadyRegisteredForThis = registration.registeredEvents?.includes(event.id);
-    if (alreadyRegisteredForThis) {
-      setSelectedEvent(event);
+    // Already registered — open the right modal directly
+    const alreadyRegistered = registration.registeredEvents?.includes(event.id);
+    if (alreadyRegistered) {
+      if (event.id === 'hackathon') {
+        setSelectedEvent(event);
+      } else if (GROUP_EVENTS.find(g => g.id === event.id)) {
+        setSelectedGroupEvent(event);
+        setShowGroupModal(true);
+      } else {
+        setSelectedEvent(event);
+      }
       return;
     }
-    // All clear — open event modal
-    setSelectedEvent(event);
+    // Not yet registered
+    if (event.id === 'hackathon') {
+      setSelectedEvent(event);
+    } else if (GROUP_EVENTS.find(g => g.id === event.id)) {
+      setSelectedGroupEvent(event);
+      setShowGroupModal(true);
+    } else {
+      setSelectedEvent(event);
+    }
   };
 
-  const closeModals = () => setSelectedEvent(null);
+  const closeModals = () => {
+    setSelectedEvent(null);
+    setShowGroupModal(false);
+    setSelectedGroupEvent(null);
+  };
 
   return (
     <motion.div
@@ -1550,8 +1572,15 @@ const EventsPage = () => {
       {selectedEvent?.id === 'hackathon' && (
         <HackathonModal isOpen={true} onClose={closeModals} />
       )}
-      {selectedEvent && selectedEvent?.id !== 'hackathon' && (
+      {selectedEvent && selectedEvent?.id !== 'hackathon' && !GROUP_EVENTS.find(g => g.id === selectedEvent?.id) && (
         <EventRegistrationModal event={selectedEvent} onClose={closeModals} />
+      )}
+      {showGroupModal && selectedGroupEvent && selectedGroupEvent.id !== 'hackathon' && (
+        <GroupEventModal
+          isOpen={showGroupModal}
+          event={selectedGroupEvent}
+          onClose={closeModals}
+        />
       )}
       <AuthModal
         isOpen={authModal.open}
