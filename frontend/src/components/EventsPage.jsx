@@ -100,7 +100,7 @@ const GROUP_EVENTS = [
 
     coverImage: rupeesPoster,
     posters: [rupeesRulesPoster],
-    fee: 600,
+    fee: 1,
   },
   {
     id: 'scale-up-studio', name: 'ScaleUp Studio', limit: 'Limit 3',
@@ -135,7 +135,7 @@ const GROUP_EVENTS = [
 
     coverImage: scaleupPoster,
     posters: [scaleupRulesPoster],
-    fee: 600,
+    fee: 1,
   },
 ];
 

@@ -27,7 +27,7 @@ const events = [
   {
     id: 3,
     title: "MSME Minister",
-    description: "A meaningful discussion with the Hon’ble MSME Minister and StartupTN CEO on expanding Peravai’s vision, reach, and opportunities for young entrepreneurs across Tamil Nadu.",
+    description: "Peravai team with the Hon’ble MSME Minister and StartupTN Chairman on expanding Peravai’s vision, reach, and opportunities for young entrepreneurs across Tamil Nadu.",
     image: msme,
   },
   {
@@ -84,8 +84,8 @@ const VideoModal = ({ video, onClose }) => {
         <motion.div
           className="relative w-full max-w-5xl bg-white border-4 border-black shadow-[10px_10px_0px_rgba(0,0,0,1)] flex flex-col overflow-hidden"
           initial={{ scale: 0.88, y: 40 }}
-          animate={{ scale: 1, y: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } }}
-          exit={{ scale: 0.88, y: 40, opacity: 0, transition: { duration: 0.25 } }}
+          animate={{ scale: 1, y: 0, transition: { duration: 1, ease: [0.22, 1, 0.36, 1] } }}
+          exit={{ scale: 0.88, y: 40, opacity: 0, transition: { duration: 0.3 } }}
         >
           {/* Modal Header */}
           <div className="flex items-center justify-between px-5 py-3 border-b-4 border-black bg-white z-10">
