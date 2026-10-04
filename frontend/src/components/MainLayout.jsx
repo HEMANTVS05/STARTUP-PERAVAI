@@ -1019,7 +1019,7 @@ const MainLayout = () => {
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}
               className="overflow-hidden 2xl:hidden border-4 border-black bg-white mb-10 shadow-[6px_6px_0px_rgba(0,0,0,1)]">
-              {['Insights', 'Events', 'Passes', 'Speakers', 'Contact'].map((item) => (
+              {['Insights', 'Passes', 'Speakers', 'Contact'].map((item) => (
                 <a key={item}
                   href={`#${item === 'Insights' ? 'whats-happening' : item.toLowerCase()}`}
                   onClick={(e) => handleNavClick(e, item === 'Insights' ? 'whats-happening' : item.toLowerCase())}
@@ -1182,12 +1182,12 @@ const MainLayout = () => {
             <div className="relative flex overflow-hidden">
               <motion.div
                 className="flex items-center gap-16 md:gap-24 w-max"
-                animate={{ x: ['0%', '-25%'] }}
-                transition={{ duration: 16, repeat: Infinity, ease: 'linear' }}
+                animate={{ x: ['0%', '-100%'] }}
+                transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
               >
                 {[...Array(4)].map((_, i) => (
                   <React.Fragment key={i}>
-                    {['StartupTN.png', 'airtel.png', 'shortfundly.png', 'aspireforher.png', 'cumta.png', 'icc.png', 'impacttree.png', 'jetro.png', 'overqualifiedhousewives.png', 'startupsingam.png', 'tnrise.png', 'tnskills.png', 'wesafe.png'].map((logo, index) => (
+                    {['StartupTN.png', 'airtel.png', 'shortfundly.png', 'aspireforher.png', 'cumta.png', 'icc.png', 'overqualifiedhousewives.png', 'startupsingam.png', 'tnrise.png', 'tnskills.png', 'wesafe.png'].map((logo, index) => (
                       <img
                         key={`${i}-${index}`}
                         src={`/logos/${logo}`}
