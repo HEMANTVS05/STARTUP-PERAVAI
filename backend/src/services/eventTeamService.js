@@ -126,6 +126,12 @@ async function joinEventTeam(eventId, user, teamCode, profileData) {
     if (!teamDoc.exists) throw Object.assign(new Error('Team not found.'), { status: 404 });
 
     const data = teamDoc.data();
+    
+    const userEmail = (user.email || '').toLowerCase().trim();
+    if (!data.invitedEmails || !data.invitedEmails.includes(userEmail)) {
+      throw Object.assign(new Error('Invalid: You have not been invited to join this team. Please ask the team leader to add your email address.'), { status: 403 });
+    }
+
     if (data.joinedMemberUids?.includes(user.uid)) {
       throw Object.assign(new Error('You are already in this team.'), { status: 409 });
     }

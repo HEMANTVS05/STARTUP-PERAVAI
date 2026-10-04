@@ -38,10 +38,10 @@ const GROUP_EVENTS = [
         <span className="block text-xl font-black uppercase tracking-tight text-[#0b2140] mb-3">24 Hours. One Mission. Reimagine the Transportation of Chennai.</span>
         <span className="block mt-2 font-bold text-black/90">What if you had 24 hours to build an idea that could transform the way Chennai moves?</span>
         <span className="block mt-2 text-black/75">
-          The <strong>Chennai Unified Metropolitan Transport Authority (CUMTA)</strong> is bringing together young innovators for an intense 24-hour challenge to imagine, create and prototype the future of Chennai\'s transportation.
+          The <strong>Chennai Unified Metropolitan Transport Authority (CUMTA)</strong> is bringing together young innovators for an intense 24-hour challenge to imagine, create and prototype the future of Chennai's transportation.
         </span>
         <span className="block mt-2 text-black/75">
-          From streets to public transport, from everyday commuters to emerging technology — the future of Chennai\'s mobility needs new ideas. Now, it\'s your turn to rethink it.
+          From streets to public transport, from everyday commuters to emerging technology — the future of Chennai's mobility needs new ideas. Now, it's your turn to rethink it.
         </span>
         <span className="block mt-3 font-black text-black/90 uppercase text-[12px] tracking-wide">
           Gather your team. Bring your ideas. Build under pressure. Reimagine Chennai.

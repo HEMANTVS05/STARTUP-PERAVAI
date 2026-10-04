@@ -68,6 +68,7 @@ const teamRoutes         = require('./src/routes/teamRoutes');
 const eventRoutes        = require('./src/routes/eventRoutes');
 const paymentRoutes      = require('./src/routes/paymentRoutes');
 const eventTeamRoutes    = require('./src/routes/eventTeamRoutes');
+const partnerRoutes      = require('./src/routes/partnerRoutes');
 
 app.use('/api/users',                  userRoutes);
 app.use('/api/registrations',          registrationRoutes);
@@ -75,6 +76,7 @@ app.use('/api/teams',                  teamRoutes);
 app.use('/api/events',                 eventRoutes);
 app.use('/api/payment',                paymentRoutes);
 app.use('/api/event-teams/:eventId',   eventTeamRoutes);
+app.use('/api/partners',               partnerRoutes);
 
 // ─── HEALTH CHECK ────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) =>

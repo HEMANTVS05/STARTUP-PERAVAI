@@ -408,6 +408,15 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
 
       setFoundTeam(team);
 
+      // Check if user is invited
+      const userEmail = user?.email?.toLowerCase().trim();
+      if (!team.invitedEmails || !team.invitedEmails.includes(userEmail)) {
+        setError('Invalid: You have not been invited to join this team. Please ask the team leader to add your email address.');
+        setFoundTeam(null);
+        setSubmitting(false);
+        return;
+      }
+
       // Check if team is full
       if ((team.joinedMemberUids?.length || 0) >= team.maxMembers) {
         setError(`Team "${team.teamName}" is full (${team.joinedMemberUids.length}/${team.maxMembers} members).`);

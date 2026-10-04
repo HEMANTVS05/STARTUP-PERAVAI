@@ -15,6 +15,7 @@ import { auth } from '../config/firebase';
 import { useNavigate } from 'react-router-dom';
 import VisitorDetailsModal from './VisitorDetailsModal';
 import { fetchUserTeamData } from '../services/hackathonService';
+import PartnerModal from './PartnerModal';
 
 import speaker1 from '../assets/speaker1.jpeg';
 import eventBrochure from '../assets/EVENT_BROCHURE.pdf';
@@ -535,6 +536,7 @@ const MainLayout = () => {
   const [showVisitorPaymentModal, setShowVisitorPaymentModal] = useState(false);
   const [showGeneralPassWarning, setShowGeneralPassWarning] = useState(false);
   const [showMultipleEventWarning, setShowMultipleEventWarning] = useState(false);
+  const [showPartnerModal, setShowPartnerModal] = useState(false);
 
   const userMenuRef = useRef(null);
   const { user, registration, loadingAuth } = useAuth();
@@ -1148,6 +1150,12 @@ const MainLayout = () => {
             >
               Explore Events
             </button>
+            <button
+              onClick={() => setShowPartnerModal(true)}
+              className="w-full sm:w-auto px-10 py-4 bg-[#1f2022] text-white font-black uppercase tracking-[0.18em] text-sm border-4 border-[#1f2022] shadow-[6px_6px_0px_rgba(0,0,0,0.25)] hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all duration-150"
+            >
+              Partner with Us!
+            </button>
           </motion.div>
 
           <motion.div
@@ -1183,11 +1191,11 @@ const MainLayout = () => {
               <motion.div
                 className="flex items-center gap-16 md:gap-24 w-max"
                 animate={{ x: ['0%', '-100%'] }}
-                transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+                transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
               >
                 {[...Array(4)].map((_, i) => (
                   <React.Fragment key={i}>
-                    {['StartupTN.png', 'airtel.png', 'shortfundly.png', 'aspireforher.png', 'cumta.png', 'icc.png', 'overqualifiedhousewives.png', 'startupsingam.png', 'tnrise.png'].map((logo, index) => (
+                    {['StartupTN.png', 'airtel.png', 'shortfundly.png', 'aspireforher.png', 'cumta.png', 'icc.png', 'overqualifiedhousewives.png', 'tnrise.png', 'nebula.png', 'zenu.png', 'haris.png'].map((logo, index) => (
                       <img
                         key={`${i}-${index}`}
                         src={`/logos/${logo}`}
@@ -1242,7 +1250,7 @@ const MainLayout = () => {
                           Upto 1 Crore Investment Commitment
                         </p>
                         <p className="font-black text-[13px] md:text-sm leading-snug text-[#1f2022] mt-1 text-justify">
-                          Through our in-house Dr. R. Sivakumar Research and Innovation Foundation, Government grants, and our network of investors and ecosystem partners, promising startups will gain access to funding, incubation, mentorship and investment opportunities.
+                          Through our in-house Dr. R. Shivakumar Research and Innovation Foundation, Government grants, and our network of investors and ecosystem partners, promising startups will gain access to funding, incubation, mentorship and investment opportunities.
                         </p>
                       </div>
                     </div>
@@ -2095,6 +2103,7 @@ const MainLayout = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      <PartnerModal isOpen={showPartnerModal} onClose={() => setShowPartnerModal(false)} />
     </>
   );
 };

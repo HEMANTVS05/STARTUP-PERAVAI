@@ -32,8 +32,8 @@ const events = [
   },
   {
     id: 4,
-    title: "Social Impact Awards",
-    description: "A 48-hour sprint to build the future. Collaborate with developers, designers, and visionaries to prototype groundbreaking products and pitch to top investors.",
+    title: "Social Impact Startup Awards",
+    description: "We believe technology is best utilised when it addresses challenges at the grassroots. At the Peravai, we aim to recognise and honour startups that are driving meaningful change and creating lasting impact in society.",
     image: awards,
   }
 ];
