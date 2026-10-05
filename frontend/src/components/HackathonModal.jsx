@@ -616,7 +616,7 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
               </div>
               <div className="flex justify-center pt-2">
                 <RazorpayCheckoutButton
-                  amount={100}
+                  amount={150000}
                   currency="INR"
                   prefillName={registration?.name || user?.displayName || ''}
                   prefillEmail={registration?.email || user?.email || ''}
@@ -627,7 +627,8 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
                       const currentPaid = registration?.paidEvents || [];
                       if (!currentPaid.includes('hackathon')) {
                         await api.patch('/api/registrations', {
-                          paidEvents: [...currentPaid, 'hackathon']
+                          paidEvents: [...currentPaid, 'hackathon'],
+                          paymentStatus: 'paid',
                         });
                         await refreshRegistration();
                       }

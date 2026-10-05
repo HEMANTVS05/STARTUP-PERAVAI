@@ -424,40 +424,40 @@ const renderEventForm = (eventId, formData, setField) => {
 // ── Validation: required field keys per event ─────────────────────────────────
 const getRequiredFields = (eventId) => {
   const map = {
-    'shark-tank':              ['teamName', 'stage', 'teamSize', 'productBrief'],
-    'phoenix-protocol':        ['teamName', 'college', 'teamSize', 'brandToRevive'],
-    'illogical-marketing':     ['college', 'objectToMarket'],
-    'junk-to-genius':          ['teamName', 'college', 'teamSize', 'sdgFocus'],
-    'reel-making':             ['teamName', 'teamSize', 'platform', 'reelTheme'],
-    'stall-expo':              ['stallName', 'stallCategory', 'contactPerson'],
-    'student-project-expo':    ['projectName', 'college', 'teamSize', 'domain', 'projectBrief'],
-    'panel-discussions':       ['college', 'role', 'topicPreference'],
-    'keynote-speeches':        ['college', 'attendeeType'],
-    'live-podcast':            ['organization', 'topicInterest'],
-    'pavilions':               ['interest'],
-    'social-impact-awards':    ['startupName', 'impactArea', 'stage', 'impactBrief'],
-    'sponsor-promotions':      ['companyName', 'productToLaunch', 'contactPerson'],
-    'valedictory':             ['organization', 'attendeeRole'],
+    'shark-tank': ['teamName', 'stage', 'teamSize', 'productBrief'],
+    'phoenix-protocol': ['teamName', 'college', 'teamSize', 'brandToRevive'],
+    'illogical-marketing': ['college', 'objectToMarket'],
+    'junk-to-genius': ['teamName', 'college', 'teamSize', 'sdgFocus'],
+    'reel-making': ['teamName', 'teamSize', 'platform', 'reelTheme'],
+    'stall-expo': ['stallName', 'stallCategory', 'contactPerson'],
+    'student-project-expo': ['projectName', 'college', 'teamSize', 'domain', 'projectBrief'],
+    'panel-discussions': ['college', 'role', 'topicPreference'],
+    'keynote-speeches': ['college', 'attendeeType'],
+    'live-podcast': ['organization', 'topicInterest'],
+    'pavilions': ['interest'],
+    'social-impact-awards': ['startupName', 'impactArea', 'stage', 'impactBrief'],
+    'sponsor-promotions': ['companyName', 'productToLaunch', 'contactPerson'],
+    'valedictory': ['organization', 'attendeeRole'],
     'easwari-startups-launch': ['startupName', 'college', 'incubationStage'],
-    'standup':                 ['college', 'ideaBrief'],
-    'design-thinking-bootcamp':['college', 'year', 'problemDomain'],
-    'startup-dating':          ['organization', 'problemStatement', 'solutionIdea'],
-    'incubation-hub-pavilions':['organization', 'interest'],
-    'one-to-one-mentorship':   ['organization', 'startupStage', 'focusArea'],
-    'fireside-chat':           ['organization', 'topicInterest'],
+    'standup': ['college', 'ideaBrief'],
+    'design-thinking-bootcamp': ['college', 'year', 'problemDomain'],
+    'startup-dating': ['organization', 'problemStatement', 'solutionIdea'],
+    'incubation-hub-pavilions': ['organization', 'interest'],
+    'one-to-one-mentorship': ['organization', 'startupStage', 'focusArea'],
+    'fireside-chat': ['organization', 'topicInterest'],
   };
   return map[eventId] || [];
 };
 
 // ── Category accent colours ───────────────────────────────────────────────────
 const categoryColors = {
-  Technical:   { bg: '#dbeafe', border: '#1d4ed8', text: '#1d4ed8' },
-  Submission:  { bg: '#f3e8ff', border: '#7c3aed', text: '#7c3aed' },
-  Expo:        { bg: '#ffedd5', border: '#ea580c', text: '#ea580c' },
-  Expert:      { bg: '#d1fae5', border: '#059669', text: '#059669' },
-  'Main Stage':{ bg: '#fef9c3', border: '#ca8a04', text: '#92400e' },
-  Workshop:    { bg: '#e0f2fe', border: '#0284c7', text: '#0284c7' },
-  Mentorship:  { bg: '#ffe4e6', border: '#be123c', text: '#be123c' },
+  Technical: { bg: '#dbeafe', border: '#1d4ed8', text: '#1d4ed8' },
+  Submission: { bg: '#f3e8ff', border: '#7c3aed', text: '#7c3aed' },
+  Expo: { bg: '#ffedd5', border: '#ea580c', text: '#ea580c' },
+  Expert: { bg: '#d1fae5', border: '#059669', text: '#059669' },
+  'Main Stage': { bg: '#fef9c3', border: '#ca8a04', text: '#92400e' },
+  Workshop: { bg: '#e0f2fe', border: '#0284c7', text: '#0284c7' },
+  Mentorship: { bg: '#ffe4e6', border: '#be123c', text: '#be123c' },
 };
 
 // ── Success screen ────────────────────────────────────────────────────────────
@@ -521,27 +521,29 @@ const AlreadyRegisteredScreen = ({ event, user, registration, onClose }) => (
 // ── Main component ────────────────────────────────────────────────────────────
 const EventRegistrationModal = ({ event, onClose }) => {
   const { user, registration, refreshRegistration } = useAuth();
-  const [formData, setFormData]           = useState({});
-  const [submitting, setSubmitting]       = useState(false);
-  const [submitted, setSubmitted]         = useState(false);
-  const [alreadyRegistered, setAlready]   = useState(false);
-  const [error, setError]                 = useState('');
-  const [checking, setChecking]           = useState(true);
-  
+  const [formData, setFormData] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [alreadyRegistered, setAlready] = useState(false);
+  const [error, setError] = useState('');
+  const [checking, setChecking] = useState(true);
+
   const isAlreadyPaid = Array.isArray(registration?.paidEvents) && registration.paidEvents.includes(event?.id);
 
   // 'info' | 'payment' | 'paid-success' | 'form'
-  const [paymentStep, setPaymentStep]     = useState(isAlreadyPaid ? 'form' : 'info');
+  const [paymentStep, setPaymentStep] = useState(isAlreadyPaid ? 'form' : 'info');
 
   const getEventAmount = (eventId) => {
     switch (eventId) {
-      case 'hackathon':               return 1200;
-      case 'shark-tank':              return 700;
-      case 'phoenix-protocol':        return 500;
-      case 'junk-to-genius':          return 500;
-      case 'illogical-marketing':     return 150;
-      case 'design-thinking-bootcamp':return 300;
-      default:                        return 0;
+      case 'hackathon': return 1200;
+      case 'shark-tank': return 700;
+      case 'phoenix-protocol': return 500;
+      case 'junk-to-genius': return 500;
+      case 'illogical-marketing': return 150;
+      case 'design-thinking-bootcamp': return 300;
+      case 'masterclass': return 100;
+      case 'riseher': return 1;
+      default: return 0;
     }
   };
 
@@ -550,10 +552,37 @@ const EventRegistrationModal = ({ event, onClose }) => {
   const setField = (key) => (e) =>
     setFormData((prev) => ({ ...prev, [key]: e.target.value }));
 
+  // Events where payment = registration (no form needed after payment)
+  const PAYMENT_ONLY_EVENTS = ['masterclass', 'riseher', 'illogical-marketing', 'design-thinking-bootcamp'];
+  const isPaymentOnly = PAYMENT_ONLY_EVENTS.includes(event?.id);
+
   // Check duplicate registration
   useEffect(() => {
     if (!user || !event) return;
     const check = async () => {
+      // For payment-only events already in paidEvents, treat as registered
+      const alreadyInPaid = isPaymentOnly && Array.isArray(registration?.paidEvents)
+        && registration.paidEvents.includes(event.id);
+      if (alreadyInPaid) {
+        // Self-heal: if paid but registeredEvents was never written, patch it now
+        const alreadyInRegistered = Array.isArray(registration?.registeredEvents)
+          && registration.registeredEvents.includes(event.id);
+        if (!alreadyInRegistered) {
+          try {
+            const currentRegistered = registration?.registeredEvents || [];
+            await api.patch('/api/registrations', {
+              registeredEvents: [...currentRegistered, event.id],
+              passType: 'Event Pass',
+            });
+            await refreshRegistration();
+          } catch (e) {
+            console.error('Self-heal patch failed:', e);
+          }
+        }
+        setAlready(true);
+        setChecking(false);
+        return;
+      }
       try {
         await api.get(`/api/events/${event.id}/my-registration`);
         setAlready(true);
@@ -563,7 +592,7 @@ const EventRegistrationModal = ({ event, onClose }) => {
     check();
     // Default to 'form' directly if no amount needed or already paid
     if (amountRequired === 0 || isAlreadyPaid) setPaymentStep('form');
-  }, [user, event, amountRequired, isAlreadyPaid]);
+  }, [user, event?.id, amountRequired, isAlreadyPaid, isPaymentOnly]);
 
   const fireConfetti = () => {
     // Left cannon
@@ -594,17 +623,32 @@ const EventRegistrationModal = ({ event, onClose }) => {
   const handlePaymentSuccess = async () => {
     try {
       const currentPaid = registration?.paidEvents || [];
-      if (!currentPaid.includes(event.id)) {
-        await api.patch('/api/registrations', {
-          paidEvents: [...currentPaid, event.id]
-        });
-        await refreshRegistration();
+      const currentRegistered = registration?.registeredEvents || [];
+
+      const patchData = {
+        paymentStatus: 'paid',
+        paidEvents: currentPaid.includes(event.id) ? currentPaid : [...currentPaid, event.id],
+      };
+
+      // For payment-only events: directly add to registeredEvents — bypasses the
+      // backend /register endpoint which requires a Firestore 'events' document.
+      if (isPaymentOnly && !currentRegistered.includes(event.id)) {
+        patchData.registeredEvents = [...currentRegistered, event.id];
+        patchData.passType = 'Event Pass';
       }
+
+      await api.patch('/api/registrations', patchData);
+      await refreshRegistration();
     } catch (err) {
       console.error("Failed to record payment:", err);
     }
     fireConfetti();
-    setPaymentStep('paid-success');
+    // For payment-only events: show the PassCard directly instead of a success screen
+    if (isPaymentOnly) {
+      setAlready(true);
+    } else {
+      setPaymentStep('paid-success');
+    }
   };
 
   const validate = () => {
@@ -624,11 +668,11 @@ const EventRegistrationModal = ({ event, onClose }) => {
     setSubmitting(true);
     try {
       await api.post(`/api/events/${event.id}/register`, {
-        eventName:       event.name,
-        eventCategory:   event.category,
-        registrantName:  registration?.name  || '',
+        eventName: event.name,
+        eventCategory: event.category,
+        registrantName: registration?.name || '',
         registrantEmail: registration?.email || user?.email || '',
-        passType:        registration?.passType || '',
+        passType: registration?.passType || '',
         ...formData,
       });
       setSubmitted(true);
@@ -639,7 +683,7 @@ const EventRegistrationModal = ({ event, onClose }) => {
   };
 
   const catStyle = categoryColors[event?.category] || { bg: '#f3f4f6', border: '#1f2022', text: '#1f2022' };
-  const userName  = registration?.name  || user?.displayName || user?.email || 'Attendee';
+  const userName = registration?.name || user?.displayName || user?.email || 'Attendee';
   const userEmail = registration?.email || user?.email || '';
 
   return (
@@ -790,7 +834,9 @@ const EventRegistrationModal = ({ event, onClose }) => {
                     <p className="font-black text-xs uppercase tracking-[0.3em] text-green-600 mb-1">🎉 Payment Successful!</p>
                     <h3 className="text-xl font-black uppercase tracking-tight">{event.name}</h3>
                     <p className="font-bold text-sm text-gray-600 mt-2 max-w-xs mx-auto">
-                      Payment has been done successfully for registration.
+                      {isPaymentOnly
+                        ? 'Your event pass has been generated. Close to view it on the Events page.'
+                        : 'Payment has been done successfully. Proceed to complete your registration.'}
                     </p>
                   </motion.div>
 
@@ -805,15 +851,27 @@ const EventRegistrationModal = ({ event, onClose }) => {
                     <p className="font-bold text-xs text-gray-500">{userEmail}</p>
                   </motion.div>
 
-                  <motion.button
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6 }}
-                    onClick={() => setPaymentStep('form')}
-                    className="w-full py-4 border-4 border-black bg-[#1f2022] text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-3"
-                  >
-                    Register for {event.name} <ArrowRight className="w-5 h-5" />
-                  </motion.button>
+                  {isPaymentOnly ? (
+                    <motion.button
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 }}
+                      onClick={onClose}
+                      className="w-full py-4 border-4 border-black bg-green-600 text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-3"
+                    >
+                      <CheckCircle2 className="w-5 h-5" /> Done — View Pass
+                    </motion.button>
+                  ) : (
+                    <motion.button
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 }}
+                      onClick={() => setPaymentStep('form')}
+                      className="w-full py-4 border-4 border-black bg-[#1f2022] text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-3"
+                    >
+                      Register for {event.name} <ArrowRight className="w-5 h-5" />
+                    </motion.button>
+                  )}
                 </motion.div>
               )}
 

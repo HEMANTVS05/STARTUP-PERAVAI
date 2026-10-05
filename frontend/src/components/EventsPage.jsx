@@ -1,15 +1,16 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Zap, Users, User, AlertCircle, MapPin, Calendar, ArrowRight, X, BookOpen, ChevronRight, ChevronLeft, Clock, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Zap, Users, User, AlertCircle, MapPin, Calendar, ArrowRight, X, BookOpen, ChevronRight, ChevronLeft, Clock, CheckCircle2, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import EventRegistrationModal from './EventRegistrationModal';
 import HackathonModal from './HackathonModal';
 import GroupEventModal from './GroupEventModal';
 import AuthModal from './AuthModal';
 import RegistrationForm from './RegistrationForm';
+import api from '../utils/api';
 import hackathonRulesPoster from '../assets/rules11.png';
-import singamRulesPoster from '../assets/rules22.png';
+import pitchRulesPoster from '../assets/rules22.png';
 import hackathonPoster from '../assets/hackathon_cover.png';
 import singamposter from '../assets/singam_cover.png';
 import rupeesPoster from '../assets/rupees_cover.png';
@@ -20,8 +21,12 @@ import bootcampPoster from '../assets/bootcamp_cover.png';
 import artPoster from '../assets/art_cover.png';
 import lavanya from '../assets/lavanya.png';
 import artRulesPoster from '../assets/rules55.png';
+import rupeesOverviewImage from '../assets/SDG.png';
 import risePoster from '../assets/rise_cover.png';
 import riseRulesPoster from '../assets/rules66.png';
+import pitchPoster from '../assets/pitch_cover.png';
+import madhav from '../assets/madhav.png';
+import masterclass from '../assets/masterclass.png';
 
 const GROUP_EVENTS = [
   {
@@ -85,6 +90,9 @@ const GROUP_EVENTS = [
         <span className="block mt-2 text-black/75">
           The resources are not physically provided during the challenge. Teams will be judged on their idea, resource planning, creativity, uniqueness and feasibility.
         </span>
+        <div className="mt-4">
+          <img src={rupeesOverviewImage} alt="SDG Goals" className="h-20 md:h-24 object-contain" />
+        </div>
         <div className="mt-6 p-6" style={{ background: '#f8fafc', borderLeft: '6px solid #0b2140' }}>
           <span className="block font-black uppercase tracking-widest text-[#0b2140] text-lg">And the best part?</span>
           <span className="block text-[16px] font-bold text-black/70 mt-2">The winning team gets the opportunity to bring their idea into life at the SRM Easwari Innovation Center, during Peravai. </span>
@@ -102,6 +110,41 @@ const GROUP_EVENTS = [
 
     coverImage: rupeesPoster,
     posters: [rupeesRulesPoster],
+    fee: 600,
+  },
+  {
+    id: 'pitch-perfect', name: 'Pitch Perfect', limit: '1–5 Members',
+    cardDesc: 'A two-day startup pitching competition taking young entrepreneurs from the first pitch to the investor stage.',
+    desc: (
+      <>
+        <span className="block text-xl font-black uppercase tracking-tight text-[#0b2140] mb-3">From the first pitch to the investor room</span>
+        <span className="block mt-2 text-black/75">
+          In partnership with Nebula, <strong>Pitch Perfect</strong> is a two-day startup pitching competition that gives young entrepreneurs the opportunity to take their ideas from the first pitch to the investor stage.
+        </span>
+        <span className="block font-black uppercase tracking-widest text-[#0b2140] text-sm mt-4">Day 1 - Prelims</span>
+        <span className="block mt-1 text-black/75">
+          Participants will pitch their startup ideas before a preliminary jury, presenting their problem statement, solution, business model, market opportunity and growth potential. Based on their pitch and overall potential, the strongest teams will be shortlisted for the grand finale.
+        </span>
+        <span className="block font-black uppercase tracking-widest text-[#0b2140] text-sm mt-4">Day 2 - Grand Finale</span>
+        <span className="block mt-1 text-black/75">
+          The shortlisted teams will pitch their startups directly in front of a distinguished panel of investors, presenting their ventures, answering investor questions and making their case for why their startup deserves attention and opportunity.
+        </span>
+        <div className="mt-6 p-6" style={{ background: '#f8fafc', borderLeft: '6px solid #0b2140' }}>
+          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-lg">Pitch Perfect</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">This is where young founders take their ideas one step closer to becoming real ventures.</span>
+        </div>
+      </>
+    ),
+    venue: 'EEC', day: 'Both Days', time: '12 PM Onwards', accent: '#0b2140', accentLight: '#e8f0ff',
+    rules: [
+      { title: '1. Team Size', body: 'Teams can have a minimum of 1 and a maximum of 5 members.' },
+      { title: '2. Registration & Payment', body: 'The team leader must register and make the payment of ₹700 for the team. Members must join using the team code.' },
+      { title: '3. Presentation', body: 'Each team will get 5 minutes to pitch their idea, followed by a 3-minute Q&A session with the judges.' },
+      { title: '4. Format', body: 'Presentations must be in PPT or PDF format. Prototypes are highly encouraged.' },
+      { title: '5. Judging Criteria', body: 'Evaluated on innovation, business model, market research, and clarity of pitch.' },
+    ],
+    coverImage: pitchPoster, // Placeholder
+    posters: [pitchRulesPoster], // Placeholder
     fee: 1,
   },
   {
@@ -137,7 +180,7 @@ const GROUP_EVENTS = [
 
     coverImage: scaleupPoster,
     posters: [scaleupRulesPoster],
-    fee: 1,
+    fee: 600,
   },
 ];
 
@@ -146,42 +189,6 @@ const INDIVIDUAL_EVENTS = [
   // { id: 'live-podcast', name: 'Live Podcast', ... }
   // Panel Discussion — commented out until guests are confirmed
   // { id: 'panel-discussions', name: 'Panel Discussion', ... }
-
-  {
-    id: 'illogical-marketing', name: 'The Art of Selling Nothing',
-    cardDesc: 'You\'ll receive an illogical product on the spot and must pitch it convincingly using branding, storytelling and persuasion.',
-    desc: (
-      <>
-        <span className="block text-xl font-black uppercase tracking-tight text-[#a80d11] mb-3">Can you sell a product that makes absolutely no sense?</span>
-        <span className="block mt-2 text-black/75">
-          In this challenge, participants will be given an illogical or unconventional product and must create a convincing sales pitch to make it desirable to the audience.
-        </span>
-        <span className="block mt-3 font-bold text-black/90">Participants will be evaluated on their ability to:</span>
-        <ul className="list-disc pl-5 mt-1 text-black/75 space-y-1">
-          <li>Understand the product and target audience</li>
-          <li>Present a convincing sales pitch</li>
-          <li>Demonstrate communication and persuasion skills</li>
-          <li>Use branding, positioning and storytelling effectively</li>
-          <li>Handle the challenge with spontaneity and confidence</li>
-        </ul>
-        <div className="mt-6 p-6" style={{ background: '#fff0f0', borderLeft: '6px solid #a80d11' }}>
-          <span className="block font-black uppercase tracking-widest text-[#a80d11] text-lg">The Art of Selling Nothing</span>
-          <span className="block text-[16px] font-bold text-black/70 mt-2">The product may be illogical.</span>
-          <span className="block text-[14px] italic text-black/60 mt-2">Your marketing strategy cannot be.</span>
-        </div>
-      </>
-    ),
-    venue: 'Hi-Tech Hall 2', day: 'Day 1', time: '9 AM Onwards', accent: '#a80d11', accentLight: '#fff0f0',
-    rules: [
-      { title: '1. Solo Event', body: 'This is a solo event.' },
-      { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
-      { title: '3. Reporting Time', body: 'All participants must report to their allocated venue 15 minutes before the start of the event. ID cards are mandatory for all participants.' },
-      { title: '4. Format', body: 'Participants will be given an illogical product and must come up with convincing marketing strategies to sell it. The judges will provide the product on the spot.' },
-      { title: '5. Code of Conduct', body: 'Any form of unfair practice or copied work will lead to immediate disqualification. The judges\' decision will be final and will not be open to discussion.' },
-    ],
-    coverImage: artPoster,
-    posters: [artRulesPoster],
-  },
   {
     id: 'design-thinking-bootcamp', name: 'Design Thinking Bootcamp',
     cardDesc: 'A hands-on session designed for students and aspiring entrepreneurs who want to transform their ideas into real, user-focused solutions.',
@@ -233,21 +240,88 @@ const INDIVIDUAL_EVENTS = [
 
   },
   {
-    id: 'riseher', name: 'Rise Her',
-    cardDesc: 'A special event dedicated to empowering women entrepreneurs and innovators.',
+    id: 'masterclass', name: 'Masterclass',
+    cardDesc: 'An exclusive session with industry experts to dive deep into specialized topics.',
     desc: (
       <>
-        <span className="block text-xl font-black uppercase tracking-tight text-[#a80d11] mb-3">Empowering the Next Generation of Women Leaders</span>
+        <span className="block text-xl font-black uppercase tracking-tight text-[#a80d11] mb-3">Ready to master the art of startups?</span>
         <span className="block mt-2 text-black/75">
-          <strong>RiseHer</strong> is an exclusive event celebrating and supporting women innovators. Connect, learn, and grow with a community of inspiring female founders and leaders.
+          This <strong>Masterclass</strong> is a hands-on session designed for students and aspiring entrepreneurs who want to transform their ideas into real, user-focused solutions.
         </span>
         <div className="mt-6 p-6" style={{ background: '#fff0f0', borderLeft: '6px solid #a80d11' }}>
-          <span className="block font-black uppercase tracking-widest text-[#a80d11] text-lg">RiseHer</span>
-          <span className="block text-[16px] font-bold text-black/70 mt-2">Empowerment, Innovation, and Leadership.</span>
+          <span className="block font-black uppercase tracking-widest text-[#a80d11] text-lg">Masterclass</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">Learn from the best in the industry.</span>
         </div>
       </>
     ),
-    venue: 'Main Auditorium', day: 'Day 2', time: '10:00 AM Onwards', accent: '#a80d11', accentLight: '#fff0f0',
+    venue: 'Hi-Tech Hall 2', day: 'Day 2', time: '10 AM Onwards', accent: '#a80d11', accentLight: '#fff0f0',
+    rules: [
+      { title: '1. Registration', body: 'Registration is mandatory and costs ₹100.' },
+      { title: '2. Attendance', body: 'Please arrive 15 minutes before the session starts.' },
+      { title: '3. Materials', body: 'Bring a notepad or device to take notes.' },
+    ],
+    coverImage: madhav, // Placeholder
+    posters: [masterclass], // Placeholder
+    fee: 100,
+  },
+
+  {
+    id: 'illogical-marketing', name: 'The Art of Selling Nothing',
+    cardDesc: 'You\'ll receive an illogical product on the spot and must pitch it convincingly using branding, storytelling and persuasion.',
+    desc: (
+      <>
+        <span className="block text-xl font-black uppercase tracking-tight text-[#a80d11] mb-3">Can you sell a product that makes absolutely no sense?</span>
+        <span className="block mt-2 text-black/75">
+          In this challenge, participants will be given an illogical or unconventional product and must create a convincing sales pitch to make it desirable to the audience.
+        </span>
+        <span className="block mt-3 font-bold text-black/90">Participants will be evaluated on their ability to:</span>
+        <ul className="list-disc pl-5 mt-1 text-black/75 space-y-1">
+          <li>Understand the product and target audience</li>
+          <li>Present a convincing sales pitch</li>
+          <li>Demonstrate communication and persuasion skills</li>
+          <li>Use branding, positioning and storytelling effectively</li>
+          <li>Handle the challenge with spontaneity and confidence</li>
+        </ul>
+        <div className="mt-6 p-6" style={{ background: '#fff0f0', borderLeft: '6px solid #a80d11' }}>
+          <span className="block font-black uppercase tracking-widest text-[#a80d11] text-lg">The Art of Selling Nothing</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">The product may be illogical.</span>
+          <span className="block text-[14px] italic text-black/60 mt-2">Your marketing strategy cannot be.</span>
+        </div>
+      </>
+    ),
+    venue: 'Hi-Tech Hall 2', day: 'Day 1', time: '9 AM Onwards', accent: '#a80d11', accentLight: '#fff0f0',
+    rules: [
+      { title: '1. Solo Event', body: 'This is a solo event.' },
+      { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
+      { title: '3. Reporting Time', body: 'All participants must report to their allocated venue 15 minutes before the start of the event. ID cards are mandatory for all participants.' },
+      { title: '4. Format', body: 'Participants will be given an illogical product and must come up with convincing marketing strategies to sell it. The judges will provide the product on the spot.' },
+      { title: '5. Code of Conduct', body: 'Any form of unfair practice or copied work will lead to immediate disqualification. The judges\' decision will be final and will not be open to discussion.' },
+    ],
+    coverImage: artPoster,
+    posters: [artRulesPoster],
+  },
+  {
+    id: 'riseher', name: 'Rise Her',
+    cardDesc: 'A dedicated women-only cohort focused on identifying, empowering and supporting aspiring women entrepreneurs.',
+    desc: (
+      <>
+        <span className="block text-xl font-black uppercase tracking-tight text-[#a80d11] mb-3">Identify. Mentor. Empower. Build the next generation of women entrepreneurs.</span>
+        <span className="block mt-2 text-black/75">
+          A dedicated women-only cohort focused on identifying, empowering and supporting aspiring women entrepreneurs who are looking to explore entrepreneurship and build meaningful ventures.
+        </span>
+        <span className="block mt-2 text-black/75">
+          With several women-led startups already identified through the TN RISE ecosystem, this initiative aims to discover and nurture the next generation of women entrepreneurs - students with entrepreneurial aspirations, ideas or the ambition to build their own ventures.
+        </span>
+        <span className="block mt-2 text-black/75">
+          The cohort will provide participants with mentorship, guidance and exposure to the startup ecosystem, helping them shape their ideas, understand the entrepreneurial journey and explore opportunities to turn their concepts into viable ventures.
+        </span>
+        <div className="mt-6 p-6" style={{ background: '#fff0f0', borderLeft: '6px solid #a80d11' }}>
+          <span className="block font-black uppercase tracking-widest text-[#a80d11] text-lg">Rise Her</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">Selected participants will also have the opportunity to be onboarded for continued mentorship and support through TN RISE, creating a pathway beyond the event towards further guidance and entrepreneurial development.</span>
+        </div>
+      </>
+    ),
+    venue: 'MBA Seminar Hall 1', day: 'Both Days', time: '9 AM Onwards', accent: '#a80d11', accentLight: '#fff0f0',
     rules: [
       { title: '1. Solo Event', body: 'This is an individual event open to all interested participants.' },
       { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of registration.' },
@@ -1012,8 +1086,205 @@ const PodcastLearnMoreModal = ({ evt, onClose, onRegister }) => {
   );
 };
 
+/* ── Rise Her — Special Learn More (no poster, idea form after registration) ── */
+const RiseHerLearnMoreModal = ({ evt, onClose, onRegister }) => {
+  const { user, registration } = useAuth();
+  const isRegistered = !!(
+    registration?.paidEvents?.includes('riseher') ||
+    registration?.registeredEvents?.includes('riseher')
+  );
+  const [form, setForm] = useState({ startupName: '', ideaBrief: '', pitchDeckUrl: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState(isRegistered);
+  const [formError, setFormError] = useState('');
+
+  useEffect(() => {
+    if (isRegistered) {
+      api.get('/api/riseher/my')
+        .then(res => {
+          if (res.data && res.data.startupName) {
+            setSubmitted(true);
+          }
+        })
+        .catch(err => {
+          // If 404, it means no submission yet, which is fine
+          console.error('No previous submission found or error fetching.');
+        })
+        .finally(() => {
+          setLoadingStatus(false);
+        });
+    } else {
+      setLoadingStatus(false);
+    }
+  }, [isRegistered]);
+
+  const setF = (k) => (e) => setForm(p => ({ ...p, [k]: e.target.value }));
+  const accent = evt.accent || '#a80d11';
+  const iCls = 'w-full border-4 border-black px-4 py-3 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-black bg-white placeholder:text-gray-400';
+  const lCls = 'block font-black uppercase tracking-[0.2em] text-xs text-black mb-1.5';
+
+  const handleSubmit = async () => {
+    if (!form.startupName.trim()) { setFormError('Startup / Project / Idea Name is required.'); return; }
+    if (!form.ideaBrief.trim()) { setFormError('Please briefly explain your idea.'); return; }
+    if (!form.pitchDeckUrl.trim()) { setFormError('Presentation / Pitch Deck link is required.'); return; }
+    setFormError('');
+    setSubmitting(true);
+    try {
+      await api.post('/api/riseher', {
+        startupName: form.startupName.trim(),
+        ideaBrief: form.ideaBrief.trim(),
+        pitchDeckUrl: form.pitchDeckUrl.trim(),
+      });
+      setSubmitted(true);
+    } catch (e) {
+      setFormError('Submission failed. Please try again.');
+    }
+    setSubmitting(false);
+  };
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)' }}
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 40, scale: 0.96 }}
+          transition={{ type: 'spring', damping: 24, stiffness: 280 }}
+          className="relative flex flex-col w-full max-w-3xl max-h-[92vh] overflow-hidden"
+          style={{ background: '#fff', border: '3px solid #111', boxShadow: '10px 10px 0px #111' }}
+          onClick={e => e.stopPropagation()}
+        >
+          {/* Gradient accent bar */}
+          <div style={{ height: '6px', background: 'linear-gradient(to right,#a80d11,#d82221 45%,#0b2140 55%,#0f50e3)', flexShrink: 0 }} />
+
+          {/* Header */}
+          <div className="flex items-center justify-between px-7 py-5" style={{ borderBottom: '3px solid #111', flexShrink: 0 }}>
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-[0.22em] mb-0.5" style={{ color: accent }}>👤 Individual Event</p>
+              <h2 className="text-2xl font-black uppercase tracking-tighter text-black leading-none">{evt.name}</h2>
+            </div>
+            <button
+              onClick={onClose}
+              style={{ width: 36, height: 36, border: '2.5px solid #111', background: '#fff', boxShadow: '3px 3px 0 #111', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#111'; e.currentTarget.style.color = '#fff'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#111'; }}
+            ><X size={16} /></button>
+          </div>
+
+          {/* Scrollable Body */}
+          <div className="flex-1 overflow-y-auto px-7 py-6">
+
+            {/* Meta strip */}
+            <div className="flex flex-wrap gap-4 mb-6 pb-5" style={{ borderBottom: '2px dashed #ddd' }}>
+              <span className="flex items-center gap-1.5 text-[11px] font-bold text-black/60 uppercase tracking-wider"><MapPin size={12} /> {evt.venue}</span>
+              <span className="flex items-center gap-1.5 text-[11px] font-bold text-black/60 uppercase tracking-wider"><Calendar size={12} /> {evt.day}</span>
+              {evt.time && <span className="flex items-center gap-1.5 text-[11px] font-bold text-black/60 uppercase tracking-wider"><Clock size={12} /> {evt.time}</span>}
+              {evt.fee && <span className="text-[11px] font-black px-2 py-0.5 uppercase tracking-widest" style={{ background: '#fff0f0', color: accent, border: `1.5px solid ${accent}` }}>₹{evt.fee} Entry</span>}
+            </div>
+
+            {/* Description — always shown, NO poster */}
+            <div className="mb-6 p-5" style={{ border: '2px solid #e0e0e0', borderLeft: `5px solid ${accent}`, background: '#fff', boxShadow: '4px 4px 0 #e0e0e0' }}>
+              <h4 className="text-sm font-black uppercase tracking-[0.25em] mb-3" style={{ color: accent }}>About Rise Her</h4>
+              <div className="text-[15px] font-medium text-black/80 leading-relaxed">{evt.desc}</div>
+            </div>
+
+            {/* Idea Submission Form — locked until registered */}
+            {isRegistered ? (
+              loadingStatus ? (
+                <div className="py-12 flex justify-center text-gray-500">
+                  <Loader2 className="w-8 h-8 animate-spin" />
+                </div>
+              ) : submitted ? (
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-8 space-y-4">
+                  <div className="w-16 h-16 bg-green-500 border-4 border-black mx-auto flex items-center justify-center" style={{ boxShadow: '5px 5px 0 #111' }}>
+                    <CheckCircle2 className="w-8 h-8 text-white" />
+                  </div>
+                  <p className="font-black text-xs uppercase tracking-[0.3em] text-green-600">🎉 Submitted!</p>
+                  <h3 className="text-xl font-black uppercase tracking-tight">Thank You</h3>
+                  <p className="text-sm font-bold text-gray-500 max-w-xs mx-auto">Your details have been shared with the TN RISE team. We'll be in touch!</p>
+                  <button onClick={onClose} className="px-8 py-3 border-4 border-black bg-black text-white font-black uppercase tracking-widest text-xs shadow-[4px_4px_0_#555] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">Close</button>
+                </motion.div>
+              ) : (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
+                  <div className="flex items-center gap-3 p-3" style={{ background: '#f0f9ff', border: '3px solid #0b2140' }}>
+                    <CheckCircle2 size={18} className="text-[#0b2140] shrink-0" />
+                    <p className="font-black text-xs uppercase tracking-wider text-[#0b2140]">You're registered! Please fill in the details below.</p>
+                  </div>
+
+                  <div>
+                    <label className={lCls}>Startup / Project / Idea Name <span className="text-red-600">*</span></label>
+                    <input type="text" placeholder="e.g. GreenPath Solutions" value={form.startupName} onChange={setF('startupName')} className={iCls} />
+                  </div>
+
+                  <div>
+                    <label className={lCls}>Briefly Explain Your Idea <span className="text-red-600">*</span></label>
+                    <textarea rows={4} placeholder="What problem does it solve? How does it work? What impact does it create?" value={form.ideaBrief} onChange={setF('ideaBrief')} className="w-full border-4 border-black px-4 py-3 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-black bg-white placeholder:text-gray-400 resize-none" />
+                  </div>
+
+                  <div>
+                    <label className={lCls}>Presentation / Pitch Deck <span className="text-red-600">*</span></label>
+                    <input type="url" placeholder="https://drive.google.com/..." value={form.pitchDeckUrl} onChange={setF('pitchDeckUrl')} className={iCls} />
+                    <p className="mt-2 text-[13px] font-bold text-gray-500 leading-relaxed">
+                      Please upload the presentation or pitch deck of your Startup / Project / Idea and provide the Google Drive link here.{' '}
+                      <strong className="text-black">Please ensure that the necessary access permissions have been enabled for the link so that the TN RISE team can view the presentation.</strong>
+                    </p>
+                  </div>
+
+                  <div className="p-4 text-[15px] font-bold text-black/70 leading-relaxed" style={{ border: '2px dashed #ccc', background: '#fafafa' }}>
+                    <p className="mb-3"><em>*This is only to help TN RISE understand your Startup / Project / Idea better and curate the session accordingly, and does not act as an evaluation parameter.</em></p>
+                    <p><strong className="text-black">Note:</strong> In case you have teammates working on the same Startup / Project / Idea, please ask them to register individually.</p>
+                  </div>
+
+                  {formError && (
+                    <div className="flex items-center gap-2 p-3 text-red-700 bg-red-50 border-l-4 border-red-600 font-bold text-xs">
+                      <AlertCircle size={14} className="shrink-0" /> {formError}
+                    </div>
+                  )}
+
+                  <button onClick={handleSubmit} disabled={submitting}
+                    className="w-full py-4 border-4 border-black text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                    style={{ background: accent }}
+                  >
+                    {submitting ? 'Submitting…' : <><span>Submit Details</span> <ArrowRight size={16} /></>}
+                  </button>
+                </motion.div>
+              )
+            ) : (
+              <div className="p-6 text-center" style={{ border: '3px dashed #ccc', background: '#fafafa' }}>
+                <p className="font-bold text-sm text-black/60">Complete your registration first to fill the idea submission form.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Footer — only shown when not yet registered */}
+          {!isRegistered && (
+            <div className="flex items-center justify-between px-7 py-5" style={{ borderTop: '3px solid #111', background: '#fafafa', flexShrink: 0 }}>
+              <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">Spots are limited — secure yours now</p>
+              <motion.button onClick={() => { onClose(); onRegister(evt); }} whileTap={{ scale: 0.96 }} whileHover={{ y: -2 }}
+                className="flex items-center gap-2.5 font-black uppercase text-[11px] tracking-widest px-8 py-3 text-white transition-all"
+                style={{ background: accent, border: `2.5px solid ${accent}`, boxShadow: '4px 4px 0 #111' }}
+              >
+                Register <ArrowRight size={13} />
+              </motion.button>
+            </div>
+          )}
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
 /* ── Learn More Modal ─────────────────────────────────────────────────── */
 const LearnMoreModal = ({ evt, isGroup, onClose, onRegister }) => {
+  if (evt.id === 'riseher') {
+    return <RiseHerLearnMoreModal evt={evt} onClose={onClose} onRegister={onRegister} />;
+  }
   if (evt.id === 'live-podcast') {
     return <PodcastLearnMoreModal evt={evt} onClose={onClose} onRegister={onRegister} />;
   }
@@ -1423,28 +1694,37 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
 
                 {/* Action Buttons (Learn More / Register) */}
                 <div className="mt-4 flex gap-3 pointer-events-auto">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setShowLearnMore(true); }}
-                    className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-5 py-2.5 bg-white text-black border-4 border-black hover:bg-gray-200 transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1"
-                  >
-                    Learn More <ChevronRight size={14} />
-                  </button>
+                  {event.id !== 'masterclass' && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setShowLearnMore(true); }}
+                      className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-5 py-2.5 bg-white text-black border-4 border-black hover:bg-gray-200 transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1"
+                    >
+                      Learn More <ChevronRight size={14} />
+                    </button>
+                  )}
                   {(() => {
-                    const isRegistered = registration?.registeredEvents?.includes(event.id);
+                    const PAYMENT_ONLY = ['masterclass', 'riseher', 'illogical-marketing', 'design-thinking-bootcamp'];
+                    const isPaidOnly = PAYMENT_ONLY.includes(event.id);
+                    const isRegistered = registration?.registeredEvents?.includes(event.id)
+                      || (isPaidOnly && registration?.paidEvents?.includes(event.id));
+                    if (isRegistered) {
+                      // Non-clickable green badge for registered events
+                      return (
+                        <span
+                          className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-5 py-2.5 text-white border-4 cursor-default select-none"
+                          style={{ background: '#16a34a', borderColor: '#15803d' }}
+                        >
+                          <CheckCircle2 size={14} /> Registered
+                        </span>
+                      );
+                    }
                     return (
                       <button
                         onClick={(e) => { e.stopPropagation(); onRegister(event); }}
                         className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-5 py-2.5 text-white border-4 transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1"
-                        style={{
-                          background: isRegistered ? '#16a34a' : event.accent,
-                          borderColor: isRegistered ? '#15803d' : '#111',
-                        }}
+                        style={{ background: event.accent, borderColor: '#111' }}
                       >
-                        {isRegistered ? (
-                          <><CheckCircle2 size={14} /> Registered</>
-                        ) : (
-                          <>Register <ArrowRight size={14} /></>
-                        )}
+                        Register <ArrowRight size={14} />
                       </button>
                     );
                   })()}
@@ -1497,7 +1777,10 @@ const EventsPage = () => {
       return;
     }
     // Already registered — open the right modal directly
-    const alreadyRegistered = registration.registeredEvents?.includes(event.id);
+    const PAYMENT_ONLY = ['masterclass', 'riseher', 'illogical-marketing', 'design-thinking-bootcamp'];
+    const isPaidOnly = PAYMENT_ONLY.includes(event.id);
+    const alreadyRegistered = registration.registeredEvents?.includes(event.id)
+      || (isPaidOnly && registration.paidEvents?.includes(event.id));
     if (alreadyRegistered) {
       if (event.id === 'hackathon') {
         setSelectedEvent(event);

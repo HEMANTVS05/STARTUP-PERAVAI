@@ -19,7 +19,7 @@ const SESSIONS = {
         desc: 'Are you fascinated by FinTech and curious about how UPI, digital payments and merchant transactions actually work in India? Join Mohan K, Co-Founder & CEO of IppoPay, for a live podcast on the technology, innovation and business transforming the way India pays. Perfect for students, aspiring FinTech founders and anyone curious about the future of digital payments in India.',
         poster: poster1,
       },
-      {
+      {/*
         id: 'd1-p2', type: 'podcast',
         title: '',
         time: '',
@@ -27,7 +27,7 @@ const SESSIONS = {
         desc: '',
         poster: null,
       },
-      {
+      {/*
         id: 'd1-panel1', type: 'panel',
         title: 'The New Industrial Revolution',
         time: 'Where Startups, Manufacturing & Emergin Technologies Converge',
@@ -42,7 +42,7 @@ const SESSIONS = {
         titleColor: '#5b21b6',   // violet — emerging cities / next-gen
         desc: 'India’s next entrepreneurial hotspots are emerging beyond the metros. This panel brings together founders, investors and ecosystem leaders to explore how Tier 2 and Tier 3 cities are building companies, developing local talent, attracting capital and creating thriving startup ecosystems. A must-attend conversation for anyone interested in the next generation of India’s business and innovation hubs.',
         poster: null,
-      },
+      },*/}
     ],
   },
   day2: {
@@ -58,7 +58,7 @@ const SESSIONS = {
         desc: 'For those curious about entrepreneurship, consumer brands and building a successful franchise, this conversation with Jahabar Sadique, Co-Founder of Chai Kings, explores how a simple idea can grow into a recognisable homegrown brand through customer insight, branding, operations and smart expansion. Join us for a live podcast on building, scaling and creating a successful franchise business.',
         poster: poster2,
       },
-      {
+      {/*
         id: 'd2-p2', type: 'podcast',
         title: 'Funding in the New Economy',
         time: '12:00 PM',
@@ -66,7 +66,7 @@ const SESSIONS = {
         desc: '',
         poster: null,
       },
-      {
+      {/*
         id: 'd2-panel1', type: 'panel',
         title: "The Investor's Perspective",
         time: '2:00 PM',
@@ -81,7 +81,7 @@ const SESSIONS = {
         titleColor: '#a80d11',   // red — Tamil Nadu flagship brand color
         desc: '',
         poster: null,
-      },
+      },*/}
     ],
   },
 };
@@ -351,11 +351,12 @@ const SessionPickerModal = ({ isOpen, onSkip, onNext, onBack }) => {
                   {d1Podcasts.map(s => renderCard(s, d1))}
                 </div>
 
-                {/* D1 Panels */}
+                {/* D1 Panels 
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-black/40 mb-3 border-b border-black/10 pb-1">Panel Discussions</p>
                 <div className="grid grid-cols-2 gap-4">
                   {d1Panels.map(s => renderCard(s, d1))}
                 </div>
+                */}
               </div>
 
               {/* ── Day 2 half */}
@@ -377,11 +378,12 @@ const SessionPickerModal = ({ isOpen, onSkip, onNext, onBack }) => {
                   {d2Podcasts.map(s => renderCard(s, d2))}
                 </div>
 
-                {/* D2 Panels */}
+                {/* D2 Panels 
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-black/40 mb-3 border-b border-black/10 pb-1">Panel Discussions</p>
                 <div className="grid grid-cols-2 gap-4">
                   {d2Panels.map(s => renderCard(s, d2))}
                 </div>
+                */}
               </div>
             </div>
           </div>

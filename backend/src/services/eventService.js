@@ -65,10 +65,9 @@ async function registerForEvent(uid, eventId, extraData = {}) {
     if (userRegDoc.exists) {
       const userRegData = userRegDoc.data();
       const existingEvents = userRegData.registeredEvents || [];
-      const eventName = event.name;
-      if (!existingEvents.includes(eventName)) {
+      if (!existingEvents.includes(eventId)) {
         txn.update(userRegRef, {
-          registeredEvents: [...existingEvents, eventName],
+          registeredEvents: [...existingEvents, eventId],
           passType: 'Event Pass',
           paymentStatus: 'completed'
         });

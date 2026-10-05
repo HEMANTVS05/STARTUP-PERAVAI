@@ -385,7 +385,8 @@ const GroupEventModal = ({ isOpen, onClose, event, eventId: propEventId, eventNa
                       const currentPaid = registration?.paidEvents || [];
                       if (!currentPaid.includes(eventId)) {
                         await api.patch('/api/registrations', {
-                          paidEvents: [...currentPaid, eventId]
+                          paidEvents: [...currentPaid, eventId],
+                          paymentStatus: 'paid',
                         });
                         await refreshRegistration();
                       }
@@ -439,6 +440,30 @@ const GroupEventModal = ({ isOpen, onClose, event, eventId: propEventId, eventNa
                   <label className={labelCls}><Mail className="w-3.5 h-3.5" /> Your Email (Auto)</label>
                   <input readOnly disabled value={user?.email || ''} className={`${inputCls} bg-gray-100 text-gray-600 cursor-not-allowed border-dashed`} />
                 </div>
+
+                {eventId === 'pitch-perfect' && (
+                  <div className="space-y-1">
+                    <label className={labelCls}><Users className="w-3.5 h-3.5 text-black" /> Team Size (Including You)</label>
+                    <select
+                      value={formData.maxMembers}
+                      onChange={(e) => {
+                        const newSize = parseInt(e.target.value, 10);
+                        setFormData(prev => ({
+                          ...prev,
+                          maxMembers: newSize,
+                          invitedEmails: Array(Math.max(0, newSize - 1)).fill(''),
+                        }));
+                      }}
+                      className={inputCls}
+                    >
+                      <option value={1}>1 Member (Just me)</option>
+                      <option value={2}>2 Members</option>
+                      <option value={3}>3 Members</option>
+                      <option value={4}>4 Members</option>
+                      <option value={5}>5 Members</option>
+                    </select>
+                  </div>
+                )}
 
                 {/* Member Emails */}
                 {formData.invitedEmails.length > 0 && (

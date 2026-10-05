@@ -10,6 +10,25 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import { fetchUserTeamData } from '../services/hackathonService';
+import api from '../utils/api';
+
+// Map of event IDs to display names
+const EVENT_DISPLAY_NAMES = {
+  'masterclass': 'Masterclass',
+  'riseher': 'Rise Her',
+  'illogical-marketing': 'The Art of Selling Nothing',
+  'design-thinking-bootcamp': 'Design Thinking Bootcamp',
+  'hackathon': 'Hackathon',
+  'shark-tank': 'Startup Singam Junior',
+  'phoenix-protocol': 'Phoenix Protocol',
+  'junk-to-genius': 'Junk to Genius',
+  'pitch-perfect': 'Pitch Perfect',
+  'rupees-to-reality': 'Rupees to Reality',
+  'scale-up-studio': 'ScaleUp Studio',
+};
+
+// Events where payment alone = registration (no form needed)
+const PAYMENT_ONLY_EVENTS = ['masterclass', 'riseher', 'illogical-marketing', 'design-thinking-bootcamp'];
 
 const passThemes = {
   "Visitor's Pass": {
@@ -181,7 +200,15 @@ export const PassCard = ({ registration, user, passType, eventName, qrSuffix, on
             <p style={{ fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', color: t.subText, marginBottom: '10px' }}>Gate Entry</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {['Day 1', 'Day 2'].map((day, i) => {
-                const checked = i === 0 ? registration.checkedInDay1 : registration.checkedInDay2;
+                let checked;
+                if (isEvent && qrSuffix) {
+                  // Per-event check-in fields: checkedInDay1_rupees-to-reality, etc.
+                  const fieldKey = i === 0 ? `checkedInDay1_${qrSuffix}` : `checkedInDay2_${qrSuffix}`;
+                  checked = registration[fieldKey];
+                } else {
+                  // Visitor pass uses generic fields
+                  checked = i === 0 ? registration.checkedInDay1 : registration.checkedInDay2;
+                }
                 return (
                   <div key={day} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 10px', borderRadius: '6px', border: checked ? 'none' : t.entryBorder, background: checked ? '#22c55e' : 'transparent', transition: 'all 0.2s' }}>
                     <p style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', color: checked ? '#fff' : t.subText }}>
@@ -204,7 +231,7 @@ export const PassCard = ({ registration, user, passType, eventName, qrSuffix, on
         </div>
 
         {/* ── Team Portal Button (Hackathon only) ── */}
-        {passType === 'Event Pass' && eventName?.toLowerCase() === 'hackathon' && onOpenHackathon && (
+        {passType === 'Event Pass' && qrSuffix === 'hackathon' && onOpenHackathon && (
           <div style={{ marginBottom: '18px' }}>
             <button
               onClick={onOpenHackathon}
@@ -218,11 +245,13 @@ export const PassCard = ({ registration, user, passType, eventName, qrSuffix, on
           </div>
         )}
 
-        {/* ── Team Portal Button (Other Group Events) ── */}
-        {passType === 'Event Pass' && (eventName === 'rupees-to-reality' || eventName === 'scale-up-studio') && onOpenGroupEvent && (
+        {/* ── Team Portal Button (Other Group Events ONLY: rupees-to-reality, scale-up-studio, pitch-perfect) ── */}
+        {passType === 'Event Pass'
+          && ['rupees-to-reality', 'scale-up-studio', 'pitch-perfect'].includes(qrSuffix)
+          && onOpenGroupEvent && (
           <div style={{ marginBottom: '18px' }}>
             <button
-              onClick={() => onOpenGroupEvent(eventName)}
+              onClick={() => onOpenGroupEvent(qrSuffix)}
               style={{ width: '100%', padding: '12px 20px', background: '#111', color: '#f6f4ee', border: '2px solid #111', borderRadius: '8px', fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.2s' }}
               onMouseEnter={e => { e.target.style.background = '#a80d11'; e.target.style.borderColor = '#a80d11'; }}
               onMouseLeave={e => { e.target.style.background = '#111'; e.target.style.borderColor = '#111'; }}
@@ -251,7 +280,7 @@ export const PassCard = ({ registration, user, passType, eventName, qrSuffix, on
 
 // ── Main UserDashboard ──────────────────────────────────────────────────────────
 const UserDashboard = ({ onClose, onOpenHackathon, onOpenGroupEvent }) => {
-  const { user, registration } = useAuth();
+  const { user, registration, refreshRegistration } = useAuth();
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [hackathonLeaderUid, setHackathonLeaderUid] = React.useState(null);
 
@@ -271,6 +300,29 @@ const UserDashboard = ({ onClose, onOpenHackathon, onOpenGroupEvent }) => {
     window.location.reload();
   };
 
+  // ── Self-heal: write registeredEvents for payment-only events that are paid but not registered ──
+  React.useEffect(() => {
+    if (!user || !registration) return;
+    const paidEvents = registration.paidEvents || [];
+    const registeredEvents = registration.registeredEvents || [];
+    const missing = paidEvents.filter(
+      (id) => PAYMENT_ONLY_EVENTS.includes(id) && !registeredEvents.includes(id)
+    );
+    if (missing.length === 0) return;
+    const heal = async () => {
+      try {
+        await api.patch('/api/registrations', {
+          registeredEvents: [...registeredEvents, ...missing],
+          passType: 'Event Pass',
+        });
+        await refreshRegistration();
+      } catch (e) {
+        console.error('Self-heal failed:', e);
+      }
+    };
+    heal();
+  }, [user, registration?.uid]);
+
   if (!registration) return null;
 
   // ── Determine which passes to show ──────────────────────────────────────────
@@ -286,8 +338,9 @@ const UserDashboard = ({ onClose, onOpenHackathon, onOpenGroupEvent }) => {
   // Event passes — one per registered event
   const registeredEvents = registration.registeredEvents || [];
   if (registeredEvents.length > 0) {
-    registeredEvents.forEach((evt) => {
-      passes.push({ passType: 'Event Pass', eventName: evt, qrSuffix: evt });
+    registeredEvents.forEach((evtId) => {
+      const displayName = EVENT_DISPLAY_NAMES[evtId] || evtId;
+      passes.push({ passType: 'Event Pass', eventName: displayName, qrSuffix: evtId });
     });
   }
 
