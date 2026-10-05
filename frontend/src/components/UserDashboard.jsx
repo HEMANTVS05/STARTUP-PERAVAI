@@ -53,7 +53,7 @@ const passThemes = {
 };
 
 // ── Single pass card ────────────────────────────────────────────────────────────
-export const PassCard = ({ registration, user, passType, eventName, qrSuffix, onClose, onOpenHackathon, overrideQrValue }) => {
+export const PassCard = ({ registration, user, passType, eventName, qrSuffix, onClose, onOpenHackathon, onOpenGroupEvent, overrideQrValue }) => {
   const t = passThemes[passType] || passThemes["Visitor's Pass"];
   const isEvent = passType !== "Visitor's Pass";
   const name = registration.name || user?.displayName || 'Attendee';
@@ -218,6 +218,21 @@ export const PassCard = ({ registration, user, passType, eventName, qrSuffix, on
           </div>
         )}
 
+        {/* ── Team Portal Button (Other Group Events) ── */}
+        {passType === 'Event Pass' && (eventName === 'rupees-to-reality' || eventName === 'scale-up-studio') && onOpenGroupEvent && (
+          <div style={{ marginBottom: '18px' }}>
+            <button
+              onClick={() => onOpenGroupEvent(eventName)}
+              style={{ width: '100%', padding: '12px 20px', background: '#111', color: '#f6f4ee', border: '2px solid #111', borderRadius: '8px', fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.2s' }}
+              onMouseEnter={e => { e.target.style.background = '#a80d11'; e.target.style.borderColor = '#a80d11'; }}
+              onMouseLeave={e => { e.target.style.background = '#111'; e.target.style.borderColor = '#111'; }}
+            >
+              <Zap style={{ width: '16px', height: '16px' }} />
+              View Team Portal
+            </button>
+          </div>
+        )}
+
         {/* ── Footer ── */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: t.entryBorder, paddingTop: '14px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -235,7 +250,7 @@ export const PassCard = ({ registration, user, passType, eventName, qrSuffix, on
 };
 
 // ── Main UserDashboard ──────────────────────────────────────────────────────────
-const UserDashboard = ({ onClose, onOpenHackathon }) => {
+const UserDashboard = ({ onClose, onOpenHackathon, onOpenGroupEvent }) => {
   const { user, registration } = useAuth();
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [hackathonLeaderUid, setHackathonLeaderUid] = React.useState(null);
@@ -336,6 +351,7 @@ const UserDashboard = ({ onClose, onOpenHackathon }) => {
             qrSuffix={currentPass.qrSuffix}
             onClose={onClose}
             onOpenHackathon={currentPass.eventName?.toLowerCase() === 'hackathon' ? onOpenHackathon : undefined}
+            onOpenGroupEvent={onOpenGroupEvent}
             overrideQrValue={currentPass.qrSuffix === 'hackathon' && hackathonLeaderUid ? `${hackathonLeaderUid}::hackathon` : undefined}
           />
           {/* Pagination indicators */}

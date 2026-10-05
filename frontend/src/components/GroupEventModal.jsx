@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users, UserPlus, LogIn, Copy, Check, Sparkles, ArrowRight,
-  Loader2, X, CheckCircle2, Mail, User, Hash, Share2, Link as LinkIcon
+  Loader2, X, CheckCircle2, Mail, User, Hash, Share2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useAuth } from '../context/AuthContext';
@@ -40,7 +40,7 @@ const ErrorMsg = ({ msg }) => msg ? (
 ) : null;
 
 // ── Main GroupEventModal ──────────────────────────────────────────────────────
-const GroupEventModal = ({ isOpen, onClose, event }) => {
+const GroupEventModal = ({ isOpen, onClose, event, eventId: propEventId, eventName: propEventName, eventAccent: propEventAccent, eventFee: propEventFee }) => {
   const { user, registration, refreshRegistration } = useAuth();
 
   const [view, setView]                   = useState('choice');    // 'choice' | 'payment' | 'create' | 'join' | 'success' | 'dashboard'
@@ -54,17 +54,16 @@ const GroupEventModal = ({ isOpen, onClose, event }) => {
   const [foundTeam, setFoundTeam]         = useState(null);
   const [joinCodeInput, setJoinCodeInput] = useState('');
   const [copiedCode, setCopiedCode]       = useState(false);
-  const [copiedLink, setCopiedLink]       = useState(false);
 
   const [formData, setFormData] = useState({
-    teamName: '', leaderName: '', maxMembers: 2, invitedEmails: [''],
+    teamName: '', leaderName: '', maxMembers: 3, invitedEmails: ['', ''],
   });
   const [memberProfile, setMemberProfile] = useState({ name: '', });
 
-  const eventId    = event?.id;
-  const eventName  = event?.name || 'Event';
-  const eventAccent = event?.accent || '#0b2140';
-  const eventFee   = event?.fee || 500;
+  const eventId    = propEventId || event?.id;
+  const eventName  = propEventName || event?.name || 'Event';
+  const eventAccent = propEventAccent || event?.accent || '#0b2140';
+  const eventFee   = propEventFee || event?.fee || 500;
 
   // ── Init: check if already in a team ──────────────────────────────────────
   useEffect(() => {
@@ -79,6 +78,22 @@ const GroupEventModal = ({ isOpen, onClose, event }) => {
         if (existingData?.team) {
           setActiveTeamData(existingData);
           setView('dashboard');
+
+          // ── Retroactive pass issuance for team leader ──────────────────────
+          const isLeader = existingData.team?.leaderUid === user.uid;
+          const alreadyHasPass = registration?.registeredEvents?.includes(eventId);
+          if (isLeader && !alreadyHasPass) {
+            try {
+              const currentEvents = registration?.registeredEvents || [];
+              await api.patch('/api/registrations', {
+                registeredEvents: [...currentEvents, eventId],
+              });
+              await refreshRegistration();
+            } catch (passErr) {
+              console.error(`Retroactive ${eventId} pass issuance failed:`, passErr);
+            }
+          }
+
           // Subscribe to real-time updates
           unsubscribe = subscribeToEventTeam(eventId, existingData.team.id, (data) => {
             if (data) setActiveTeamData(data);
@@ -109,18 +124,6 @@ const GroupEventModal = ({ isOpen, onClose, event }) => {
     return () => { if (unsubscribe) unsubscribe(); };
   }, [isOpen, user, eventId]);
 
-  // ── Team size handler ─────────────────────────────────────────────────────
-  const handleTeamSizeChange = (size) => {
-    const numSize = Number(size);
-    const neededInvites = numSize - 1;
-    setFormData(prev => {
-      let updatedEmails = [...prev.invitedEmails];
-      while (updatedEmails.length < neededInvites) updatedEmails.push('');
-      updatedEmails = updatedEmails.slice(0, neededInvites);
-      return { ...prev, maxMembers: numSize, invitedEmails: updatedEmails };
-    });
-  };
-
   // ── Create team ───────────────────────────────────────────────────────────
   const handleCreateTeam = async (e) => {
     e.preventDefault();
@@ -148,9 +151,33 @@ const GroupEventModal = ({ isOpen, onClose, event }) => {
         await refreshRegistration();
       }
 
-      const updatedData = await fetchUserEventTeam(user.uid, eventId);
+      const updatedData = {
+        team: {
+          id: data.teamId,
+          teamId: data.teamId,
+          teamCode: data.teamCode,
+          teamName: data.teamName,
+          leaderUid: user.uid,
+          leaderName: formData.leaderName,
+          leaderEmail: user.email,
+          maxMembers: formData.maxMembers,
+          invitedEmails: formData.invitedEmails.filter(Boolean),
+          joinedMemberUids: [user.uid],
+          status: 'active',
+        },
+        members: [{
+          id: `${data.teamId}_${user.uid}`,
+          teamId: data.teamId,
+          teamCode: data.teamCode,
+          eventId,
+          uid: user.uid,
+          role: 'leader',
+          name: formData.leaderName,
+          email: user.email,
+        }],
+      };
       setActiveTeamData(updatedData);
-      setView('success');
+      setView('dashboard');
     } catch (err) {
       setError(err.response?.data?.error || err.message || 'Failed to create team.');
     } finally {
@@ -169,6 +196,12 @@ const GroupEventModal = ({ isOpen, onClose, event }) => {
       if (!team) { setError('No team found with that code.'); return; }
       if ((team.joinedMemberUids?.length || 0) >= team.maxMembers) {
         setError('This team is already full.'); return;
+      }
+      // ── Invitation check (mirrors hackathon workflow) ──
+      const userEmail = user?.email?.toLowerCase().trim();
+      if (!team.invitedEmails || !team.invitedEmails.includes(userEmail)) {
+        setError('You are not invited. Please ask the team leader to add your email address.');
+        return;
       }
       setFoundTeam(team);
     } catch (err) {
@@ -189,18 +222,23 @@ const GroupEventModal = ({ isOpen, onClose, event }) => {
         name: memberProfile.name.trim(),
         email: user.email,
       });
+      // NOTE: Only the team LEADER gets the event pass.
+      // Members who join via code are recorded in Firestore but do NOT get a registeredEvents entry.
 
-      // Add event to registeredEvents
-      const currentEvents = registration?.registeredEvents || [];
-      if (!currentEvents.includes(eventId)) {
-        await api.patch('/api/registrations', {
-          registeredEvents: [...currentEvents, eventId],
-        });
-        await refreshRegistration();
-      }
-
-      const updatedData = await fetchUserEventTeam(user.uid, eventId);
-      setActiveTeamData(updatedData);
+      // Build data directly to avoid Firestore read-after-write timing issue
+      const joinedData = {
+        team: {
+          ...foundTeam,
+          joinedMemberUids: [...(foundTeam.joinedMemberUids || []), user.uid],
+        },
+        members: [
+          // Leader as placeholder
+          { id: `leader`, uid: foundTeam.leaderUid, role: 'leader', name: foundTeam.leaderName, email: foundTeam.leaderEmail || '' },
+          // Current user joining
+          { id: `${foundTeam.id}_${user.uid}`, uid: user.uid, role: 'member', name: memberProfile.name.trim(), email: user.email },
+        ],
+      };
+      setActiveTeamData(joinedData);
       setView('dashboard');
     } catch (err) {
       setError(err.response?.data?.error || err.message || 'Failed to join team.');
@@ -216,13 +254,6 @@ const GroupEventModal = ({ isOpen, onClose, event }) => {
     navigator.clipboard.writeText(teamCode);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
-  };
-  const handleCopyLink = () => {
-    if (!teamCode) return;
-    const link = `${window.location.origin}/events?joinCode=${teamCode}&eventId=${eventId}`;
-    navigator.clipboard.writeText(link);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
   };
 
   if (!isOpen) return null;
@@ -282,11 +313,6 @@ const GroupEventModal = ({ isOpen, onClose, event }) => {
                 </div>
               </div>
 
-              <div className="border-4 border-black p-6 bg-[#fff5f5] text-center">
-                <p className="font-black uppercase tracking-[0.25em] text-xs text-gray-500 mb-2">Registration Fee</p>
-                <p className="font-black text-5xl text-[#a80d11] mb-1">₹{eventFee}</p>
-                <p className="font-bold text-xs text-gray-500 uppercase tracking-wider">{eventName}</p>
-              </div>
 
               <div className="flex flex-col gap-3 mt-4">
                 {!hasPaid ? (
@@ -301,14 +327,10 @@ const GroupEventModal = ({ isOpen, onClose, event }) => {
                       Continue to Payment <ArrowRight className="w-5 h-5" />
                     </button>
                     <button
-                      onClick={() => {
-                        // Allow them to look at the join screen, but joining will require payment
-                        // Actually, let's keep it strictly gated.
-                        setPaymentStep('payment'); 
-                      }}
+                      onClick={() => setView('join')}
                       className="w-full py-3 border-4 border-black bg-white text-black font-black uppercase tracking-[0.15em] text-xs shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-2"
                     >
-                      <Users className="w-4 h-4" /> Already have a team?
+                      <Users className="w-4 h-4" /> Already have a team? Join with Code
                     </button>
                   </>
                 ) : (
@@ -418,19 +440,6 @@ const GroupEventModal = ({ isOpen, onClose, event }) => {
                   <input readOnly disabled value={user?.email || ''} className={`${inputCls} bg-gray-100 text-gray-600 cursor-not-allowed border-dashed`} />
                 </div>
 
-                {/* Team Size */}
-                <div className="border-4 border-black p-4 bg-[#fbfbf8] space-y-2">
-                  <label className="font-black uppercase tracking-[0.2em] text-xs text-black block">Team Size <span className="text-red-600">*</span></label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {[2, 3, 4].map(size => (
-                      <button type="button" key={size} onClick={() => handleTeamSizeChange(size)}
-                        className={`p-3 border-4 font-black uppercase text-center transition-all text-sm ${formData.maxMembers === size ? 'border-black bg-black text-white' : 'border-black bg-white text-black hover:bg-gray-100'}`}>
-                        {size} Members
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
                 {/* Member Emails */}
                 {formData.invitedEmails.length > 0 && (
                   <div className="border-4 border-black p-4 bg-white space-y-3">
@@ -458,7 +467,7 @@ const GroupEventModal = ({ isOpen, onClose, event }) => {
           )}
 
           {/* JOIN TEAM */}
-          {!loading && view === 'join' && hasPaid && (
+          {!loading && view === 'join' && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
               <div className="flex items-center gap-3 border-b-4 border-black pb-4">
                 <button onClick={() => setView('choice')} className="text-xs font-black uppercase tracking-widest text-gray-500 hover:text-black">← Back</button>
@@ -520,10 +529,6 @@ const GroupEventModal = ({ isOpen, onClose, event }) => {
                   {copiedCode ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
                   {copiedCode ? 'Copied!' : 'Copy Code'}
                 </button>
-                <button onClick={handleCopyLink} className="py-2.5 px-4 border-2 border-black bg-white font-black uppercase text-xs tracking-widest hover:bg-black hover:text-white transition-all flex items-center gap-1.5">
-                  {copiedLink ? <Check className="w-3.5 h-3.5 text-green-600" /> : <LinkIcon className="w-3.5 h-3.5" />}
-                  {copiedLink ? 'Copied!' : 'Copy Link'}
-                </button>
               </div>
               <button onClick={() => setView('dashboard')} className="w-full py-3 border-4 border-black bg-[#1f2022] text-white font-black uppercase tracking-widest text-xs hover:bg-black transition-all">
                 View Team Dashboard →
@@ -534,10 +539,14 @@ const GroupEventModal = ({ isOpen, onClose, event }) => {
           {/* DASHBOARD */}
           {!loading && view === 'dashboard' && activeTeamData?.team && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+
+              {/* Header */}
               <div className="flex items-center justify-between border-b-4 border-black pb-4">
                 <div>
                   <span className="px-3 py-1 bg-green-600 text-white font-black text-xs uppercase tracking-widest border-2 border-black inline-block mb-1">REGISTERED</span>
-                  <h4 className="text-3xl font-black uppercase tracking-tight">{activeTeamData.team.teamName}</h4>
+                  <div className="flex items-center gap-3">
+                    <h4 className="text-3xl font-black uppercase tracking-tight">{activeTeamData.team.teamName}</h4>
+                  </div>
                 </div>
                 <div className="text-right">
                   <p className="font-black text-xs uppercase tracking-widest text-gray-500">Team Size</p>
@@ -545,51 +554,66 @@ const GroupEventModal = ({ isOpen, onClose, event }) => {
                 </div>
               </div>
 
+              {/* Team Code Box */}
               <div className="border-4 border-black p-5 bg-blue-50 space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-black uppercase tracking-[0.2em] text-xs text-blue-950">Team Code</p>
                     <p className="font-mono font-black text-3xl tracking-wider text-black select-all">{activeTeamData.team.teamCode}</p>
+                    <p className="font-bold text-xs text-gray-600 mt-1">Share this code with your invited teammates.</p>
                   </div>
-                  <div className="flex gap-2">
-                    <button onClick={handleCopyCode} className="py-2.5 px-3 border-2 border-black bg-white font-black uppercase text-xs tracking-widest hover:bg-black hover:text-white transition-all flex items-center gap-1.5">
-                      {copiedCode ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
-                      {copiedCode ? 'Copied' : 'Copy'}
-                    </button>
-                    <button onClick={handleCopyLink} className="py-2.5 px-3 border-2 border-black bg-white font-black uppercase text-xs tracking-widest hover:bg-black hover:text-white transition-all flex items-center gap-1.5">
-                      {copiedLink ? <Check className="w-3.5 h-3.5 text-green-600" /> : <LinkIcon className="w-3.5 h-3.5" />}
-                      {copiedLink ? 'Copied' : 'Link'}
-                    </button>
-                  </div>
+                  <button onClick={handleCopyCode} className="py-2.5 px-3 border-2 border-black bg-white font-black uppercase text-xs tracking-widest hover:bg-black hover:text-white transition-all flex items-center gap-1.5 shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                    {copiedCode ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedCode ? 'Copied' : 'Copy'}
+                  </button>
                 </div>
               </div>
 
               {/* Members List */}
-              <div className="border-4 border-black p-4 bg-white space-y-3">
-                <p className="font-black uppercase tracking-widest text-xs border-b-2 border-black/10 pb-2">Team Members ({activeTeamData.members?.length || 0})</p>
-                {(activeTeamData.members || []).map((m, i) => (
-                  <div key={m.id} className="flex items-center gap-3 p-3 border-2 border-black/10">
-                    <div className="w-9 h-9 bg-black text-white flex items-center justify-center font-black text-xs shrink-0">
-                      {m.name?.substring(0, 2).toUpperCase() || '??'}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h5 className="font-black uppercase tracking-wider text-sm">
+                    Team Members ({activeTeamData.members?.length || 0} Joined)
+                  </h5>
+                </div>
+                <div className="space-y-3">
+                  {(activeTeamData.members || []).map((m) => (
+                    <div key={m.id || m.uid} className="p-4 border-4 border-black bg-[#fffefa] flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <span className="font-black uppercase text-base text-black">{m.name || m.email}</span>
+                          {m.role === 'leader' ? (
+                            <span className="px-2 py-0.5 bg-black text-white font-black text-[10px] uppercase tracking-widest">TEAM LEADER</span>
+                          ) : (
+                            <span className="px-2 py-0.5 bg-blue-100 text-blue-800 font-bold text-[10px] uppercase tracking-widest border border-blue-300">JOINED MEMBER</span>
+                          )}
+                        </div>
+                        <p className="font-bold text-xs text-gray-600">{m.email}</p>
+                      </div>
+                      <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
                     </div>
-                    <div className="flex-1">
-                      <p className="font-black text-sm text-black">{m.name || m.email}</p>
-                      <p className="text-xs text-gray-500">{m.email}</p>
-                    </div>
-                    <span className={`px-2 py-0.5 text-[10px] font-black uppercase tracking-widest border ${m.role === 'leader' ? 'bg-black text-white border-black' : 'bg-white text-black border-black/30'}`}>
-                      {m.role}
-                    </span>
-                  </div>
-                ))}
-                {/* Empty slots */}
-                {Array.from({ length: (activeTeamData.team.maxMembers || 0) - (activeTeamData.members?.length || 0) }).map((_, i) => (
-                  <div key={`empty-${i}`} className="flex items-center gap-3 p-3 border-2 border-dashed border-black/20">
-                    <div className="w-9 h-9 border-2 border-dashed border-black/20 flex items-center justify-center shrink-0">
-                      <User className="w-4 h-4 text-black/20" />
-                    </div>
-                    <p className="text-xs font-black uppercase tracking-widest text-black/30">Waiting for member…</p>
-                  </div>
-                ))}
+                  ))}
+                  {/* Pending invite slots */}
+                  {Array.from({ length: (activeTeamData.team.maxMembers || 0) - (activeTeamData.members?.length || 0) }).map((_, i) => {
+                    const pendingEmail = (activeTeamData.team.invitedEmails || [])[
+                      i + (activeTeamData.members?.filter(m => m.role !== 'leader').length || 0)
+                    ] || (activeTeamData.team.invitedEmails || [])[i];
+                    return (
+                      <div key={`empty-${i}`} className="p-4 border-4 border-dashed border-black/30 bg-gray-50 flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-2">
+                            <span className="font-black text-sm text-black/40 uppercase">Awaiting Member</span>
+                            <span className="px-2 py-0.5 bg-gray-200 text-gray-500 font-bold text-[10px] uppercase tracking-widest">INVITED</span>
+                          </div>
+                          {pendingEmail && (
+                            <p className="font-bold text-xs text-gray-400">{pendingEmail}</p>
+                          )}
+                        </div>
+                        <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
               <button onClick={onClose} className="w-full py-3 border-4 border-black bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-all">
@@ -597,6 +621,7 @@ const GroupEventModal = ({ isOpen, onClose, event }) => {
               </button>
             </motion.div>
           )}
+
         </div>
       </motion.div>
     </motion.div>

@@ -80,43 +80,17 @@ export async function fetchProblemStatements() {
 }
 
 /**
- * Generate a unique team code formatted like: SPV-7KQ4P
- */
-export async function generateUniqueTeamCode() {
-  const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // Exclude ambiguous chars like O, 0, I, 1
-  let code = '';
-  let isUnique = false;
-  let attempts = 0;
-
-  while (!isUnique && attempts < 10) {
-    attempts++;
-    let randomPart = '';
-    for (let i = 0; i < 5; i++) {
-      randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    code = `SPV-${randomPart}`;
-
-    // Check if code exists in `teams` collection
-    const q = query(collection(db, 'teams'), where('teamCode', '==', code));
-    const snap = await getDocs(q);
-    if (snap.empty) {
-      isUnique = true;
-    }
-  }
-
-  return code;
-}
-
-/**
  * Check if Team Name is unique (case-insensitive)
  */
 export async function checkTeamNameUnique(teamName) {
   if (!teamName || !teamName.trim()) return false;
-  const cleanName = teamName.trim().toLowerCase();
-  
-  const q = query(collection(db, 'teams'), where('teamNameLower', '==', cleanName));
-  const snap = await getDocs(q);
-  return snap.empty;
+  try {
+    const { data } = await api.get(`/api/teams/check?name=${encodeURIComponent(teamName.trim())}`);
+    return data.available;
+  } catch (err) {
+    console.error('checkTeamNameUnique error:', err);
+    return false; // Fail safe
+  }
 }
 
 /**
@@ -160,60 +134,8 @@ export async function createTeamInFirestore(leaderUser, formData) {
  * Update an existing team in Firestore (Leader only)
  */
 export async function updateTeamInFirestore(teamId, leaderUser, teamData) {
-  const { teamName, problemStatement, maxMembers, invitedEmails, college, department, leaderName, leaderEmail } = teamData;
-
-  const teamRef = doc(db, 'teams', teamId);
-  const teamSnap = await getDoc(teamRef);
-
-  if (!teamSnap.exists()) {
-    throw new Error("Team not found.");
-  }
-  
-  const currentData = teamSnap.data();
-
-  // If team name changed, verify uniqueness
-  if (teamName.trim().toLowerCase() !== currentData.teamName.toLowerCase()) {
-    const isUnique = await checkTeamNameUnique(teamName);
-    if (!isUnique) {
-      throw new Error(`Team Name "${teamName}" is already taken.`);
-    }
-  }
-  
-  // Verify maxMembers isn't less than currently joined members
-  const joinedCount = currentData.joinedMemberUids?.length || 1;
-  if (maxMembers < joinedCount) {
-    throw new Error(`Cannot reduce team size to ${maxMembers}. There are already ${joinedCount} members joined.`);
-  }
-
-  // Update `teams` doc
-  await updateDoc(teamRef, {
-    teamName: teamName.trim(),
-    problemStatement: problemStatement.trim(),
-    maxMembers,
-    invitedEmails: invitedEmails.map(e => e.trim().toLowerCase()),
-    college: college.trim(),
-    department: department.trim(),
-    leaderName: leaderName.trim(),
-    status: maxMembers === joinedCount ? 'full' : 'open',
-    updatedAt: serverTimestamp(),
-  });
-
-  // Update Leader's `team_members` doc
-  const memberDocRef = doc(db, 'team_members', `${teamId}_${leaderUser.uid}`);
-  await updateDoc(memberDocRef, {
-    name: leaderName.trim(),
-    department: department.trim(),
-    college: college.trim(),
-  });
-
-  // Update Leader's profile in `users` collection
-  await updateUserProfile(leaderUser.uid, {
-    name: leaderName.trim(),
-    department: department.trim(),
-    college: college.trim(),
-  });
-
-  return { teamId, teamName: teamName.trim() };
+  const { data } = await api.put(`/api/teams/${teamId}`, teamData);
+  return data;
 }
 
 /**
@@ -222,13 +144,14 @@ export async function updateTeamInFirestore(teamId, leaderUser, teamData) {
 export async function findTeamByCode(teamCode) {
   if (!teamCode || !teamCode.trim()) return null;
   const cleanCode = teamCode.trim().toUpperCase();
-
-  const q = query(collection(db, 'teams'), where('teamCode', '==', cleanCode));
-  const snap = await getDocs(q);
-
-  if (snap.empty) return null;
-  const teamDoc = snap.docs[0];
-  return { id: teamDoc.id, ...teamDoc.data() };
+  try {
+    const { data } = await api.get(`/api/teams/search?code=${cleanCode}`);
+    return data || null;
+  } catch (err) {
+    if (err.response?.status === 404) return null;
+    console.error('findTeamByCode:', err);
+    return null;
+  }
 }
 
 /**
@@ -248,28 +171,42 @@ export async function joinTeamInFirestore(user, teamCode, userProfileData) {
 export function subscribeToTeamDetails(teamId, callback) {
   if (!teamId) return () => {};
 
-  const teamRef = doc(db, 'teams', teamId);
-  
-  const unsubscribeTeam = onSnapshot(teamRef, async (teamSnap) => {
-    if (!teamSnap.exists()) {
-      callback(null);
-      return;
-    }
+  try {
+    const teamRef = doc(db, 'teams', teamId);
+    
+    return onSnapshot(
+      teamRef,
+      async (teamSnap) => {
+        if (!teamSnap.exists()) {
+          callback(null);
+          return;
+        }
 
-    const teamData = { id: teamSnap.id, ...teamSnap.data() };
+        const teamData = { id: teamSnap.id, ...teamSnap.data() };
 
-    // Fetch team_members documents
-    const membersQuery = query(collection(db, 'team_members'), where('teamId', '==', teamId));
-    const membersSnap = await getDocs(membersQuery);
-    const membersList = membersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        try {
+          // Fetch team_members documents
+          const membersQuery = query(collection(db, 'team_members'), where('teamId', '==', teamId));
+          const membersSnap = await getDocs(membersQuery);
+          const membersList = membersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-    callback({
-      team: teamData,
-      members: membersList
-    });
-  });
-
-  return unsubscribeTeam;
+          callback({
+            team: teamData,
+            members: membersList
+          });
+        } catch (err) {
+          // If members fetch fails, return just the team data
+          callback({ team: teamData, members: [] });
+        }
+      },
+      (err) => {
+        console.warn(`subscribeToTeamDetails(${teamId}): permission error, real-time updates disabled.`);
+      }
+    );
+  } catch (err) {
+    console.warn(`subscribeToTeamDetails(${teamId}): failed to subscribe.`);
+    return () => {};
+  }
 }
 
 /**
@@ -277,44 +214,12 @@ export function subscribeToTeamDetails(teamId, callback) {
  */
 export async function fetchUserTeamData(uid) {
   if (!uid) return null;
-
-  // 1. Check user doc first
-  const userProfile = await getUserProfile(uid);
-  if (userProfile?.teamId) {
-    const teamDoc = await getDoc(doc(db, 'teams', userProfile.teamId));
-    if (teamDoc.exists()) {
-      const teamData = { id: teamDoc.id, ...teamDoc.data() };
-      const membersQuery = query(collection(db, 'team_members'), where('teamId', '==', userProfile.teamId));
-      const membersSnap = await getDocs(membersQuery);
-      const membersList = membersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-      return {
-        team: teamData,
-        members: membersList,
-        userProfile
-      };
-    }
+  try {
+    const { data } = await api.get('/api/teams/me');
+    return data; // { team, members }
+  } catch (err) {
+    if (err.response?.status === 404) return null;
+    console.error('fetchUserTeamData:', err);
+    return null;
   }
-
-  // 2. Check team_members collection by uid fallback
-  const q = query(collection(db, 'team_members'), where('uid', '==', uid));
-  const snap = await getDocs(q);
-  if (!snap.empty) {
-    const memberDoc = snap.docs[0].data();
-    const teamDoc = await getDoc(doc(db, 'teams', memberDoc.teamId));
-    if (teamDoc.exists()) {
-      const teamData = { id: teamDoc.id, ...teamDoc.data() };
-      const membersQuery = query(collection(db, 'team_members'), where('teamId', '==', memberDoc.teamId));
-      const membersSnap = await getDocs(membersQuery);
-      const membersList = membersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-      return {
-        team: teamData,
-        members: membersList,
-        userProfile
-      };
-    }
-  }
-
-  return null;
 }

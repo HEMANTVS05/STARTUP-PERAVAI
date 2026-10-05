@@ -70,7 +70,7 @@ async function getUserTeam(uid) {
  * Spec §17: use transactions/batches for concurrent-safe operations.
  */
 async function createTeam(leaderUser, formData) {
-  const { teamName, college, department, problemStatement, leaderName, leaderEmail, maxMembers, invitedEmails } = formData;
+  const { teamName, college, department, leaderName, leaderEmail, maxMembers, invitedEmails } = formData;
 
   // 1. Check name uniqueness
   const available = await isTeamNameAvailable(teamName);
@@ -105,7 +105,6 @@ async function createTeam(leaderUser, formData) {
     teamNameLower: teamName.trim().toLowerCase(),
     college:       college.trim(),
     department:    department.trim(),
-    problemStatement: problemStatement.trim(),
     leaderUid:     leaderUser.uid,
     leaderName:    leaderName.trim(),
     leaderEmail:   leaderEmail.trim().toLowerCase(),
@@ -202,4 +201,61 @@ async function joinTeam(user, teamCode, profileData) {
   });
 }
 
-module.exports = { findTeamByCode, isTeamNameAvailable, getUserTeam, createTeam, joinTeam };
+async function updateTeam(teamId, leaderUser, teamData) {
+  const { teamName, problemStatement, maxMembers, invitedEmails, college, department, leaderName } = teamData;
+  const teamRef = db.collection(TEAMS).doc(teamId);
+  const teamSnap = await teamRef.get();
+  
+  if (!teamSnap.exists) throw Object.assign(new Error("Team not found."), { status: 404 });
+  const currentData = teamSnap.data();
+  
+  if (currentData.leaderUid !== leaderUser.uid) {
+    throw Object.assign(new Error("Only the team leader can update team details."), { status: 403 });
+  }
+
+  if (teamName.trim().toLowerCase() !== currentData.teamName.toLowerCase()) {
+    const isUnique = await isTeamNameAvailable(teamName);
+    if (!isUnique) throw Object.assign(new Error(`Team Name "${teamName}" is already taken.`), { status: 409 });
+  }
+
+  const joinedCount = currentData.joinedMemberUids?.length || 1;
+  if (maxMembers < joinedCount) {
+    throw Object.assign(new Error(`Cannot reduce team size to ${maxMembers}. There are already ${joinedCount} members joined.`), { status: 400 });
+  }
+
+  const now = new Date().toISOString();
+  const batch = db.batch();
+  
+  batch.update(teamRef, {
+    teamName: teamName.trim(),
+    teamNameLower: teamName.trim().toLowerCase(),
+    problemStatement: problemStatement.trim(),
+    maxMembers: Number(maxMembers),
+    invitedEmails: (invitedEmails || []).map(e => e.trim().toLowerCase()),
+    college: college.trim(),
+    department: department.trim(),
+    leaderName: leaderName.trim(),
+    status: maxMembers === joinedCount ? 'full' : 'active',
+    updatedAt: now,
+  });
+
+  const memberRef = db.collection(MEMBERS).doc(`${teamId}_${leaderUser.uid}`);
+  batch.update(memberRef, {
+    name: leaderName.trim(),
+    department: department.trim(),
+    college: college.trim(),
+  });
+
+  const userRef = db.collection(USERS).doc(leaderUser.uid);
+  batch.set(userRef, {
+    name: leaderName.trim(),
+    department: department.trim(),
+    college: college.trim(),
+    updatedAt: now,
+  }, { merge: true });
+
+  await batch.commit();
+  return { teamId, teamName: teamName.trim() };
+}
+
+module.exports = { findTeamByCode, isTeamNameAvailable, getUserTeam, createTeam, joinTeam, updateTeam };

@@ -22,8 +22,8 @@ const searchEventTeamByCode = async (req, res, next) => {
     if (!code) return res.status(400).json({ error: 'code query parameter is required.' });
     const team = await findEventTeamByCode(eventId, code);
     if (!team) return res.status(404).json({ error: 'Team not found.' });
-    const { teamId, teamCode, teamName, leaderName, maxMembers, joinedMemberUids, status } = team;
-    res.json({ teamId, teamCode, teamName, leaderName, maxMembers, currentMembers: joinedMemberUids?.length || 0, status });
+    const { id, teamId, teamCode, teamName, leaderName, leaderUid, leaderEmail, maxMembers, invitedEmails, joinedMemberUids, status } = team;
+    res.json({ id: id || teamId, teamId: id || teamId, teamCode, teamName, leaderName, leaderUid, leaderEmail, maxMembers, invitedEmails: invitedEmails || [], currentMembers: joinedMemberUids?.length || 0, joinedMemberUids: joinedMemberUids || [], status });
   } catch (err) { next(err); }
 };
 

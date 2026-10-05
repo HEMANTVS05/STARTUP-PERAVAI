@@ -1,7 +1,11 @@
+// ─── Event Team Service (Frontend) ───────────────────────────────────────────
+// Uses the BACKEND API for all reads/writes to avoid Firestore permission errors.
+// Only subscribeToEventTeam uses Firestore directly (real-time updates).
+// ─────────────────────────────────────────────────────────────────────────────
+
 import {
   collection,
   doc,
-  getDoc,
   getDocs,
   query,
   where,
@@ -11,53 +15,32 @@ import { db } from '../config/firebase';
 import api from '../utils/api';
 
 /**
- * Find a team by code in a specific event's teams collection.
+ * Find a team by code — uses backend API to avoid Firestore permission errors.
  */
 export async function findEventTeamByCode(eventId, teamCode) {
   if (!teamCode?.trim() || !eventId) return null;
-  const cleanCode = teamCode.trim().toUpperCase();
-  const q = query(
-    collection(db, 'eventTeams', eventId, 'teams'),
-    where('teamCode', '==', cleanCode)
-  );
-  const snap = await getDocs(q);
-  if (snap.empty) return null;
-  const d = snap.docs[0];
-  return { id: d.id, ...d.data() };
+  try {
+    const { data } = await api.get(`/api/event-teams/${eventId}/search?code=${teamCode.trim().toUpperCase()}`);
+    // Backend returns all fields including invitedEmails, leaderUid, leaderEmail, joinedMemberUids
+    return data || null;
+  } catch (err) {
+    if (err.response?.status === 404) return null;
+    console.error(`findEventTeamByCode(${eventId}):`, err);
+    return null;
+  }
 }
 
 /**
  * Fetch the team the current user is in for a specific event.
+ * Uses backend API (/api/event-teams/:eventId/me) — avoids Firestore permission errors.
  */
 export async function fetchUserEventTeam(uid, eventId) {
   if (!uid || !eventId) return null;
   try {
-    // Check eventTeams/{eventId}/team_members for this uid
-    const q = query(
-      collection(db, 'eventTeams', eventId, 'team_members'),
-      where('uid', '==', uid)
-    );
-    const snap = await getDocs(q);
-    if (snap.empty) return null;
-
-    const memberData = snap.docs[0].data();
-    const teamDoc = await getDoc(
-      doc(db, 'eventTeams', eventId, 'teams', memberData.teamId)
-    );
-    if (!teamDoc.exists()) return null;
-
-    const membersSnap = await getDocs(
-      query(
-        collection(db, 'eventTeams', eventId, 'team_members'),
-        where('teamId', '==', memberData.teamId)
-      )
-    );
-
-    return {
-      team: { id: teamDoc.id, ...teamDoc.data() },
-      members: membersSnap.docs.map(d => ({ id: d.id, ...d.data() })),
-    };
+    const { data } = await api.get(`/api/event-teams/${eventId}/me`);
+    return data; // { team: {...}, members: [...] }
   } catch (err) {
+    if (err.response?.status === 404) return null; // Not in a team — normal case
     console.error(`fetchUserEventTeam(${eventId}):`, err);
     return null;
   }
@@ -65,22 +48,41 @@ export async function fetchUserEventTeam(uid, eventId) {
 
 /**
  * Real-time listener for a specific event team.
+ * Still uses Firestore onSnapshot — if permissions block this, falls back to polling.
  */
 export function subscribeToEventTeam(eventId, teamId, callback) {
   if (!teamId || !eventId) return () => {};
-  const teamRef = doc(db, 'eventTeams', eventId, 'teams', teamId);
-  return onSnapshot(teamRef, async teamSnap => {
-    if (!teamSnap.exists()) { callback(null); return; }
-    const teamData = { id: teamSnap.id, ...teamSnap.data() };
-    const membersSnap = await getDocs(
-      query(
-        collection(db, 'eventTeams', eventId, 'team_members'),
-        where('teamId', '==', teamId)
-      )
+
+  try {
+    const teamRef = doc(db, 'eventTeams', eventId, 'teams', teamId);
+    return onSnapshot(
+      teamRef,
+      async (teamSnap) => {
+        if (!teamSnap.exists()) { callback(null); return; }
+        const teamData = { id: teamSnap.id, ...teamSnap.data() };
+        try {
+          const membersSnap = await getDocs(
+            query(
+              collection(db, 'eventTeams', eventId, 'team_members'),
+              where('teamId', '==', teamId)
+            )
+          );
+          callback({
+            team: teamData,
+            members: membersSnap.docs.map(d => ({ id: d.id, ...d.data() })),
+          });
+        } catch {
+          // Members fetch failed — return team-only with empty members
+          callback({ team: teamData, members: [] });
+        }
+      },
+      (err) => {
+        // Firestore permission error on snapshot — silently stop
+        console.warn(`subscribeToEventTeam(${eventId}): permission error, real-time updates disabled.`);
+      }
     );
-    callback({
-      team: teamData,
-      members: membersSnap.docs.map(d => ({ id: d.id, ...d.data() })),
-    });
-  });
+  } catch (err) {
+    console.warn(`subscribeToEventTeam(${eventId}): failed to subscribe.`);
+    return () => {};
+  }
 }

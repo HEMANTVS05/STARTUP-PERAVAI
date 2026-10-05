@@ -20,6 +20,8 @@ import bootcampPoster from '../assets/bootcamp_cover.png';
 import artPoster from '../assets/art_cover.png';
 import lavanya from '../assets/lavanya.png';
 import artRulesPoster from '../assets/rules55.png';
+import risePoster from '../assets/rise_cover.png';
+import riseRulesPoster from '../assets/rules66.png';
 
 const GROUP_EVENTS = [
   {
@@ -85,7 +87,7 @@ const GROUP_EVENTS = [
         </span>
         <div className="mt-6 p-6" style={{ background: '#f8fafc', borderLeft: '6px solid #0b2140' }}>
           <span className="block font-black uppercase tracking-widest text-[#0b2140] text-lg">And the best part?</span>
-          <span className="block text-[16px] font-bold text-black/70 mt-2">The winning team gets the opportunity to bring their idea to life in the Idea Lab at Easwari Engineering College.</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">The winning team gets the opportunity to bring their idea into life at the SRM Easwari Innovation Center, during Peravai. </span>
         </div>
       </>
     ),
@@ -109,7 +111,7 @@ const GROUP_EVENTS = [
       <>
         <span className="block text-xl font-black uppercase tracking-tight text-[#0b2140] mb-3">What if you could rethink a brand from the ground up?</span>
         <span className="block mt-2 text-black/75">
-          In <strong>Scale Up Studio</strong>, teams will select an existing Indian brand and take on the challenge of reimagining it for a new generation.
+          In <strong>Scale Up Studio</strong>, teams will select an existing brand and take on the challenge of reimagining it for a new generation.
         </span>
         <span className="block mt-2 text-black/75">
           Participants will analyse the brand, identify opportunities for improvement and rework its identity, design, technical aspects and business strategy to create a fresh and relevant version of the brand.
@@ -200,6 +202,21 @@ const INDIVIDUAL_EVENTS = [
           <span className="block text-[16px] font-bold text-black/70 mt-2">Whether you already have a startup idea or simply have a problem you want to solve.</span>
           <span className="block text-[14px] italic text-black/60 mt-2">This bootcamp will give you the frameworks and guidance to take your first step.</span>
         </div>
+        <div className="mt-6 p-5" style={{ background: '#fff0f0', borderLeft: '6px solid #a80d11', borderRadius: '8px' }}>
+          <span className="block text-[18px] font-black uppercase tracking-tight text-black">Lavanya G</span>
+          <a
+            href="https://www.linkedin.com/in/lavanya-g-028a55186/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 mt-3 px-4 py-2 font-black uppercase text-[11px] tracking-widest text-white transition-all"
+            style={{ background: '#0077b5', borderRadius: '4px' }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+            </svg>
+            View LinkedIn Profile
+          </a>
+        </div>
       </>
     ),
     venue: 'MBA Seminar Hall 2', day: 'Both Days', time: '11:30 AM Onwards', accent: '#a80d11', accentLight: '#fff0f0',
@@ -214,6 +231,30 @@ const INDIVIDUAL_EVENTS = [
     coverImage: bootcampPoster,
     posters: [lavanya],
 
+  },
+  {
+    id: 'riseher', name: 'Rise Her',
+    cardDesc: 'A special event dedicated to empowering women entrepreneurs and innovators.',
+    desc: (
+      <>
+        <span className="block text-xl font-black uppercase tracking-tight text-[#a80d11] mb-3">Empowering the Next Generation of Women Leaders</span>
+        <span className="block mt-2 text-black/75">
+          <strong>RiseHer</strong> is an exclusive event celebrating and supporting women innovators. Connect, learn, and grow with a community of inspiring female founders and leaders.
+        </span>
+        <div className="mt-6 p-6" style={{ background: '#fff0f0', borderLeft: '6px solid #a80d11' }}>
+          <span className="block font-black uppercase tracking-widest text-[#a80d11] text-lg">RiseHer</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">Empowerment, Innovation, and Leadership.</span>
+        </div>
+      </>
+    ),
+    venue: 'Main Auditorium', day: 'Day 2', time: '10:00 AM Onwards', accent: '#a80d11', accentLight: '#fff0f0',
+    rules: [
+      { title: '1. Solo Event', body: 'This is an individual event open to all interested participants.' },
+      { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of registration.' },
+      { title: '3. Reporting Time', body: 'Report to the venue 15 minutes prior. ID cards are mandatory.' },
+    ],
+    coverImage: risePoster, // Using placeholder until specific poster is provided
+    posters: [riseRulesPoster],
   },
 ];
 

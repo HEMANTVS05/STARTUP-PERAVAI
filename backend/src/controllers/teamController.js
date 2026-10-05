@@ -4,6 +4,7 @@ const {
   getUserTeam,
   createTeam,
   joinTeam,
+  updateTeam,
 } = require('../services/teamService');
 const { validateCreateTeam, validateJoinTeam } = require('../validators/teamValidator');
 
@@ -55,4 +56,14 @@ const joinExistingTeam = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { getMyTeam, checkTeamName, searchTeamByCode, createNewTeam, joinExistingTeam };
+const updateExistingTeam = async (req, res, next) => {
+  try {
+    const { teamId } = req.params;
+    if (!teamId) return res.status(400).json({ error: 'teamId is required.' });
+    // Assume validation happens or could happen here
+    const result = await updateTeam(teamId, { uid: req.user.uid, email: req.user.email }, req.body);
+    res.json(result);
+  } catch (err) { next(err); }
+};
+
+module.exports = { getMyTeam, checkTeamName, searchTeamByCode, createNewTeam, joinExistingTeam, updateExistingTeam };

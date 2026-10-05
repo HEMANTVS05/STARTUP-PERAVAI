@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import VisitorDetailsModal from './VisitorDetailsModal';
 import { fetchUserTeamData } from '../services/hackathonService';
 import PartnerModal from './PartnerModal';
+import GroupEventModal from './GroupEventModal';
 
 import speaker1 from '../assets/speaker1.jpeg';
 import eventBrochure from '../assets/EVENT_BROCHURE.pdf';
@@ -523,6 +524,8 @@ const MainLayout = () => {
   // Hackathon Modal state
   const [showHackathonModal, setShowHackathonModal] = useState(false);
   const [hackathonJoinCode, setHackathonJoinCode] = useState('');
+  
+  const [activeGroupEventId, setActiveGroupEventId] = useState(null);
   const [profileWarning, setProfileWarning] = useState(false);
   const [userHasHackathonTeam, setUserHasHackathonTeam] = useState(false);
 
@@ -965,20 +968,20 @@ const MainLayout = () => {
                       exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.15 }}
                       className="absolute right-0 top-full mt-2 w-48 border-4 border-black bg-white shadow-[6px_6px_0px_rgba(0,0,0,1)] z-50">
 
-                      {registration && registration.paymentStatus !== 'pending' && (
+                      {registration && (registration.paymentStatus === 'completed' || (registration.registeredEvents && registration.registeredEvents.length > 0)) && (
                         <button onClick={() => { setShowDashboard(true); setUserMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-4 py-3 font-black uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-colors border-b-2 border-black">
                           <QrCode className="w-4 h-4" /> My Pass
                         </button>
                       )}
-                      {registration && registration.paymentStatus === 'pending' && (
+                      {registration && registration.paymentStatus !== 'completed' && (!registration.registeredEvents || registration.registeredEvents.length === 0) && (
                         <button onClick={() => {
                           setUserMenuOpen(false);
                           const el = document.getElementById('passes');
                           if (el) el.scrollIntoView({ behavior: 'smooth' });
                         }}
                           className="w-full flex items-center gap-3 px-4 py-3 font-black uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-colors border-b-2 border-black">
-                          <Ticket className="w-4 h-4" /> Choose Pass
+                          <Ticket className="w-4 h-4" /> GET PASS
                         </button>
                       )}
                       {!registration && (
@@ -1037,20 +1040,20 @@ const MainLayout = () => {
               >
                 <Download className="w-5 h-5" /> Download Brochure
               </a>
-              {user && registration && registration.paymentStatus !== 'pending' && (
+              {user && registration && (registration.paymentStatus === 'completed' || (registration.registeredEvents && registration.registeredEvents.length > 0)) && (
                 <button onClick={() => { setShowDashboard(true); setMenuOpen(false); }}
                   className="w-full flex items-center gap-3 px-8 py-4 font-black uppercase tracking-widest text-gray-600 border-b-2 border-black hover:bg-black hover:text-white transition-colors">
-                  <QrCode className="w-5 h-5" /> My QR
+                  <QrCode className="w-5 h-5" /> MY PASS
                 </button>
               )}
-              {user && registration && registration.paymentStatus === 'pending' && (
+              {user && registration && registration.paymentStatus !== 'completed' && (!registration.registeredEvents || registration.registeredEvents.length === 0) && (
                 <button onClick={() => {
                   setMenuOpen(false);
                   const el = document.getElementById('passes');
                   if (el) el.scrollIntoView({ behavior: 'smooth' });
                 }}
                   className="w-full flex items-center gap-3 px-8 py-4 font-black uppercase tracking-widest text-gray-600 border-b-2 border-black hover:bg-black hover:text-white transition-colors">
-                  <Ticket className="w-5 h-5" /> Choose Pass
+                  <Ticket className="w-5 h-5" /> GET PASS
                 </button>
               )}
 
@@ -1440,29 +1443,35 @@ const MainLayout = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.4 }}
-              className="mt-16 mx-auto max-w-4xl border-4 border-black p-6 md:p-8 bg-white relative shadow-[8px_8px_0px_rgba(0,0,0,1)]"
+              className="mt-16 mx-auto max-w-4xl border-4 border-[#a80d11] p-6 md:p-8 bg-white relative shadow-[8px_8px_0px_rgba(0,0,0,1)]"
             >
-              <div className="absolute -top-4 left-6 bg-black text-white px-4 py-1 font-black uppercase tracking-widest text-xs">
+              <div className="absolute -top-4 left-6 bg-[#a80d11] text-white px-4 py-1 font-black uppercase tracking-widest text-xs">
                 TERMS & CONDITIONS
               </div>
-              <ul className="space-y-3 text-left">
-                <li className="flex items-start gap-3">
-
-                  <p className="font-bold text-gray-800 text-sm md:text-base leading-relaxed">
-                    Those with an event pass need not avail entry pass separately.
-                  </p>
+              <ol className="list-decimal list-outside space-y-4 pl-5 text-left font-bold text-gray-800 text-sm md:text-base leading-relaxed">
+                <li className="pl-2">
+                  Possession of a valid Event Pass or Visitor Pass grants access to the event. Passes must be presented at the designated entry point.
                 </li>
-                <li className="flex items-start gap-3">
-
-                  <p className="font-bold text-gray-800 text-sm md:text-base leading-relaxed">
-                    Those with a particular event pass can register to multiple events provided their schedule does not interfere with that of another event.
-                  </p>
+                <li className="pl-2">
+                  Participants wishing to participate in multiple events must ensure that their selected event schedules do not overlap. The management will not be responsible for any scheduling conflicts between multiple events.
                 </li>
-              </ul>
+                <li className="pl-2">
+                  All passes are non-refundable and cannot be cancelled once purchased.
+                </li>
+                <li className="pl-2">
+                  Passes are non-transferable and may only be used by the registered participant, unless otherwise permitted by the management.
+                </li>
+                <li className="pl-2">
+                  The management reserves the right to modify event schedules, timings, venues, speakers, or programmes when necessary. Participants will be informed of significant changes wherever reasonably possible.
+                </li>
+                <li className="pl-2 text-justify">
+                  The management shall not be held responsible for cancellation, postponement, modification, or disruption of the event due to circumstances beyond its reasonable control, including natural disasters, government restrictions, emergencies, or other unforeseen circumstances.
+                </li>
+              </ol>
             </motion.div>
           </div>
-        </motion.div>
-      </div>
+        </motion.div >
+      </div >
 
       <div className="mt-8 md:mt-10 mx-4 sm:mx-6 lg:mx-24 h-[3px]" style={{ background: 'linear-gradient(to right, transparent, #a80d11 20%, #1f2022 50%, #0f50e3 80%, transparent)' }} />
 
@@ -1831,6 +1840,10 @@ const MainLayout = () => {
               setShowDashboard(false);
               setShowHackathonModal(true);
             }}
+            onOpenGroupEvent={(eventId) => {
+              setShowDashboard(false);
+              setActiveGroupEventId(eventId);
+            }}
           />
         )}
       </AnimatePresence>
@@ -1846,6 +1859,22 @@ const MainLayout = () => {
             initialJoinCode={hackathonJoinCode}
           />
         )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {activeGroupEventId && (() => {
+          const isRupees = activeGroupEventId === 'rupees-to-reality';
+          return (
+            <GroupEventModal
+              isOpen={!!activeGroupEventId}
+              onClose={() => setActiveGroupEventId(null)}
+              eventId={activeGroupEventId}
+              eventName={isRupees ? 'Rupees to Reality' : 'ScaleUp Studio'}
+              eventAccent={'#0b2140'}
+              eventFee={1}
+            />
+          );
+        })()}
       </AnimatePresence>
 
       <VisitorPassPaymentModal

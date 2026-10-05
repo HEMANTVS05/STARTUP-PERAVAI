@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mic, Users, ChevronRight, SkipForward } from 'lucide-react';
 import poster1 from '../assets/ippopay.png';
+import poster2 from '../assets/chaikings.png';
 
 // ── Session Data ────────────────────────────────────────────────────────────────
 const SESSIONS = {
@@ -14,20 +15,23 @@ const SESSIONS = {
         id: 'd1-p1', type: 'podcast',
         title: "Mohan K",
         time: 'Ippopay Co-Founder',
-        desc: 'Are you fascinated by FinTech and curious about how UPI, digital payments and merchant transactions actually work in India? Join Mohan K, Co-Founder & CEO of IppoPay, for a live podcast on the technology, innovation and business transforming the way India pays. Perfect for students, aspiring FinTech founders and anyone curious about the future of digital payments in India.', // fill later
+        titleColor: '#19afd0',
+        desc: 'Are you fascinated by FinTech and curious about how UPI, digital payments and merchant transactions actually work in India? Join Mohan K, Co-Founder & CEO of IppoPay, for a live podcast on the technology, innovation and business transforming the way India pays. Perfect for students, aspiring FinTech founders and anyone curious about the future of digital payments in India.',
         poster: poster1,
       },
       {
         id: 'd1-p2', type: 'podcast',
-        title: 'Jahabar sadique',
-        time: 'time solunga',
-        desc: 'For those curious about entrepreneurship, consumer brands and building a successful franchise, this conversation with Jahabar Sadique, Co-Founder of Chai Kings, explores how a simple idea can grow into a recognisable homegrown brand through customer insight, branding, operations and smart expansion. Join us for a live podcast on building, scaling and creating a successful franchise business.',
+        title: '',
+        time: '',
+        titleColor: '',
+        desc: '',
         poster: null,
       },
       {
         id: 'd1-panel1', type: 'panel',
         title: 'The New Industrial Revolution',
         time: 'Where Startups, Manufacturing & Emergin Technologies Converge',
+        titleColor: '#92400e',   // amber-brown — industrial / manufacturing
         desc: 'Curious about where the next wave of industrial innovation is coming from? This panel brings together the worlds of startups, manufacturing and emerging technologies to unpack how AI, robotics, automation, advanced engineering and deep tech are reshaping the way industries build, operate and scale. A must-attend conversation for aspiring founders, engineers, innovators and anyone interested in the future of industry.',
         poster: null,
       },
@@ -35,6 +39,7 @@ const SESSIONS = {
         id: 'd1-panel2', type: 'panel',
         title: 'Beyond the Metros',
         time: 'Building Companies, Capabilities & Capital Across the Next Generation of Indian Cities',
+        titleColor: '#5b21b6',   // violet — emerging cities / next-gen
         desc: 'India’s next entrepreneurial hotspots are emerging beyond the metros. This panel brings together founders, investors and ecosystem leaders to explore how Tier 2 and Tier 3 cities are building companies, developing local talent, attracting capital and creating thriving startup ecosystems. A must-attend conversation for anyone interested in the next generation of India’s business and innovation hubs.',
         poster: null,
       },
@@ -47,15 +52,17 @@ const SESSIONS = {
     sessions: [
       {
         id: 'd2-p1', type: 'podcast',
-        title: 'Scaling Smart: Lessons Learned',
-        time: '10:00 AM',
-        desc: '',
-        poster: null,
+        title: 'Jahabar sadique',
+        time: 'Chai Kings Co-Founder',
+        titleColor: '#00a652',   // teal — original Chai Kings popup color
+        desc: 'For those curious about entrepreneurship, consumer brands and building a successful franchise, this conversation with Jahabar Sadique, Co-Founder of Chai Kings, explores how a simple idea can grow into a recognisable homegrown brand through customer insight, branding, operations and smart expansion. Join us for a live podcast on building, scaling and creating a successful franchise business.',
+        poster: poster2,
       },
       {
         id: 'd2-p2', type: 'podcast',
         title: 'Funding in the New Economy',
         time: '12:00 PM',
+        titleColor: '#b45309',   // warm orange — economy / finance
         desc: '',
         poster: null,
       },
@@ -63,6 +70,7 @@ const SESSIONS = {
         id: 'd2-panel1', type: 'panel',
         title: "The Investor's Perspective",
         time: '2:00 PM',
+        titleColor: '#065f46',   // emerald — investors / growth
         desc: '',
         poster: null,
       },
@@ -70,6 +78,7 @@ const SESSIONS = {
         id: 'd2-panel2', type: 'panel',
         title: 'Tech for Tamil Nadu',
         time: '4:00 PM',
+        titleColor: '#a80d11',   // red — Tamil Nadu flagship brand color
         desc: '',
         poster: null,
       },
@@ -79,6 +88,7 @@ const SESSIONS = {
 
 // ── Session Card ────────────────────────────────────────────────────────────────
 const SessionCard = ({ session, dayColor, selected, disabled, onSelect, onLearnMore }) => {
+  const [expanded, setExpanded] = useState(false);
   const isPodcast = session.type === 'podcast';
 
   return (
@@ -130,7 +140,25 @@ const SessionCard = ({ session, dayColor, selected, disabled, onSelect, onLearnM
         {/* Description space */}
         <div className="flex-1 mb-3 min-h-[52px]">
           {session.desc ? (
-            <p className="text-sm text-black/70 font-bold leading-relaxed">{session.desc}</p>
+            <div>
+              <p
+                className="text-md text-black/70 font-bold leading-relaxed"
+                style={{
+                  display: '-webkit-box',
+                  WebkitLineClamp: expanded ? 'unset' : 2,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: expanded ? 'visible' : 'hidden',
+                }}
+              >
+                {session.desc}
+              </p>
+              <button
+                onClick={(e) => { e.stopPropagation(); setExpanded(v => !v); }}
+                className="mt-1.5 text-[13px] font-black uppercase tracking-widest text-[#a80d11] hover:underline flex items-center gap-0.5 transition-all"
+              >
+                {expanded ? '▲ Show Less' : '▼ Read More'}
+              </button>
+            </div>
           ) : (
             <p className="text-xs text-black/25 font-bold italic">Description coming soon...</p>
           )}
@@ -139,7 +167,7 @@ const SessionCard = ({ session, dayColor, selected, disabled, onSelect, onLearnM
         {/* Selected indicator / Learn More */}
         <div className="flex items-center justify-between border-t-2 border-black/10 pt-3">
           {selected ? (
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#a80d11] flex items-center gap-1.5">
+            <span className="text-[11px] font-black uppercase tracking-widest text-[#a80d11] flex items-center gap-1.5">
               <div className="w-4 h-4 bg-[#a80d11] flex items-center justify-center">
                 <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -152,7 +180,7 @@ const SessionCard = ({ session, dayColor, selected, disabled, onSelect, onLearnM
           )}
           <button
             onClick={(e) => { e.stopPropagation(); onLearnMore(session); }}
-            className="text-[10px] font-black uppercase tracking-widest text-[#a80d11] hover:underline flex items-center gap-1 transition-all"
+            className="text-[13px] font-black uppercase tracking-widest text-[#a80d11] hover:underline flex items-center gap-1 transition-all"
           >
             Learn More <ChevronRight className="w-3 h-3" />
           </button>
@@ -180,11 +208,11 @@ const PosterPopup = ({ session, dayLabel, onClose }) => {
         transition={{ type: 'spring', damping: 25, stiffness: 260 }}
         className="relative z-10 w-full max-w-5xl border-4 border-white shadow-2xl overflow-hidden bg-black"
       >
-        {/* Title bar */}
-        <div className="bg-[#a80d11] border-b-4 border-white px-5 py-3 flex items-center justify-between">
+        {/* Title bar — uses per-session colour */}
+        <div className="border-b-4 border-white px-5 py-3 flex items-center justify-between" style={{ background: session.titleColor || '#19afd0' }}>
           <div>
-            <p className="text-white/60 text-[9px] font-black uppercase tracking-widest">{dayLabel}</p>
-            <p className="text-white font-black text-sm leading-tight">{session.title}</p>
+            <p className="text-white/60 text-[15px] font-black uppercase tracking-widest">{dayLabel}</p>
+            <p className="text-white font-black text-lg leading-tight">{session.title}</p>
           </div>
           <button
             onClick={onClose}
@@ -302,10 +330,10 @@ const SessionPickerModal = ({ isOpen, onSkip, onNext, onBack }) => {
             </div>
 
             {/* ── Day 1 | divider | Day 2 */}
-            <div className="flex flex-1 min-h-0 divide-x-4 divide-black">
+            <div className="flex flex-grow divide-x-4 divide-black">
 
               {/* ── Day 1 half */}
-              <div className="flex-1 px-6 py-5">
+              <div className="flex-1 px-6 py-7">
                 {/* Day 1 header */}
                 <div className="flex items-center gap-3 mb-5 pb-3 border-b-4 border-black">
                   <div className="w-10 h-10 bg-[#a80d11] border-2 border-black flex items-center justify-center shrink-0">
@@ -331,7 +359,7 @@ const SessionPickerModal = ({ isOpen, onSkip, onNext, onBack }) => {
               </div>
 
               {/* ── Day 2 half */}
-              <div className="flex-1 px-6 py-5">
+              <div className="flex-1 px-6 py-7">
                 {/* Day 2 header */}
                 <div className="flex items-center gap-3 mb-5 pb-3 border-b-4 border-black">
                   <div className="w-10 h-10 bg-[#0b2140] border-2 border-black flex items-center justify-center shrink-0">

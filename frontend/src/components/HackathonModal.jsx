@@ -126,6 +126,24 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
           setActiveTeamData(existingData);
           setView('dashboard');
 
+          // ── Retroactive pass issuance for team leader ──────────────────────
+          // If this user is the leader and doesn't have the hackathon pass yet,
+          // issue it now (handles cases where the original patch failed or the
+          // team was created before pass-issuance was added).
+          const isLeader = existingData.team?.leaderUid === user.uid;
+          const alreadyHasPass = registration?.registeredEvents?.includes('hackathon');
+          if (isLeader && !alreadyHasPass) {
+            try {
+              const currentEvents = registration?.registeredEvents || [];
+              await api.patch('/api/registrations', {
+                registeredEvents: [...currentEvents, 'hackathon'],
+              });
+              await refreshRegistration();
+            } catch (passErr) {
+              console.error('Retroactive hackathon pass issuance failed:', passErr);
+            }
+          }
+
           // Subscribe to real-time updates for team & members
           unsubscribe = subscribeToTeamDetails(existingData.team.id, (updated) => {
             if (updated) {
@@ -230,7 +248,6 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
       teamName: team.teamName || '',
       college: team.college || '',
       department: team.department || '',
-      problemStatement: team.problemStatement || '',
       leaderName: team.leaderName || '',
       maxMembers: team.maxMembers || 3,
       memberEmails: team.invitedEmails || [],
@@ -247,12 +264,11 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
   const validateCreateForm = async () => {
     setError('');
 
-    const { teamName, college, department, problemStatement, leaderName, memberEmails, maxMembers } = formData;
+    const { teamName, college, department, leaderName, memberEmails, maxMembers } = formData;
 
     if (!teamName.trim()) return 'Team Name is required.';
     if (!college.trim()) return 'College Name is required.';
     if (!department.trim()) return 'Department is required.';
-    if (!problemStatement.trim()) return 'Please select a Problem Statement.';
     if (!leaderName.trim()) return 'Team Leader Name is required.';
 
     // 1. Leader email check
@@ -322,7 +338,6 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
         teamName: formData.teamName,
         college: formData.college,
         department: formData.department,
-        problemStatement: formData.problemStatement,
         leaderName: formData.leaderName,
         leaderEmail: user.email,
         maxMembers: formData.maxMembers,
@@ -367,7 +382,6 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
     try {
       await updateTeamInFirestore(activeTeamData.team.id, user, {
         teamName: formData.teamName,
-        problemStatement: formData.problemStatement,
         maxMembers: formData.maxMembers,
         invitedEmails: formData.memberEmails,
         college: formData.college,
@@ -461,19 +475,8 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
         college: memberProfile.college.trim(),
         department: memberProfile.department.trim(),
       });
-
-      // Add hackathon to registeredEvents in the registration doc
-      try {
-        const currentEvents = registration?.registeredEvents || [];
-        if (!currentEvents.includes('hackathon')) {
-          await api.patch('/api/registrations', {
-            registeredEvents: [...currentEvents, 'hackathon']
-          });
-          await refreshRegistration();
-        }
-      } catch (passErr) {
-        console.error('Failed to add hackathon event pass:', passErr);
-      }
+      // NOTE: Only the team LEADER gets the hackathon event pass.
+      // Members who join via code are recorded in Firestore but do NOT get a registeredEvents entry.
 
       // Refresh team data and switch view to dashboard
       const updatedData = await fetchUserTeamData(user.uid);
@@ -494,15 +497,6 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
     navigator.clipboard.writeText(code);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
-  };
-
-  const handleCopyLink = () => {
-    if (!createdTeam && !activeTeamData?.team) return;
-    const code = createdTeam?.teamCode || activeTeamData?.team?.teamCode;
-    const link = `${window.location.origin}${window.location.pathname}?joinCode=${code}`;
-    navigator.clipboard.writeText(link);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
   };
 
   if (!isOpen) return null;
@@ -795,26 +789,6 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
                   />
                 </div>
 
-                {/* Problem Statement Dropdown */}
-                <div className="space-y-1.5">
-                  <label htmlFor="problemStatement" className={labelCls}>
-                    <BookOpen className="w-3.5 h-3.5 text-black" />
-                    Problem Statement <span className="text-red-600">*</span>
-                  </label>
-                  <select
-                    id="problemStatement"
-                    value={formData.problemStatement}
-                    onChange={e => setFormData(p => ({ ...p, problemStatement: e.target.value }))}
-                    className={`${inputCls} cursor-pointer`}
-                  >
-                    {problemStatements.map(ps => (
-                      <option key={ps.id} value={ps.title}>
-                        [{ps.category}] {ps.title}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
                 {/* Leader Name & Email */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field
@@ -841,16 +815,16 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
                   </div>
                 </div>
 
-                {/* Team Size Selection (Min 2, Max 4) */}
+                {/* Team Size Selection (Min 3, Max 5) */}
                 <div className="space-y-2 border-4 border-black p-4 bg-[#fbfbf8]">
                   <label className="font-black uppercase tracking-[0.2em] text-xs text-black block">
-                    Team Size Limit (Min 2, Max 4) <span className="text-red-600">*</span>
+                    Team Size Limit (Min 3, Max 5) <span className="text-red-600">*</span>
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {[
-                      { size: 2, label: '2 Members', desc: 'Leader + 1 Member' },
                       { size: 3, label: '3 Members', desc: 'Leader + 2 Members' },
                       { size: 4, label: '4 Members', desc: 'Leader + 3 Members' },
+                      { size: 5, label: '5 Members', desc: 'Leader + 4 Members' },
                     ].map(opt => (
                       <button
                         type="button"
@@ -959,21 +933,13 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
                 </div>
 
                 {/* Copy Buttons */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div className="flex justify-center pt-2">
                   <button
                     onClick={handleCopyCode}
-                    className="py-3 px-4 border-4 border-black bg-white font-black uppercase text-xs tracking-widest hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
+                    className="py-3 px-6 border-4 border-black bg-white font-black uppercase text-xs tracking-widest hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
                   >
                     {copiedCode ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
                     {copiedCode ? 'Code Copied!' : 'Copy Team Code'}
-                  </button>
-
-                  <button
-                    onClick={handleCopyLink}
-                    className="py-3 px-4 border-4 border-black bg-white font-black uppercase text-xs tracking-widest hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
-                  >
-                    {copiedLink ? <Check className="w-4 h-4 text-green-600" /> : <LinkIcon className="w-4 h-4" />}
-                    {copiedLink ? 'Link Copied!' : 'Copy Link'}
                   </button>
                 </div>
               </div>
@@ -1038,9 +1004,6 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
                       <h5 className="text-2xl font-black uppercase text-black">{foundTeam.teamName}</h5>
                       <p className="font-bold text-xs text-gray-600 mt-1">
                         Leader: <span className="font-black text-black">{foundTeam.leaderName}</span> · College: <span className="font-black text-black">{foundTeam.college}</span>
-                      </p>
-                      <p className="font-bold text-xs text-blue-700 mt-1">
-                        Problem Statement: {foundTeam.problemStatement}
                       </p>
                     </div>
 
@@ -1139,13 +1102,6 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
                       {copiedCode ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
                       {copiedCode ? 'Copied' : 'Copy Code'}
                     </button>
-                    <button
-                      onClick={handleCopyLink}
-                      className="py-2.5 px-3 border-2 border-black bg-white font-black uppercase text-xs tracking-widest hover:bg-black hover:text-white transition-all flex items-center gap-1.5 shadow-[2px_2px_0px_rgba(0,0,0,1)]"
-                    >
-                      {copiedLink ? <Check className="w-3.5 h-3.5 text-green-600" /> : <LinkIcon className="w-3.5 h-3.5" />}
-                      {copiedLink ? 'Copied' : 'Copy Link'}
-                    </button>
                   </div>
                 </div>
               </div>
@@ -1159,10 +1115,6 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
                 <div>
                   <p className="font-black uppercase tracking-widest text-[11px] text-gray-400">Department</p>
                   <p className="font-bold text-sm text-black">{activeTeamData.team.department}</p>
-                </div>
-                <div className="md:col-span-2 border-t-2 border-black/10 pt-3">
-                  <p className="font-black uppercase tracking-widest text-[11px] text-gray-400">Problem Statement</p>
-                  <p className="font-bold text-sm text-blue-900">{activeTeamData.team.problemStatement}</p>
                 </div>
               </div>
 

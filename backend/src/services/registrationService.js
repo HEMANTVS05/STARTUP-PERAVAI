@@ -36,7 +36,7 @@ async function upsertRegistration(uid, data) {
   }
 
   const payload = {
-    checkedInDay1: true,
+    checkedInDay1: false,
     checkedInDay2: false,
     ...data,
     uid,
@@ -53,11 +53,7 @@ async function upsertRegistration(uid, data) {
  */
 async function updateRegistration(uid, data) {
   const ref = db.collection(COLLECTION).doc(uid);
-  const snap = await ref.get();
-  if (!snap.exists) {
-    throw Object.assign(new Error('Registration not found.'), { status: 404 });
-  }
-  await ref.update({ ...data, updatedAt: new Date().toISOString() });
+  await ref.set({ ...data, updatedAt: new Date().toISOString() }, { merge: true });
   const updated = await ref.get();
   return { id: uid, ...updated.data() };
 }
