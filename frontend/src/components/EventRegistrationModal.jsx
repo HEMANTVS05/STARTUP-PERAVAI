@@ -542,7 +542,7 @@ const EventRegistrationModal = ({ event, onClose }) => {
       case 'illogical-marketing': return 150;
       case 'design-thinking-bootcamp': return 300;
       case 'masterclass': return 100;
-      case 'riseher': return 1;
+      case 'riseher': return 200;
       default: return 0;
     }
   };
