@@ -155,11 +155,23 @@ const NeoVideoPlayer = ({ video }) => {
   const openModal = (e) => {
     e.stopPropagation();
     setIsModalOpen(true);
+    if (videoRef.current) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    if (videoRef.current) {
+      videoRef.current.play();
+      setIsPlaying(true);
+    }
   };
 
   return (
     <>
-      {isModalOpen && <VideoModal video={video} onClose={() => setIsModalOpen(false)} />}
+      {isModalOpen && <VideoModal video={video} onClose={closeModal} />}
       <div
         className="relative w-full h-full bg-black border-4 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_rgba(0,0,0,1)] overflow-hidden cursor-pointer flex-shrink-0 snap-start flex flex-col"
         onClick={togglePlay}
