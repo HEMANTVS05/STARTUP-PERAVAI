@@ -26,23 +26,23 @@ const SESSIONS = {
         titleColor: '',
         desc: '',
         poster: null,
-      },
-      {/*
+      }*/},
+      {
         id: 'd1-panel1', type: 'panel',
-        title: 'The New Industrial Revolution',
-        time: 'Where Startups, Manufacturing & Emergin Technologies Converge',
+        title: 'From Participation to Power',
+        time: 'Reimagining the Role of Women in India’s Entrepreneurial Economy',
         titleColor: '#92400e',   // amber-brown — industrial / manufacturing
-        desc: 'Curious about where the next wave of industrial innovation is coming from? This panel brings together the worlds of startups, manufacturing and emerging technologies to unpack how AI, robotics, automation, advanced engineering and deep tech are reshaping the way industries build, operate and scale. A must-attend conversation for aspiring founders, engineers, innovators and anyone interested in the future of industry.',
+        desc: 'A conversation on how women are moving beyond participation to leadership, ownership, and decision-making across India’s startup ecosystem. The session explores the barriers, opportunities, networks, and support systems shaping the next generation of women entrepreneurs.',
         poster: null,
       },
       {
         id: 'd1-panel2', type: 'panel',
-        title: 'Beyond the Metros',
-        time: 'Building Companies, Capabilities & Capital Across the Next Generation of Indian Cities',
+        title: 'The New Industrial Revolution',
+        time: 'Where Startups, Manufacturing & EmergingTechnologies Converge',
         titleColor: '#5b21b6',   // violet — emerging cities / next-gen
-        desc: 'India’s next entrepreneurial hotspots are emerging beyond the metros. This panel brings together founders, investors and ecosystem leaders to explore how Tier 2 and Tier 3 cities are building companies, developing local talent, attracting capital and creating thriving startup ecosystems. A must-attend conversation for anyone interested in the next generation of India’s business and innovation hubs.',
+        desc: 'A deep dive into how AI, robotics, semiconductors, automation, and advanced manufacturing are transforming India’s industrial landscape. Industry leaders and founders explore how technology-driven startups can build globally competitive products and reshape the future of manufacturing',
         poster: null,
-      },*/}
+      },
     ],
   },
   day2: {
@@ -65,23 +65,23 @@ const SESSIONS = {
         titleColor: '#b45309',   // warm orange — economy / finance
         desc: '',
         poster: null,
-      },
-      {/*
+        }*/},
+      {
         id: 'd2-panel1', type: 'panel',
-        title: "The Investor's Perspective",
-        time: '2:00 PM',
+        title: "Beyond the Metros",
+        time: 'Building Companies, Capabilities & Capital Across the Next Generation of Indian Cities',
         titleColor: '#065f46',   // emerald — investors / growth
-        desc: '',
+        desc: 'A conversation on the rise of entrepreneurial ecosystems beyond India’s traditional startup hubs, where regional talent, MSMEs, and emerging founders are building ambitious companies. The session explores how access to capital, incubation, infrastructure, and local networks can unlock the potential of Tier-2 and Tier-3 cities.',
         poster: null,
       },
       {
         id: 'd2-panel2', type: 'panel',
-        title: 'Tech for Tamil Nadu',
-        time: '4:00 PM',
+        title: 'The Road to Investment',
+        time: 'How Investor Interest Becomes Conviction, Commitment & Capital',
         titleColor: '#a80d11',   // red — Tamil Nadu flagship brand color
-        desc: '',
+        desc: 'What makes an investor move from noticing a startup to believing in its potential and committing capital? Founders and investors unpack the journey from first conversation to due diligence, conviction, deal-making, and long-term partnership.',
         poster: null,
-      },*/}
+      },
     ],
   },
 };
@@ -351,12 +351,11 @@ const SessionPickerModal = ({ isOpen, onSkip, onNext, onBack }) => {
                   {d1Podcasts.map(s => renderCard(s, d1))}
                 </div>
 
-                {/* D1 Panels 
+                {/* D1 Panels */}
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-black/40 mb-3 border-b border-black/10 pb-1">Panel Discussions</p>
                 <div className="grid grid-cols-2 gap-4">
                   {d1Panels.map(s => renderCard(s, d1))}
                 </div>
-                */}
               </div>
 
               {/* ── Day 2 half */}
@@ -378,12 +377,11 @@ const SessionPickerModal = ({ isOpen, onSkip, onNext, onBack }) => {
                   {d2Podcasts.map(s => renderCard(s, d2))}
                 </div>
 
-                {/* D2 Panels 
+                {/* D2 Panels */}
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-black/40 mb-3 border-b border-black/10 pb-1">Panel Discussions</p>
                 <div className="grid grid-cols-2 gap-4">
                   {d2Panels.map(s => renderCard(s, d2))}
                 </div>
-                */}
               </div>
             </div>
           </div>

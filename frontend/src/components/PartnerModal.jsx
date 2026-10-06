@@ -160,6 +160,16 @@ const PartnerModal = ({ isOpen, onClose }) => {
                   </div>
                 )}
 
+                <Field
+                  id="name"
+                  name="name"
+                  label="Your Name"
+                  required
+                  placeholder="Your Name"
+                  value={formData.name}
+                  onChange={handleChange}
+                />
+
                 <div className="space-y-1">
                   <label htmlFor="role" className={labelCls}>Join us as <span className="text-red-600">*</span></label>
                   <select
@@ -177,15 +187,6 @@ const PartnerModal = ({ isOpen, onClose }) => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <Field
-                    id="name"
-                    name="name"
-                    label="First Name & Last Name"
-                    required
-                    placeholder="Your Name"
-                    value={formData.name}
-                    onChange={handleChange}
-                  />
                   <Field
                     id="organization"
                     name="organization"

@@ -851,7 +851,7 @@ const MainLayout = () => {
           </p>
         </div>
       ),
-      buttonText: (registration && registration.paymentStatus !== 'pending' && registration.passType !== 'None') ? 'YOUR PASS' : 'WHAT\'S INSIDE',
+      buttonText: (registration && registration.paymentStatus !== 'pending' && registration.passType === "Visitor's Pass") ? 'YOUR PASS' : 'WHAT\'S INSIDE',
       onClaim: () => setShowVisitorModal(true),
       delay: 0.1,
     },
@@ -2078,7 +2078,7 @@ const MainLayout = () => {
           setShowVisitorModal(false);
           setShowDashboard(true);
         }}
-        hasPass={!!(registration && registration.paymentStatus !== 'pending' && registration.passType !== 'None')}
+        hasPass={!!(registration && registration.paymentStatus !== 'pending' && registration.passType === "Visitor's Pass")}
       />
 
       {/* ── Floating Dock Navbar (appears on scroll) ── */}
