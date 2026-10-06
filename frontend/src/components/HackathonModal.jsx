@@ -423,8 +423,9 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
       setFoundTeam(team);
 
       // Check if user is invited
-      const userEmail = user?.email?.toLowerCase().trim();
-      if (!team.invitedEmails || !team.invitedEmails.includes(userEmail)) {
+      const userEmail = user?.email?.toLowerCase().trim() || '';
+      const isInvited = (team.invitedEmails || []).some(e => typeof e === 'string' && e.toLowerCase().trim() === userEmail);
+      if (!isInvited) {
         setError('Invalid: You have not been invited to join this team. Please ask the team leader to add your email address.');
         setFoundTeam(null);
         setSubmitting(false);

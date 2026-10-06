@@ -127,8 +127,9 @@ async function joinEventTeam(eventId, user, teamCode, profileData) {
 
     const data = teamDoc.data();
     
-    const userEmail = (user.email || '').toLowerCase().trim();
-    if (!data.invitedEmails || !data.invitedEmails.includes(userEmail)) {
+    const userEmail = (user.email || profileData.email || '').toLowerCase().trim();
+    const isInvited = (data.invitedEmails || []).some(e => typeof e === 'string' && e.toLowerCase().trim() === userEmail);
+    if (!isInvited) {
       throw Object.assign(new Error('Invalid: You have not been invited to join this team. Please ask the team leader to add your email address.'), { status: 403 });
     }
 

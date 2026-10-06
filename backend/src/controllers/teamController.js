@@ -31,9 +31,9 @@ const searchTeamByCode = async (req, res, next) => {
     if (!code) return res.status(400).json({ error: 'code query parameter is required.' });
     const team = await findTeamByCode(code);
     if (!team) return res.status(404).json({ error: 'Team not found.' });
-    // Return only safe public fields
-    const { teamId, teamCode, teamName, college, department, problemStatement, maxMembers, joinedMemberUids, status } = team;
-    res.json({ teamId, teamCode, teamName, college, department, problemStatement, maxMembers, currentMembers: joinedMemberUids?.length || 0, status });
+    // Return safe public fields + invitedEmails for frontend validation
+    const { teamId, teamCode, teamName, college, department, problemStatement, maxMembers, invitedEmails, joinedMemberUids, status } = team;
+    res.json({ teamId, teamCode, teamName, college, department, problemStatement, maxMembers, invitedEmails: invitedEmails || [], currentMembers: joinedMemberUids?.length || 0, status });
   } catch (err) { next(err); }
 };
 

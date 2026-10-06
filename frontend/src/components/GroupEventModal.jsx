@@ -198,8 +198,9 @@ const GroupEventModal = ({ isOpen, onClose, event, eventId: propEventId, eventNa
         setError('This team is already full.'); return;
       }
       // ── Invitation check (mirrors hackathon workflow) ──
-      const userEmail = user?.email?.toLowerCase().trim();
-      if (!team.invitedEmails || !team.invitedEmails.includes(userEmail)) {
+      const userEmail = user?.email?.toLowerCase().trim() || '';
+      const isInvited = (team.invitedEmails || []).some(e => typeof e === 'string' && e.toLowerCase().trim() === userEmail);
+      if (!isInvited) {
         setError('You are not invited. Please ask the team leader to add your email address.');
         return;
       }
