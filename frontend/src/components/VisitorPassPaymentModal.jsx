@@ -195,7 +195,7 @@ const VisitorPassPaymentModal = ({ isOpen, onClose, onSuccess }) => {
 
                       <div className="flex justify-center mb-4">
                         <RazorpayCheckoutButton
-                          amount={100}
+                          amount={5000}
                           currency="INR"
                           prefillName={registration?.name || user?.displayName || ''}
                           prefillEmail={registration?.email || user?.email || ''}
