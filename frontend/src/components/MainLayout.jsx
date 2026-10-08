@@ -993,8 +993,15 @@ const MainLayout = () => {
           <div className="hidden 2xl:flex items-center gap-6 xl:gap-10 text-sm font-black text-gray-500 uppercase tracking-widest">
             {['Insights', 'Passes', 'Guests', 'Brochure', 'Contact'].map(item => (
               <a key={item}
-                href={`#${item === 'Insights' ? 'whats-happening' : item.toLowerCase()}`}
-                onClick={(e) => handleNavClick(e, item === 'Insights' ? 'whats-happening' : item.toLowerCase())}
+                href={`#${item === 'Insights' ? 'whats-happening'
+                  : item === 'Guests' ? 'speakers'
+                    : item.toLowerCase()
+                  }`}
+                onClick={(e) => handleNavClick(e,
+                  item === 'Insights' ? 'whats-happening'
+                    : item === 'Guests' ? 'speakers'
+                      : item.toLowerCase()
+                )}
                 className="relative group hover:text-black transition-colors py-1">
                 {item}
                 <div className="absolute bottom-0 left-0 w-full h-[3px] bg-blue-600 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
@@ -1082,8 +1089,15 @@ const MainLayout = () => {
               className="overflow-hidden 2xl:hidden border-4 border-black bg-white mb-10 shadow-[6px_6px_0px_rgba(0,0,0,1)]">
               {['Insights', 'Passes', 'Guests', 'Contact'].map((item) => (
                 <a key={item}
-                  href={`#${item === 'Insights' ? 'whats-happening' : item.toLowerCase()}`}
-                  onClick={(e) => handleNavClick(e, item === 'Insights' ? 'whats-happening' : item.toLowerCase())}
+                  href={`#${item === 'Insights' ? 'whats-happening'
+                    : item === 'Guests' ? 'speakers'
+                      : item.toLowerCase()
+                    }`}
+                  onClick={(e) => handleNavClick(e,
+                    item === 'Insights' ? 'whats-happening'
+                      : item === 'Guests' ? 'speakers'
+                        : item.toLowerCase()
+                  )}
                   className="block px-8 py-4 font-black uppercase tracking-widest text-gray-600 border-b-2 border-black last:border-b-0 hover:bg-black hover:text-white transition-colors">
                   {item}
                 </a>
