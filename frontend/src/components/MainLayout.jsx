@@ -1551,8 +1551,8 @@ const MainLayout = () => {
             Hear from the best
           </p>
           <h2 className="text-5xl sm:text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none text-black">
-            Guest <br />
-            <span style={redGrad}>Speakers.</span>
+            Our <br />
+            <span style={redGrad}>Guests.</span>
           </h2>
         </div>
         <SpeakersCarousel />
