@@ -25,8 +25,6 @@ import rupeesOverviewImage from '../assets/SDG.png';
 import risePoster from '../assets/rise_cover.png';
 import riseRulesPoster from '../assets/rules66.png';
 import pitchPoster from '../assets/pitch_cover.png';
-import madhav from '../assets/madhav.png';
-import masterclass from '../assets/masterclass.png';
 
 const GROUP_EVENTS = [
   {
@@ -239,32 +237,6 @@ const INDIVIDUAL_EVENTS = [
     posters: [lavanya],
 
   },
-  {
-    id: 'masterclass', name: 'Masterclass',
-    cardDesc: 'An exclusive session with industry experts to dive deep into specialized topics.',
-    desc: (
-      <>
-        <span className="block text-xl font-black uppercase tracking-tight text-[#a80d11] mb-3">Ready to master the art of startups?</span>
-        <span className="block mt-2 text-black/75">
-          This <strong>Masterclass</strong> is a hands-on session designed for students and aspiring entrepreneurs who want to transform their ideas into real, user-focused solutions.
-        </span>
-        <div className="mt-6 p-6" style={{ background: '#fff0f0', borderLeft: '6px solid #a80d11' }}>
-          <span className="block font-black uppercase tracking-widest text-[#a80d11] text-lg">Masterclass</span>
-          <span className="block text-[16px] font-bold text-black/70 mt-2">Learn from the best in the industry.</span>
-        </div>
-      </>
-    ),
-    venue: 'Hi-Tech Hall 2', day: 'Day 2', time: '10 AM Onwards', accent: '#a80d11', accentLight: '#fff0f0',
-    rules: [
-      { title: '1. Registration', body: 'Registration is mandatory and costs ₹100.' },
-      { title: '2. Attendance', body: 'Please arrive 15 minutes before the session starts.' },
-      { title: '3. Materials', body: 'Bring a notepad or device to take notes.' },
-    ],
-    coverImage: madhav, // Placeholder
-    posters: [masterclass], // Placeholder
-    fee: 100,
-  },
-
   {
     id: 'illogical-marketing', name: 'The Art of Selling Nothing',
     cardDesc: 'You\'ll receive an illogical product on the spot and must pitch it convincingly using branding, storytelling and persuasion.',
