@@ -244,8 +244,8 @@ const EventSlideshow = () => {
 
   const slideVariants = {
     enter: (dir) => ({ x: dir > 0 ? '100%' : '-100%', opacity: 1 }),
-    center: { x: 0, opacity: 1, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
-    exit: (dir) => ({ x: dir > 0 ? '-100%' : '100%', opacity: 1, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }),
+    center: { x: 0, opacity: 1, transition: { duration: 0.75, ease: [0.25, 0.46, 0.45, 0.94] } },
+    exit: (dir) => ({ x: dir > 0 ? '-100%' : '100%', opacity: 1, transition: { duration: 0.75, ease: [0.25, 0.46, 0.45, 0.94] } }),
   };
 
   const event = events[current];
@@ -291,6 +291,7 @@ const EventSlideshow = () => {
               animate="center"
               exit="exit"
               className="absolute inset-0 w-full h-full"
+              style={{ willChange: 'transform' }}
             >
               {event.image ? (
                 <img
@@ -316,7 +317,7 @@ const EventSlideshow = () => {
 
               {/* Title and Description Overlay */}
               <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 lg:p-12 text-white flex flex-col justify-end">
-                <h3 className="text-3xl sm:text-5xl lg:text-7xl font-black uppercase tracking-tighter leading-none mb-3 sm:mb-5 drop-shadow-md">
+                <h3 className="text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-none mb-3 sm:mb-5 drop-shadow-md">
                   {event.title}
                 </h3>
                 <p className="text-xs sm:text-sm lg:text-base text-gray-200 font-bold max-w-3xl leading-relaxed uppercase tracking-wider drop-shadow-md">

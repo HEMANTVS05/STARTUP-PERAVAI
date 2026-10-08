@@ -18,7 +18,16 @@ import { fetchUserTeamData } from '../services/hackathonService';
 import PartnerModal from './PartnerModal';
 import GroupEventModal from './GroupEventModal';
 
-import speaker1 from '../assets/speaker1.jpeg';
+import speaker1 from '../assets/speaker1.png';
+import speaker2 from '../assets/speaker2.jpg';
+import speaker3 from '../assets/speaker3.jpg';
+import speaker4 from '../assets/speaker4.jpg';
+import speaker5 from '../assets/speaker5.jpg';
+import speaker6 from '../assets/speaker6.jpg';
+import speaker7 from '../assets/speaker7.jpg';
+import speaker8 from '../assets/speaker8.jpg';
+import speaker9 from '../assets/speaker9.jpg';
+import speaker10 from '../assets/speaker10.png';
 import eventBrochure from '../assets/EVENT_BROCHURE.pdf';
 import landingMascot from '../assets/landing_page_mascot.png';
 
@@ -330,39 +339,69 @@ const PassCard = ({ name, nameLine2, icon: Icon, price, stubGradient, ticketBg, 
 // ─── Guest Speakers Data & Component ─────────────────────────────────────────
 const speakers = [
   {
-    name: 'Balasubramanian N',
-    company: 'VICE PRESIDENT - PRODUCT ENGINEERING at Renault Nissan Technology & Business Centre India',
+    name: 'Mohan K',
+    company: 'Co-Founder of IppoPay',
     photo: speaker1,
-    linkedin: 'https://linkedin.com/'
+    linkedin: 'https://www.linkedin.com/in/itmohans/?isSelfProfile=false'
   },
   {
-    name: 'SPEAKER 2',
-    company: 'COMPANY 2',
-    photo: '',
-    linkedin: 'https://linkedin.com/'
+    name: 'C.K. Kumaravel',
+    company: 'Co-Founder of Naturals Salon & Spa',
+    photo: speaker2,
+    linkedin: 'https://www.linkedin.com/in/ckknaturals/?isSelfProfile=false'
   },
   {
-    name: 'SPEAKER 3',
-    company: 'COMPANY 3',
-    photo: '',
-    linkedin: 'https://linkedin.com/'
+    name: 'Jahabar Sadique',
+    company: 'Co-Founder of Chai Kings',
+    photo: speaker3,
+    linkedin: 'https://www.linkedin.com/in/jahabarsadique/?isSelfProfile=false'
   },
   {
-    name: 'SPEAKER 4',
-    company: 'COMPANY 4',
-    photo: '',
-    linkedin: 'https://linkedin.com/'
+    name: 'Singai G Ramachandran',
+    company: 'Chairperson of StartupTN',
+    photo: speaker4,
+    linkedin: 'https://www.linkedin.com/in/singai-g-ramachandran-71b236b1/?isSelfProfile=false'
   },
   {
-    name: 'SPEAKER 5',
-    company: 'COMPANY 5',
-    photo: '',
-    linkedin: 'https://linkedin.com/'
+    name: 'Dilip Kumar Devanathan',
+    company: 'Senior Vice President of HCL Technologies',
+    photo: speaker5,
+    linkedin: 'https://www.linkedin.com/in/dilip-kumar-devanathan-81baa34/?isSelfProfile=false'
+  },
+  {
+    name: 'Balaji Arumugam',
+    company: 'FOUNDER & CEO of Big Bucks Innovation',
+    photo: speaker6,
+    linkedin: 'https://www.linkedin.com/in/balajiarumugam1210/?isSelfProfile=false'
+  },
+  {
+    name: 'Rajalingam Rathinam',
+    company: ' Founder, Director, and Chairman of NestOne Group',
+    photo: speaker7,
+    linkedin: 'https://www.linkedin.com/in/balajiarumugam1210/?isSelfProfile=false'
+  },
+  {
+    name: 'Reji Joseph',
+    company: 'CEO of Infinity Advisors',
+    photo: speaker8,
+    linkedin: 'https://www.linkedin.com/in/balajiarumugam1210/?isSelfProfile=false'
+  },
+  {
+    name: 'Rohini Manohar',
+    company: 'Founder & Co-Founder of Chennai Yoga Studio, Mitra Yoga Fest',
+    photo: speaker9,
+    linkedin: 'https://www.linkedin.com/in/rohini-manohar-13034715/?isSelfProfile=false'
+  },
+  {
+    name: 'Bharathan Prahalad',
+    company: 'HR Leader & Change Agent of Aziro (formerly MSys Technologies)',
+    photo: speaker10,
+    linkedin: 'https://www.linkedin.com/in/bharathan-prahalad-13474b8/?isSelfProfile=false'
   },
 ];
 
 const SpeakerCard = ({ speaker }) => {
-  const atIndex = speaker.company ? speaker.company.indexOf(' at ') : -1;
+  const atIndex = speaker.company ? speaker.company.indexOf(' of ') : -1;
   const role = atIndex !== -1 ? speaker.company.slice(0, atIndex) : speaker.company;
   const companyName = atIndex !== -1 ? speaker.company.slice(atIndex + 4) : null;
 
@@ -373,7 +412,7 @@ const SpeakerCard = ({ speaker }) => {
           src={speaker.photo}
           alt={speaker.name}
           draggable={false}
-          className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 pointer-events-none"
+          className="w-full h-full object-cover transition-all duration-500 pointer-events-none"
         />
         <a href={speaker.linkedin} target="_blank" rel="noopener noreferrer"
           className="absolute bottom-4 right-4 w-10 h-10 bg-[#1f2022] border-4 border-black flex items-center justify-center text-white hover:bg-black transition-colors shadow-[3px_3px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
@@ -400,71 +439,95 @@ const SpeakerCard = ({ speaker }) => {
   );
 };
 
-// ─── Speakers Carousel (drag + arrows + auto-scroll) ─────────────────────────
+// ─── Speakers Carousel (drag + arrows + GPU-smooth auto-scroll) ──────────────
 const SpeakersCarousel = () => {
-  const trackRef = useRef(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const dragStartX = useRef(0);
-  const scrollStartX = useRef(0);
-  const animFrameRef = useRef(null);
-  const speedRef = useRef(3); // px per frame
+  const outerRef = useRef(null);      // viewport clipping div
+  const innerRef = useRef(null);      // the strip we translate
+  const isPausedRef = useRef(false);
+  const isDraggingRef = useRef(false);
+  const offsetRef = useRef(0);        // current translateX (negative = scrolled right)
+  const dragStartXRef = useRef(0);
+  const dragStartOffsetRef = useRef(0);
+  const rafRef = useRef(null);
+  const SPEED = 3; // px per frame — buttery slow
 
-  // Auto-scroll loop
+  // We need half-width to know when to loop
+  const halfWidthRef = useRef(0);
   useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
+    if (innerRef.current) {
+      halfWidthRef.current = innerRef.current.scrollWidth / 2;
+    }
+  }, []);
 
+  // GPU compositor loop — only touches `transform`, no layout
+  useEffect(() => {
     const step = () => {
-      if (!isPaused && !isDragging) {
-        track.scrollLeft += speedRef.current;
-        // Infinite loop: when we've scrolled half the total width, reset silently
-        if (track.scrollLeft >= track.scrollWidth / 2) {
-          track.scrollLeft = 0;
+      if (!isPausedRef.current && !isDraggingRef.current) {
+        offsetRef.current -= SPEED;
+        // Silent reset when we've scrolled one full copy
+        if (Math.abs(offsetRef.current) >= halfWidthRef.current) {
+          offsetRef.current = 0;
         }
       }
-      animFrameRef.current = requestAnimationFrame(step);
+      if (innerRef.current) {
+        innerRef.current.style.transform = `translateX(${offsetRef.current}px)`;
+      }
+      rafRef.current = requestAnimationFrame(step);
     };
+    rafRef.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
 
-    animFrameRef.current = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(animFrameRef.current);
-  }, [isPaused, isDragging]);
-
+  // Arrow buttons — animate offset smoothly via rAF
   const scroll = (dir) => {
-    const track = trackRef.current;
-    if (!track) return;
-    const cardWidth = 300; // approximate card + margin
-    track.scrollBy({ left: dir * cardWidth * 2, behavior: 'smooth' });
+    const cardWidth = 288 + 32; // card w-72 + mx-4 both sides
+    const target = offsetRef.current + dir * -(cardWidth * 2);
+    const start = offsetRef.current;
+    const duration = 500;
+    const startTime = performance.now();
+    const animate = (now) => {
+      const t = Math.min((now - startTime) / duration, 1);
+      const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; // easeInOut
+      offsetRef.current = start + (target - start) * ease;
+      if (innerRef.current) {
+        innerRef.current.style.transform = `translateX(${offsetRef.current}px)`;
+      }
+      if (t < 1) requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
   };
 
-  // Mouse drag handlers
+  // Mouse drag
   const onMouseDown = (e) => {
-    setIsDragging(true);
-    dragStartX.current = e.clientX;
-    scrollStartX.current = trackRef.current.scrollLeft;
+    isDraggingRef.current = true;
+    dragStartXRef.current = e.clientX;
+    dragStartOffsetRef.current = offsetRef.current;
+    e.preventDefault();
   };
   const onMouseMove = (e) => {
-    if (!isDragging) return;
-    const dx = e.clientX - dragStartX.current;
-    trackRef.current.scrollLeft = scrollStartX.current - dx;
+    if (!isDraggingRef.current) return;
+    const dx = e.clientX - dragStartXRef.current;
+    offsetRef.current = dragStartOffsetRef.current + dx;
   };
-  const onMouseUp = () => setIsDragging(false);
+  const onMouseUp = () => { isDraggingRef.current = false; };
 
-  // Touch drag handlers
+  // Touch drag
   const onTouchStart = (e) => {
-    dragStartX.current = e.touches[0].clientX;
-    scrollStartX.current = trackRef.current.scrollLeft;
+    isDraggingRef.current = true;
+    dragStartXRef.current = e.touches[0].clientX;
+    dragStartOffsetRef.current = offsetRef.current;
   };
   const onTouchMove = (e) => {
-    const dx = e.touches[0].clientX - dragStartX.current;
-    trackRef.current.scrollLeft = scrollStartX.current - dx;
+    const dx = e.touches[0].clientX - dragStartXRef.current;
+    offsetRef.current = dragStartOffsetRef.current + dx;
   };
+  const onTouchEnd = () => { isDraggingRef.current = false; };
 
   return (
     <div
       className="relative"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => { setIsPaused(false); setIsDragging(false); }}
+      onMouseEnter={() => { isPausedRef.current = true; }}
+      onMouseLeave={() => { isPausedRef.current = false; isDraggingRef.current = false; }}
     >
       {/* Arrow buttons */}
       <div className="flex justify-end gap-3 px-4 sm:px-6 lg:px-24 mb-6">
@@ -484,28 +547,31 @@ const SpeakersCarousel = () => {
         </button>
       </div>
 
-      {/* Gradient masks */}
-      <div className="absolute left-0 bottom-0 w-10 md:w-24 z-10 pointer-events-none" style={{ top: '4rem', background: 'linear-gradient(to right, #fffefa, transparent)' }} />
-      <div className="absolute right-0 bottom-0 w-10 md:w-24 z-10 pointer-events-none" style={{ top: '4rem', background: 'linear-gradient(to left, #fffefa, transparent)' }} />
-
-      {/* Scrollable track */}
+      {/* Viewport — hides overflow, no fades */}
       <div
-        ref={trackRef}
-        className={`flex overflow-x-scroll pb-6 pt-2 scroll-smooth ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        ref={outerRef}
+        className={`overflow-hidden pb-6 pt-2 ${isDraggingRef.current ? 'cursor-grabbing' : 'cursor-grab'}`}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseUp}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
       >
-        {/* Duplicate speakers for infinite illusion */}
-        {[...Array(4)].map((_, i) =>
-          speakers.map((speaker, index) => (
-            <SpeakerCard key={`${i}-${index}`} speaker={speaker} />
-          ))
-        )}
+        {/* Inner strip — GPU-translated, will-change keeps it on compositor */}
+        <div
+          ref={innerRef}
+          className="flex"
+          style={{ willChange: 'transform' }}
+        >
+          {/* 4 copies for seamless infinite loop */}
+          {[...Array(4)].map((_, i) =>
+            speakers.map((speaker, index) => (
+              <SpeakerCard key={`${i}-${index}`} speaker={speaker} />
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
@@ -524,7 +590,7 @@ const MainLayout = () => {
   // Hackathon Modal state
   const [showHackathonModal, setShowHackathonModal] = useState(false);
   const [hackathonJoinCode, setHackathonJoinCode] = useState('');
-  
+
   const [activeGroupEventId, setActiveGroupEventId] = useState(null);
   const [profileWarning, setProfileWarning] = useState(false);
   const [userHasHackathonTeam, setUserHasHackathonTeam] = useState(false);
@@ -925,7 +991,7 @@ const MainLayout = () => {
 
           {/* Desktop nav */}
           <div className="hidden 2xl:flex items-center gap-6 xl:gap-10 text-sm font-black text-gray-500 uppercase tracking-widest">
-            {['Insights', 'Passes', 'Speakers', 'Brochure', 'Contact'].map(item => (
+            {['Insights', 'Passes', 'Guests', 'Brochure', 'Contact'].map(item => (
               <a key={item}
                 href={`#${item === 'Insights' ? 'whats-happening' : item.toLowerCase()}`}
                 onClick={(e) => handleNavClick(e, item === 'Insights' ? 'whats-happening' : item.toLowerCase())}
@@ -935,16 +1001,6 @@ const MainLayout = () => {
               </a>
             ))}
 
-            {/*<a
-              href={eventBrochure}
-              download="EVENT_BROCHURE.pdf"
-              className="flex items-center gap-2 px-3 py-1.5 border-2 border-black bg-red-800 text-white font-white uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
-              style={{ background: 'linear-gradient(to right, #a80d11 20%, #d82221 90%)' }}
-            >
-              <Download className="w-5 h-6" />
-              Brochure
-            </a>
-            */}
 
             {/* ── Register Here / User menu ── */}
             {!user ? (
@@ -1024,7 +1080,7 @@ const MainLayout = () => {
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}
               className="overflow-hidden 2xl:hidden border-4 border-black bg-white mb-10 shadow-[6px_6px_0px_rgba(0,0,0,1)]">
-              {['Insights', 'Passes', 'Speakers', 'Contact'].map((item) => (
+              {['Insights', 'Passes', 'Guests', 'Contact'].map((item) => (
                 <a key={item}
                   href={`#${item === 'Insights' ? 'whats-happening' : item.toLowerCase()}`}
                   onClick={(e) => handleNavClick(e, item === 'Insights' ? 'whats-happening' : item.toLowerCase())}
@@ -1475,7 +1531,7 @@ const MainLayout = () => {
 
       <div className="mt-8 md:mt-10 mx-4 sm:mx-6 lg:mx-24 h-[3px]" style={{ background: 'linear-gradient(to right, transparent, #a80d11 20%, #1f2022 50%, #0f50e3 80%, transparent)' }} />
 
-      {/*<div id="speakers" className="py-12 md:py-20 relative">
+      <div id="speakers" className="py-12 md:py-20 relative">
         <div className="text-center mb-10 md:mb-14 relative z-10">
           <p className="font-black uppercase tracking-[0.35em] text-gray-400 text-xs md:text-sm mb-4">
             Hear from the best
@@ -1487,7 +1543,6 @@ const MainLayout = () => {
         </div>
         <SpeakersCarousel />
       </div>
-      */}
       <div className="mx-4 sm:mx-6 lg:mx-24 h-[2px]" style={{ background: 'linear-gradient(to right, transparent, #a80d11 20%, #1f2022 50%, #0f50e3 80%, transparent)' }} />
 
       <div id="brochure" className="mt-20 md:mt-28 relative z-10 px-4 sm:px-6 lg:px-20">
@@ -2114,7 +2169,7 @@ const MainLayout = () => {
                 },
                 {
                   icon: <Users size={20} />,
-                  label: 'Speakers',
+                  label: 'Guests',
                   onClick: () => handleNavClick({ preventDefault: () => { } }, 'speakers'),
                 },
                 {
