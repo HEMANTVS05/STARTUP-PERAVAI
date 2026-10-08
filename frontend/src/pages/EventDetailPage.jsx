@@ -561,7 +561,7 @@ const EventDetailPage = () => {
                     className="text-2xl md:text-3xl font-black uppercase tracking-tighter"
                     style={{ color: accent }}
                   >
-                    Event Poster
+                    {isGroup ? "Rules & Regulations" : "Event Poster"}
                   </h2>
                 </div>
                 <motion.div
@@ -585,7 +585,7 @@ const EventDetailPage = () => {
           </div>
 
           {/* ── Right: Sticky Sidebar ──────────────────────────────────── */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 lg:mt-[72px]">
             <div className="sticky top-24 space-y-6">
 
               {/* ── Register Card ─────────────────────────────────────── */}
