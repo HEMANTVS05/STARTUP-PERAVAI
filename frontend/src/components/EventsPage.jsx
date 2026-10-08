@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Zap, Users, User, AlertCircle, MapPin, Calendar, ArrowRight, X, BookOpen, ChevronRight, ChevronLeft, Clock, CheckCircle2, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import EventRegistrationModal from './EventRegistrationModal';
@@ -61,7 +61,7 @@ const GROUP_EVENTS = [
         </div>
       </>
     ),
-    venue: 'MLCP labs', day: 'Both Days', time: '1 PM Onwards', accent: '#0b2140', accentLight: '#e8f0ff', fee: 1500,
+    venue: 'MLCP labs', day: 'Both Days', time: '1 PM Onwards', accent: '#0b223e', accentLight: '#eff6ff', fee: 1500,
     rules: [
       { title: 'Team Size', body: 'Each team must consist of 3–5 members.' },
       { title: 'Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
@@ -97,7 +97,7 @@ const GROUP_EVENTS = [
         </div>
       </>
     ),
-    venue: 'Academic Block', day: 'Day 1', time: '12 PM Onwards', accent: '#0b2140', accentLight: '#e8f0ff',
+    venue: 'Academic Block', day: 'Day 1', time: '12 PM Onwards', accent: '#eab308', accentLight: '#fefce8',
     rules: [
       { title: '1. Team Size', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Teams of up to 3 members. All members must be present on both days of the event.' },
       { title: '2. Materials', body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium. Only materials provided at the venue may be used. No external materials are allowed.' },
@@ -133,7 +133,7 @@ const GROUP_EVENTS = [
         </div>
       </>
     ),
-    venue: 'EEC', day: 'Both Days', time: '12 PM Onwards', accent: '#0b2140', accentLight: '#e8f0ff',
+    venue: 'EEC', day: 'Both Days', time: '12 PM Onwards', accent: '#980000', accentLight: '#fef2f2',
     rules: [
       { title: '1. Team Size', body: 'Teams can have a minimum of 1 and a maximum of 5 members.' },
       { title: '2. Registration & Payment', body: 'The team leader must register and make the payment of ₹700 for the team. Members must join using the team code.' },
@@ -167,7 +167,7 @@ const GROUP_EVENTS = [
         </div>
       </>
     ),
-    venue: 'Academic Block', day: 'Day 2', time: '9 AM Onwards', accent: '#0b2140', accentLight: '#e8f0ff',
+    venue: 'Academic Block', day: 'Day 2', time: '9 AM Onwards', accent: '#08a852ff', accentLight: '#f0fdf4',
     rules: [
       { title: '1. nee solu', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. A maximum of 3 members per team. Each team must register together prior to the event.' },
       { title: '2. Round Structure', body: 'Duis aute irure dolor in reprehenderit in voluptate velit esse. The event consists of multiple elimination rounds. Teams must clear each round to advance.' },
@@ -224,7 +224,7 @@ const INDIVIDUAL_EVENTS = [
         </div>
       </>
     ),
-    venue: 'MBA Seminar Hall 2', day: 'Both Days', time: '11:30 AM Onwards', accent: '#a80d11', accentLight: '#fff0f0',
+    venue: 'MBA Seminar Hall 2', day: 'Both Days', time: '11:30 AM Onwards', accent: '#f43b38', accentLight: '#fef2f2',
     rules: [
       { title: '1. Attendance', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Full attendance on both days is mandatory. Partial attendance will result in disqualification from certification.' },
       { title: '2. Prerequisites', body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium. No prior experience is required. Bring your own laptop and a willingness to learn.' },
@@ -261,7 +261,7 @@ const INDIVIDUAL_EVENTS = [
         </div>
       </>
     ),
-    venue: 'Hi-Tech Hall 2', day: 'Day 1', time: '9 AM Onwards', accent: '#a80d11', accentLight: '#fff0f0',
+    venue: 'Hi-Tech Hall 2', day: 'Day 1', time: '9 AM Onwards', accent: '#8504fc', accentLight: '#faf5ff',
     rules: [
       { title: '1. Solo Event', body: 'This is a solo event.' },
       { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
@@ -293,7 +293,7 @@ const INDIVIDUAL_EVENTS = [
         </div>
       </>
     ),
-    venue: 'MBA Seminar Hall 1', day: 'Both Days', time: '9 AM Onwards', accent: '#a80d11', accentLight: '#fff0f0',
+    venue: 'MBA Seminar Hall 1', day: 'Both Days', time: '9 AM Onwards', accent: '#c50637', accentLight: '#fff1f2',
     rules: [
       { title: '1. Solo Event', body: 'This is an individual event open to all interested participants.' },
       { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of registration.' },
@@ -1412,106 +1412,93 @@ const LearnMoreModal = ({ evt, isGroup, onClose, onRegister }) => {
 /* ── Event Card ────────────────────────────────────────────────────────── */
 const EventCard = ({ evt, idx, onRegister, isGroup, onLoginRequest }) => {
   const [hovered, setHovered] = useState(false);
-  const [showLearnMore, setShowLearnMore] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
   return (
-    <>
-      <motion.div
-        custom={idx}
-        initial="hidden"
-        animate="visible"
-        variants={cardVariants}
-        onHoverStart={() => setHovered(true)}
-        onHoverEnd={() => setHovered(false)}
-        className="relative group flex flex-col overflow-hidden cursor-pointer"
-        style={{
-          background: '#fff',
-          border: `3px solid #111`,
-          boxShadow: hovered ? '8px 8px 0px #111' : '4px 4px 0px #111',
-          transform: hovered ? 'translate(-2px, -2px)' : 'translate(0,0)',
-          transition: 'box-shadow 0.2s ease, transform 0.2s ease',
-        }}
-      >
-        {/* Accent top bar */}
-        <div style={{ height: '5px', background: evt.accent, width: '100%' }} />
+    <motion.div
+      custom={idx}
+      initial="hidden"
+      animate="visible"
+      variants={cardVariants}
+      onHoverStart={() => setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
+      className="relative group flex flex-col overflow-hidden cursor-pointer"
+      style={{
+        background: '#fff',
+        border: `3px solid #111`,
+        boxShadow: hovered ? '8px 8px 0px #111' : '4px 4px 0px #111',
+        transform: hovered ? 'translate(-2px, -2px)' : 'translate(0,0)',
+        transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+      }}
+    >
+      {/* Accent top bar */}
+      <div style={{ height: '5px', background: evt.accent, width: '100%' }} />
 
-        <div className="flex flex-col flex-1 p-5">
-          {/* Category badge + limit */}
-          <div className="flex items-center justify-between mb-3">
-            <span
-              className="text-[9px] font-black uppercase tracking-[0.2em] px-2 py-1"
-              style={{ background: evt.accentLight, color: evt.accent, border: `1.5px solid ${evt.accent}` }}
-            >
-              {isGroup ? '👥 Team Event' : '👤 Individual'}
-            </span>
-            {evt.limit && (
-              <span className="text-[12px] font-black uppercase tracking-widest text-black/70">
-                {evt.limit}
-              </span>
-            )}
-          </div>
-
-          {/* Name */}
-          <h3
-            className="font-black uppercase leading-none tracking-tighter mb-3"
-            style={{ fontSize: 'clamp(18px, 2.5vw, 22px)', lineHeight: 1.05 }}
+      <div className="flex flex-col flex-1 p-5">
+        {/* Category badge + limit */}
+        <div className="flex items-center justify-between mb-3">
+          <span
+            className="text-[9px] font-black uppercase tracking-[0.2em] px-2 py-1"
+            style={{ background: evt.accentLight, color: evt.accent, border: `1.5px solid ${evt.accent}` }}
           >
-            {evt.name}
-          </h3>
-
-          {/* Description */}
-          <div className="text-[14.5px] font-medium text-black/90 leading-relaxed flex-1 mb-4">
-            {evt.cardDesc || evt.desc}
-          </div>
-
-          {/* Meta pills */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            <span className="flex items-center gap-1 text-[10px] font-bold text-black/50 uppercase tracking-wider">
-              <MapPin size={10} /> {evt.venue}
+            {isGroup ? '👥 Team Event' : '👤 Individual'}
+          </span>
+          {evt.limit && (
+            <span className="text-[12px] font-black uppercase tracking-widest text-black/70">
+              {evt.limit}
             </span>
-            <span className="text-black/30">•</span>
-            <span className="flex items-center gap-1 text-[10px] font-bold text-black/50 uppercase tracking-wider">
-              <Calendar size={10} /> {evt.day}
-            </span>
-            {evt.time && (
-              <>
-                <span className="text-black/30">•</span>
-                <span className="flex items-center gap-1 text-[10px] font-bold text-black/50 uppercase tracking-wider">
-                  <Clock size={10} /> {evt.time}
-                </span>
-              </>
-            )}
-          </div>
-
-          {/* Price + Learn More CTA */}
-          <div className="flex items-center justify-between pt-4" style={{ borderTop: '2px solid #111' }}>
-            <div>
-              <p className="font-black text-xl text-black leading-none">{evt.price}</p>
-            </div>
-            <motion.button
-              onClick={() => setShowLearnMore(true)}
-              whileTap={{ scale: 0.96 }}
-              className="flex items-center gap-2 font-black uppercase text-[10px] tracking-widest px-6 py-2.5 text-white transition-all"
-              style={{ background: evt.accent, border: `2px solid ${evt.accent}` }}
-            >
-              Learn More <ChevronRight size={12} />
-            </motion.button>
-          </div>
+          )}
         </div>
-      </motion.div>
 
-      {/* Learn More Modal */}
-      {showLearnMore && (
-        <LearnMoreModal
-          evt={evt}
-          isGroup={isGroup}
-          onClose={() => setShowLearnMore(false)}
-          onRegister={onRegister}
-        />
-      )}
-    </>
+        {/* Name */}
+        <h3
+          className="font-black uppercase leading-none tracking-tighter mb-3"
+          style={{ fontSize: 'clamp(18px, 2.5vw, 22px)', lineHeight: 1.05 }}
+        >
+          {evt.name}
+        </h3>
+
+        {/* Description */}
+        <div className="text-[14.5px] font-medium text-black/90 leading-relaxed flex-1 mb-4">
+          {evt.cardDesc || evt.desc}
+        </div>
+
+        {/* Meta pills */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          <span className="flex items-center gap-1 text-[10px] font-bold text-black/50 uppercase tracking-wider">
+            <MapPin size={10} /> {evt.venue}
+          </span>
+          <span className="text-black/30">•</span>
+          <span className="flex items-center gap-1 text-[10px] font-bold text-black/50 uppercase tracking-wider">
+            <Calendar size={10} /> {evt.day}
+          </span>
+          {evt.time && (
+            <>
+              <span className="text-black/30">•</span>
+              <span className="flex items-center gap-1 text-[10px] font-bold text-black/50 uppercase tracking-wider">
+                <Clock size={10} /> {evt.time}
+              </span>
+            </>
+          )}
+        </div>
+
+        {/* Price + Learn More CTA */}
+        <div className="flex items-center justify-between pt-4" style={{ borderTop: '2px solid #111' }}>
+          <div>
+            <p className="font-black text-xl text-black leading-none">{evt.price}</p>
+          </div>
+          <motion.button
+            onClick={() => navigate(`/events/${evt.id}`)}
+            whileTap={{ scale: 0.96 }}
+            className="flex items-center gap-2 font-black uppercase text-[10px] tracking-widest px-6 py-2.5 text-white transition-all"
+            style={{ background: evt.accent, border: `2px solid ${evt.accent}` }}
+          >
+            Learn More <ChevronRight size={12} />
+          </motion.button>
+        </div>
+      </div>
+    </motion.div>
   );
 };
 
@@ -1538,7 +1525,7 @@ const SectionHeader = ({ icon: Icon, label, accent, className = "mb-8" }) => (
 const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister, isGroup }) => {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [showLearnMore, setShowLearnMore] = useState(false);
+  const navigate = useNavigate();
   const { registration } = useAuth();
 
   const next = () => {
@@ -1585,7 +1572,7 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
       <div className="w-full flex justify-center">
         <div
           className="relative w-full max-w-[95%] xl:max-w-6xl h-[450px] md:h-[600px] lg:h-[600px] bg-gray-200 overflow-hidden border-4 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_rgba(0,0,0,1)] group cursor-pointer"
-          onClick={() => setShowLearnMore(true)}
+          onClick={() => navigate(`/events/${event.id}`)}
         >
           <AnimatePresence initial={false} custom={direction}>
             <motion.div
@@ -1668,7 +1655,7 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
                 <div className="mt-4 flex gap-3 pointer-events-auto">
                   {event.id !== 'masterclass' && (
                     <button
-                      onClick={(e) => { e.stopPropagation(); setShowLearnMore(true); }}
+                      onClick={(e) => { e.stopPropagation(); navigate(`/events/${event.id}`); }}
                       className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-5 py-2.5 bg-white text-black border-4 border-black hover:bg-gray-200 transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1"
                     >
                       Learn More <ChevronRight size={14} />
@@ -1707,20 +1694,13 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
         </div>
       </div>
 
-      {showLearnMore && (
-        <LearnMoreModal
-          evt={event}
-          isGroup={isGroup}
-          onClose={() => setShowLearnMore(false)}
-          onRegister={onRegister}
-        />
-      )}
     </div>
   );
 };
 
 const EventsPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, registration } = useAuth();
 
   useEffect(() => {
@@ -1780,6 +1760,17 @@ const EventsPage = () => {
     setShowGroupModal(false);
     setSelectedGroupEvent(null);
   };
+
+  useEffect(() => {
+    if (location.state?.registerEventId) {
+      const allEvents = [...GROUP_EVENTS, ...INDIVIDUAL_EVENTS];
+      const eventToRegister = allEvents.find(e => e.id === location.state.registerEventId);
+      if (eventToRegister) {
+        setTimeout(() => handleRegisterClick(eventToRegister), 100);
+      }
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
 
   return (
     <motion.div

@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainLayout from './components/MainLayout';
 import EventsPage from './components/EventsPage';
+import EventDetailPage from './pages/EventDetailPage';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
           <Routes>
             <Route path="/" element={<MainLayout />} />
             <Route path="/events" element={<EventsPage />} />
+            <Route path="/events/:eventId" element={<EventDetailPage />} />
           </Routes>
         </div>
       </BrowserRouter>
