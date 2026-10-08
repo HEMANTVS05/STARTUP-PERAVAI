@@ -378,13 +378,13 @@ const speakers = [
     name: 'Rajalingam Rathinam',
     company: ' Founder, Director, and Chairman of NestOne Group',
     photo: speaker7,
-    linkedin: 'https://www.linkedin.com/in/balajiarumugam1210/?isSelfProfile=false'
+    linkedin: 'https://www.linkedin.com/in/rajalingamrathinam/?isSelfProfile=false'
   },
   {
     name: 'Reji Joseph',
     company: 'CEO of Infinity Advisors',
     photo: speaker8,
-    linkedin: 'https://www.linkedin.com/in/balajiarumugam1210/?isSelfProfile=false'
+    linkedin: 'https://www.linkedin.com/in/reji7000/?isSelfProfile=false'
   },
   {
     name: 'Rohini Manohar',
