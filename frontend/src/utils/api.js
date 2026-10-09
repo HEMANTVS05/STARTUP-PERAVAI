@@ -33,8 +33,10 @@ api.interceptors.request.use(async (config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const message =
-      error.response?.data?.error || error.message || 'An unexpected error occurred.';
+    let message = error.response?.data?.error || error.message || 'An unexpected error occurred.';
+    if (error.response?.data?.details && Array.isArray(error.response.data.details)) {
+      message = `${message} ${error.response.data.details.join(' ')}`;
+    }
     return Promise.reject(new Error(message));
   }
 );

@@ -70,7 +70,7 @@ async function getUserTeam(uid) {
  * Spec §17: use transactions/batches for concurrent-safe operations.
  */
 async function createTeam(leaderUser, formData) {
-  const { teamName, college, department, leaderName, leaderEmail, maxMembers, invitedEmails } = formData;
+  const { teamName, college, department, problemStatement, leaderName, leaderEmail, maxMembers, invitedEmails } = formData;
 
   // 1. Check name uniqueness
   const available = await isTeamNameAvailable(teamName);
@@ -103,6 +103,7 @@ async function createTeam(leaderUser, formData) {
     teamCode,
     teamName:      teamName.trim(),
     teamNameLower: teamName.trim().toLowerCase(),
+    problemStatement: problemStatement ? problemStatement.trim() : '',
     college:       college.trim(),
     department:    department.trim(),
     leaderUid:     leaderUser.uid,

@@ -267,6 +267,7 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
     const { teamName, college, department, leaderName, memberEmails, maxMembers } = formData;
 
     if (!teamName.trim()) return 'Team Name is required.';
+    if (teamName.trim().length < 3) return 'Team Name must be at least 3 characters long.';
     if (!college.trim()) return 'College Name is required.';
     if (!department.trim()) return 'Department is required.';
     if (!leaderName.trim()) return 'Team Leader Name is required.';
@@ -340,6 +341,7 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
         department: formData.department,
         leaderName: formData.leaderName,
         leaderEmail: user.email,
+        problemStatement: formData.problemStatement,
         maxMembers: formData.maxMembers,
         invitedEmails: formData.memberEmails,
       });
