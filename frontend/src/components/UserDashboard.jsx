@@ -1,15 +1,16 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircle2, Ticket, Calendar, MapPin,
   Briefcase, GraduationCap, Building2, Zap, ShieldCheck,
-  ChevronLeft, ChevronRight, X
+  ChevronLeft, ChevronRight, X, RefreshCw
 } from 'lucide-react';
 import QRCode from 'react-qr-code';
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import { fetchUserTeamData } from '../services/hackathonService';
+import SessionPickerModal from './SessionPickerModal';
 import api from '../utils/api';
 
 // Map of event IDs to display names
@@ -72,7 +73,7 @@ const passThemes = {
 };
 
 // ── Single pass card ────────────────────────────────────────────────────────────
-export const PassCard = ({ registration, user, passType, eventName, qrSuffix, onClose, onOpenHackathon, onOpenGroupEvent, overrideQrValue }) => {
+export const PassCard = ({ registration, user, passType, eventName, qrSuffix, onClose, onOpenHackathon, onOpenGroupEvent, overrideQrValue, onChangeSession }) => {
   const t = passThemes[passType] || passThemes["Visitor's Pass"];
   const isEvent = passType !== "Visitor's Pass";
   const name = registration.name || user?.displayName || 'Attendee';
@@ -138,21 +139,40 @@ export const PassCard = ({ registration, user, passType, eventName, qrSuffix, on
         </div>
 
         {/* ── Session Info (Visitor Pass only — podcast or panel) ── */}
-        {!isEvent && registration.sessionType && (registration.sessionType === 'podcast' || registration.sessionType === 'panel') && (
-          <div style={{ background: registration.sessionType === 'podcast' ? '#222222ff' : '#0b2140', border: '2px solid #111', borderRadius: '10px', padding: '14px 16px', marginBottom: '18px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-              <span style={{ fontSize: '16px' }}>{registration.sessionType === 'podcast' ? '🎙️' : '🎤'}</span>
-              <span style={{ fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.25em', color: registration.sessionType === 'podcast' ? '#ffffffff' : '#a78bfa' }}>
-                {registration.sessionType === 'podcast' ? 'Live Podcast' : 'Panel Discussion'}
-              </span>
-            </div>
-            <p style={{ fontSize: '14px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.01em', color: '#f6f4ee', lineHeight: 1.2, marginBottom: registration.sessionSubtitle ? '6px' : 0 }}>
-              {registration.sessionChoice?.replace(/\s*\(Day \d\)$/, '') || 'Session'}
-            </p>
-            {registration.sessionSubtitle && (
-              <p style={{ fontSize: '11px', fontWeight: 700, color: registration.sessionType === 'podcast' ? '#93c5fd' : '#c4b5fd', letterSpacing: '0.05em' }}>
-                {registration.sessionType === 'podcast' ? '🎤 ' : '💬 '}{registration.sessionSubtitle}
-              </p>
+        {!isEvent && (
+          <div style={{ marginBottom: '18px' }}>
+            {registration.sessionType && (registration.sessionType === 'podcast' || registration.sessionType === 'panel') ? (
+              <div style={{ background: registration.sessionType === 'podcast' ? '#222222ff' : '#0b2140', border: '2px solid #111', borderRadius: '10px', padding: '14px 16px', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '16px' }}>{registration.sessionType === 'podcast' ? '🎙️' : '🎤'}</span>
+                  <span style={{ fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.25em', color: registration.sessionType === 'podcast' ? '#ffffffff' : '#a78bfa' }}>
+                    {registration.sessionType === 'podcast' ? 'Live Podcast' : 'Panel Discussion'}
+                  </span>
+                </div>
+                <p style={{ fontSize: '14px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.01em', color: '#f6f4ee', lineHeight: 1.2, marginBottom: registration.sessionSubtitle ? '6px' : 0 }}>
+                  {registration.sessionChoice?.replace(/\s*\(Day \d\)$/, '') || 'Session'}
+                </p>
+                {registration.sessionSubtitle && (
+                  <p style={{ fontSize: '11px', fontWeight: 700, color: registration.sessionType === 'podcast' ? '#93c5fd' : '#c4b5fd', letterSpacing: '0.05em' }}>
+                    {registration.sessionType === 'podcast' ? '🎤 ' : '💬 '}{registration.sessionSubtitle}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div style={{ background: '#f6f4ee', border: '2px dashed #ccc', borderRadius: '10px', padding: '14px 16px', marginBottom: '10px', textAlign: 'center' }}>
+                <p style={{ fontSize: '11px', fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: '0.15em' }}>No session selected yet</p>
+              </div>
+            )}
+            {onChangeSession && (
+              <button
+                onClick={onChangeSession}
+                style={{ width: '100%', padding: '10px 16px', background: '#fff', color: '#1f2022', border: '2px solid #111', borderRadius: '8px', fontWeight: 900, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', transition: 'background 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#1f2022'; e.currentTarget.style.color = '#fff'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#1f2022'; }}
+              >
+                <RefreshCw style={{ width: '14px', height: '14px' }} />
+                {registration.sessionType ? 'Change Session' : 'Select a Session'}
+              </button>
             )}
           </div>
         )}
@@ -283,6 +303,8 @@ const UserDashboard = ({ onClose, onOpenHackathon, onOpenGroupEvent }) => {
   const { user, registration, refreshRegistration } = useAuth();
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [hackathonLeaderUid, setHackathonLeaderUid] = React.useState(null);
+  const [showSessionPicker, setShowSessionPicker] = React.useState(false);
+  const [savingSession, setSavingSession] = React.useState(false);
 
   React.useEffect(() => {
     if (user && registration?.registeredEvents?.includes('hackathon')) {
@@ -298,6 +320,29 @@ const UserDashboard = ({ onClose, onOpenHackathon, onOpenGroupEvent }) => {
     await signOut(auth);
     onClose?.();
     window.location.reload();
+  };
+
+  const handleSessionSave = async (session) => {
+    setSavingSession(true);
+    try {
+      const dayLabel = session.id.startsWith('d1') ? 'Day 1' : 'Day 2';
+      await api.patch('/api/registrations', {
+        sessionChoice: `${session.title} (${dayLabel})`,
+        sessionType: session.type,
+        sessionSubtitle: session.time || '',
+      });
+      await refreshRegistration();
+    } catch (e) {
+      console.error('Failed to save session', e);
+      alert('Failed to save session. Please try again.');
+    } finally {
+      setSavingSession(false);
+      setShowSessionPicker(false);
+    }
+  };
+
+  const handleSessionSkip = () => {
+    setShowSessionPicker(false);
   };
 
   // ── Self-heal: write registeredEvents for payment-only events that are paid but not registered ──
@@ -329,7 +374,8 @@ const UserDashboard = ({ onClose, onOpenHackathon, onOpenGroupEvent }) => {
   const passes = [];
 
   const hasVisitorPass =
-    registration.passType === "Visitor's Pass" && registration.paymentStatus === 'paid';
+    registration.passType === "Visitor's Pass" &&
+    (registration.paymentStatus === 'paid' || registration.paymentStatus === 'free');
 
   if (hasVisitorPass) {
     passes.push({ passType: "Visitor's Pass", eventName: registration.sessionChoice || null, qrSuffix: null });
@@ -360,77 +406,88 @@ const UserDashboard = ({ onClose, onOpenHackathon, onOpenGroupEvent }) => {
   const currentPass = passes[currentIndex];
 
   return (
-    <motion.div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-hidden"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-    >
-      {/* Backdrop */}
-      <motion.div
-        className="fixed inset-0 z-40"
-        style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(12px)' }}
-        onClick={onClose}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+    <>
+      {/* Session Picker for re-selection */}
+      <SessionPickerModal
+        isOpen={showSessionPicker}
+        onSkip={handleSessionSkip}
+        onNext={handleSessionSave}
+        onBack={() => setShowSessionPicker(false)}
       />
 
-      <div className="relative z-50 flex items-center justify-center w-full gap-3 sm:gap-4 px-1 sm:px-0">
-        {/* Left Arrow */}
-        {passes.length > 1 && (
-          <button
-            onClick={prevPass}
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 flex items-center justify-center border-2 border-white/20 text-white hover:bg-white hover:text-black transition-all shrink-0"
-          >
-            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
-          </button>
-        )}
+      <motion.div
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        {/* Backdrop */}
+        <motion.div
+          className="fixed inset-0 z-40"
+          style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(12px)' }}
+          onClick={onClose}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        />
 
-        {/* Current Pass Container */}
-        <div className="flex-1 min-w-0 max-w-[340px] sm:max-w-sm md:max-w-md">
-          {/* Close button */}
-          <div className="flex justify-end mb-3">
-            <button
-              onClick={onClose}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/25 text-white text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all"
-            >
-              <X className="w-4 h-6.5" />
-            </button>
-          </div>
-          <PassCard
-            registration={registration}
-            user={user}
-            passType={currentPass.passType}
-            eventName={currentPass.eventName}
-            qrSuffix={currentPass.qrSuffix}
-            onClose={onClose}
-            onOpenHackathon={currentPass.eventName?.toLowerCase() === 'hackathon' ? onOpenHackathon : undefined}
-            onOpenGroupEvent={onOpenGroupEvent}
-            overrideQrValue={currentPass.qrSuffix === 'hackathon' && hackathonLeaderUid ? `${hackathonLeaderUid}::hackathon` : undefined}
-          />
-          {/* Pagination indicators */}
+        <div className="relative z-50 flex items-center justify-center w-full gap-3 sm:gap-4 px-1 sm:px-0">
+          {/* Left Arrow */}
           {passes.length > 1 && (
-            <div className="flex justify-center gap-2 mt-4">
-              {passes.map((_, idx) => (
-                <div
-                  key={idx}
-                  className={`h-2 rounded-full transition-all ${idx === currentIndex ? 'w-8 bg-[#a80d11]' : 'w-2 bg-white/30'}`}
-                />
-              ))}
+            <button
+              onClick={prevPass}
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 flex items-center justify-center border-2 border-white/20 text-white hover:bg-white hover:text-black transition-all shrink-0"
+            >
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+          )}
+
+          {/* Current Pass Container */}
+          <div className="flex-1 min-w-0 max-w-[340px] sm:max-w-sm md:max-w-md">
+            {/* Close button */}
+            <div className="flex justify-end mb-3">
+              <button
+                onClick={onClose}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/25 text-white text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all"
+              >
+                <X className="w-4 h-6.5" />
+              </button>
             </div>
+            <PassCard
+              registration={registration}
+              user={user}
+              passType={currentPass.passType}
+              eventName={currentPass.eventName}
+              qrSuffix={currentPass.qrSuffix}
+              onClose={onClose}
+              onOpenHackathon={currentPass.eventName?.toLowerCase() === 'hackathon' ? onOpenHackathon : undefined}
+              onOpenGroupEvent={onOpenGroupEvent}
+              overrideQrValue={currentPass.qrSuffix === 'hackathon' && hackathonLeaderUid ? `${hackathonLeaderUid}::hackathon` : undefined}
+              onChangeSession={currentPass.passType === "Visitor's Pass" ? () => setShowSessionPicker(true) : undefined}
+            />
+            {/* Pagination indicators */}
+            {passes.length > 1 && (
+              <div className="flex justify-center gap-2 mt-4">
+                {passes.map((_, idx) => (
+                  <div
+                    key={idx}
+                    className={`h-2 rounded-full transition-all ${idx === currentIndex ? 'w-8 bg-[#a80d11]' : 'w-2 bg-white/30'}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Right Arrow */}
+          {passes.length > 1 && (
+            <button
+              onClick={nextPass}
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 flex items-center justify-center border-2 border-white/20 text-white hover:bg-white hover:text-black transition-all shrink-0"
+            >
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
           )}
         </div>
-
-        {/* Right Arrow */}
-        {passes.length > 1 && (
-          <button
-            onClick={nextPass}
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 flex items-center justify-center border-2 border-white/20 text-white hover:bg-white hover:text-black transition-all shrink-0"
-          >
-            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-          </button>
-        )}
-      </div>
-    </motion.div>
+      </motion.div>
+    </>
   );
 };
 

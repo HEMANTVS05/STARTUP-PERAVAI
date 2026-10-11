@@ -1204,11 +1204,61 @@ const MainLayout = () => {
             />
           </div>
 
+          {/* ── FREE Visitor Pass Hero Banner ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 1.25, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-10 md:mt-14 w-full"
+          >
+            <div className="relative border-4 border-black bg-[#1f2022] shadow-[6px_6px_0px_rgba(168,13,17,1)] flex items-center gap-6 md:gap-10 px-6 md:px-10 py-5 md:py-6 overflow-hidden">
+
+              {/* Ticket icon */}
+              <motion.div
+                animate={{ rotate: [-4, 4, -4], scale: [1, 1.08, 1] }}
+                transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+                className="relative shrink-0 w-14 h-14 md:w-16 md:h-16 bg-[#a80d11] border-4 border-white flex items-center justify-center shadow-[4px_4px_0px_rgba(255,255,255,0.25)]"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 md:w-9 md:h-9 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                </svg>
+              </motion.div>
+
+              {/* Text */}
+              <div className="relative flex-1 min-w-0">
+                <motion.span
+                  animate={{ opacity: [1, 0.75, 1] }}
+                  transition={{ duration: 1.4, repeat: Infinity }}
+                  className="inline-block bg-[#a80d11] text-white text-[9px] md:text-xs font-black uppercase tracking-[0.3em] px-3 py-1 border-2 border-white mb-2 shadow-[2px_2px_0px_rgba(0,0,0,0.5)]"
+                >
+                  🎉 Limited Passes Available!
+                </motion.span>
+                <p className="font-black uppercase tracking-tight text-white text-2xl md:text-2xl lg:text-3xl leading-none">
+                  Visitor Pass is{' '}
+                  <span className="text-green-400 drop-shadow-[2px_2px_0_rgba(0,0,0,0.8)]">Completely FREE!</span>
+                </p>
+              </div>
+
+              {/* CTA */}
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setShowVisitorModal(true)}
+                className="relative shrink-0 py-3 md:py-3 px-3 md:px-3 border-4 border-white bg-white text-[#1f2022] font-black uppercase tracking-[0.15em] text-sm md:text-base shadow-[4px_4px_0px_rgba(255,255,255,0.25)] hover:bg-green-400 hover:border-green-400 transition-colors whitespace-nowrap flex items-center gap-2"
+              >
+                Grab Your Pass
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </motion.button>
+            </div>
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.3, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-12 md:mt-20 flex flex-col sm:flex-row gap-4 items-center justify-center w-full px-4"
+            className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-4 items-center justify-center w-full px-4"
           >
             <a
               href="#passes"
@@ -1748,6 +1798,28 @@ const MainLayout = () => {
 
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6">
             <motion.a
+              href="https://www.linkedin.com/in/easwari-startup-peravai?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+              target="_blank"
+              rel="noreferrer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5 }}
+              className="group flex flex-col gap-4 p-6 bg-white border-4 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all text-white"
+            >
+              <div className="w-12 h-12 bg-blue-600 border-4 border-black text-white-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                  <rect width="4" height="12" x="2" y="9" />
+                  <circle cx="4" cy="4" r="2" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-black uppercase tracking-widest text-xs text-gray-500 mb-1">LinkedIn</p>
+                <p className="font-bold truncate text-black">Startup Peravai</p>
+              </div>
+            </motion.a>
+            <motion.a
               href="mailto:office@startupperavai.in"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1764,20 +1836,41 @@ const MainLayout = () => {
               </div>
             </motion.a>
 
+            {/* Event Related Queries */}
             <motion.a
               href="tel:+919789034548"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="group flex flex-col gap-4 p-6 bg-white border-4 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all text-white"
+              className="group flex flex-col gap-4 p-6 bg-white border-4 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all"
             >
-              <div className="w-12 h-12 bg-red-600 border-4 border-black text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-[#a80d11] border-4 border-black text-white flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Phone className="w-6 h-6" />
               </div>
               <div>
-                <p className="font-black uppercase tracking-widest text-xs text-gray-500 mb-1">Phone</p>
+                <p className="font-black uppercase tracking-widest text-xs text-gray-500 mb-1">Event Queries</p>
                 <p className="font-bold text-black">+91 97890 34548</p>
+                <p className="font-bold text-[10px] uppercase tracking-widest text-gray-400 mt-0.5">Event Related Queries</p>
+              </div>
+            </motion.a>
+
+            {/* Tech Support */}
+            <motion.a
+              href="tel:+917010997679"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="group flex flex-col gap-4 p-6 bg-white border-4 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all"
+            >
+              <div className="w-12 h-12 bg-[#0b2140] border-4 border-black text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Phone className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="font-black uppercase tracking-widest text-xs text-gray-500 mb-1">Tech Support</p>
+                <p className="font-bold text-black">+91 70109 97679</p>
+                <p className="font-bold text-[10px] uppercase tracking-widest text-gray-400 mt-0.5">Technical Support</p>
               </div>
             </motion.a>
 
@@ -1788,7 +1881,7 @@ const MainLayout = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.4 }}
               className="group flex flex-col gap-4 p-6 bg-white border-4 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all"
             >
               <div className="w-12 h-12 bg-black border-4 border-black text-white flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -1802,29 +1895,6 @@ const MainLayout = () => {
                 <p className="font-black uppercase tracking-widest text-xs text-gray-500 mb-1">Instagram</p>
                 <p className="font-bold text-black truncate">@easwari_startup_peravai
                 </p>
-              </div>
-            </motion.a>
-
-            <motion.a
-              href="https://www.linkedin.com/in/easwari-startup-peravai?utm_source=share_via&utm_content=profile&utm_medium=member_android"
-              target="_blank"
-              rel="noreferrer"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-              className="group flex flex-col gap-4 p-6 bg-white border-4 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all text-white"
-            >
-              <div className="w-12 h-12 bg-blue-600 border-4 border-black text-white-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                  <rect width="4" height="12" x="2" y="9" />
-                  <circle cx="4" cy="4" r="2" />
-                </svg>
-              </div>
-              <div>
-                <p className="font-black uppercase tracking-widest text-xs text-gray-500 mb-1">LinkedIn</p>
-                <p className="font-bold truncate text-black">Startup Peravai</p>
               </div>
             </motion.a>
           </div>

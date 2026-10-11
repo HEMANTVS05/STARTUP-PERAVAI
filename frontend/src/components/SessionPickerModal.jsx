@@ -50,14 +50,14 @@ const SESSIONS = {
     date: 'Oct 31, 2026',
     color: '#0b2140',
     sessions: [
-      {
+      {/*
         id: 'd2-p1', type: 'podcast',
         title: 'Jahabar sadique',
         time: 'Chai Kings Co-Founder',
         titleColor: '#00a652',   // teal — original Chai Kings popup color
         desc: 'For those curious about entrepreneurship, consumer brands and building a successful franchise, this conversation with Jahabar Sadique, Co-Founder of Chai Kings, explores how a simple idea can grow into a recognisable homegrown brand through customer insight, branding, operations and smart expansion. Join us for a live podcast on building, scaling and creating a successful franchise business.',
         poster: poster2,
-      },
+      */},
       {/*
         id: 'd2-p2', type: 'podcast',
         title: 'Funding in the New Economy',
