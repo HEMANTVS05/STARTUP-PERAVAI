@@ -1243,7 +1243,7 @@ const MainLayout = () => {
               <motion.button
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={() => setShowVisitorModal(true)}
+                onClick={(e) => handleNavClick(e, 'passes')}
                 className="relative shrink-0 py-3 md:py-3 px-3 md:px-3 border-4 border-white bg-white text-[#1f2022] font-black uppercase tracking-[0.15em] text-sm md:text-base shadow-[4px_4px_0px_rgba(255,255,255,0.25)] hover:bg-green-400 hover:border-green-400 transition-colors whitespace-nowrap flex items-center gap-2"
               >
                 Grab Your Pass
