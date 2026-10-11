@@ -1231,7 +1231,7 @@ const MainLayout = () => {
                   transition={{ duration: 1.4, repeat: Infinity }}
                   className="inline-block bg-[#a80d11] text-white text-[9px] md:text-xs font-black uppercase tracking-[0.3em] px-3 py-1 border-2 border-white mb-2 shadow-[2px_2px_0px_rgba(0,0,0,0.5)]"
                 >
-                  🎉 Limited Passes Available!
+                  Limited Passes Available!
                 </motion.span>
                 <p className="font-black uppercase tracking-tight text-white text-2xl md:text-2xl lg:text-3xl leading-none">
                   Visitor Pass is{' '}
