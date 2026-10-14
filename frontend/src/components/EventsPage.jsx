@@ -1544,10 +1544,10 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
   // Auto-advance every 5.5 s; pauses for 8 s after manual interaction
   useEffect(() => {
     const timer = setInterval(() => {
-      if (Date.now() - lastInteractionRef.current < 8000) return;
+      if (Date.now() - lastInteractionRef.current < 3000) return;
       setDirection(1);
       setCurrent((p) => (p + 1) % events.length);
-    }, 3500);
+    }, 3000);
     return () => clearInterval(timer);
   }, [events.length]);
 
