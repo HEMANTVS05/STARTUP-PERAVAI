@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Zap, Users, User, AlertCircle, MapPin, Calendar, ArrowRight, X, BookOpen, ChevronRight, ChevronLeft, Clock, CheckCircle2, Loader2 } from 'lucide-react';
@@ -1527,16 +1527,29 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
   const [direction, setDirection] = useState(1);
   const navigate = useNavigate();
   const { registration } = useAuth();
+  const lastInteractionRef = useRef(0);
 
   const next = () => {
+    lastInteractionRef.current = Date.now();
     setDirection(1);
     setCurrent((p) => (p + 1) % events.length);
   };
 
   const prev = () => {
+    lastInteractionRef.current = Date.now();
     setDirection(-1);
     setCurrent((p) => (p - 1 + events.length) % events.length);
   };
+
+  // Auto-advance every 5.5 s; pauses for 8 s after manual interaction
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (Date.now() - lastInteractionRef.current < 8000) return;
+      setDirection(1);
+      setCurrent((p) => (p + 1) % events.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, [events.length]);
 
   const slideVariants = {
     enter: (dir) => ({ x: dir > 0 ? '100%' : '-100%', opacity: 1 }),

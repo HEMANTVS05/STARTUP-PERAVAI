@@ -22,6 +22,8 @@ async function getRegistrationByUid(uid) {
   return getRegistrationById(uid);
 }
 
+const { syncIndividualEvent } = require('./individualEventService');
+
 /**
  * Create or update a registration.
  * Uses the user's UID as the document ID to enforce one registration per user.
@@ -45,6 +47,7 @@ async function upsertRegistration(uid, data) {
   };
 
   await ref.set(payload);
+  await syncIndividualEvent(uid, payload).catch(err => console.error('Failed to sync individual event:', err));
   return { id: uid, ...payload };
 }
 
@@ -55,7 +58,9 @@ async function updateRegistration(uid, data) {
   const ref = db.collection(COLLECTION).doc(uid);
   await ref.set({ ...data, updatedAt: new Date().toISOString() }, { merge: true });
   const updated = await ref.get();
-  return { id: uid, ...updated.data() };
+  const fullData = updated.data();
+  await syncIndividualEvent(uid, fullData).catch(err => console.error('Failed to sync individual event:', err));
+  return { id: uid, ...fullData };
 }
 
 /**

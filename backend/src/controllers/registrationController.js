@@ -46,4 +46,19 @@ const listRegistrations = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { getMyRegistration, createRegistration, updateMyRegistration, listRegistrations };
+// Admin / internal counts
+const { getCounts } = require('../../getCounts');
+const getRegistrationCounts = async (req, res, next) => {
+  try {
+    const counts = await getCounts();
+    res.json(counts);
+  } catch (err) { next(err); }
+};
+
+module.exports = {
+  getMyRegistration,
+  createRegistration,
+  updateMyRegistration,
+  listRegistrations,
+  getRegistrationCounts,
+};

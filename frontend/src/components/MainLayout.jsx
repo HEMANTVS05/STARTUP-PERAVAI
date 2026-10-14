@@ -28,6 +28,9 @@ import speaker7 from '../assets/speaker7.jpg';
 import speaker8 from '../assets/speaker8.jpg';
 import speaker9 from '../assets/speaker9.jpg';
 import speaker10 from '../assets/speaker10.png';
+
+import investor1 from '../assets/i1.jpg';
+
 import eventBrochure from '../assets/EVENT_BROCHURE.pdf';
 import landingMascot from '../assets/landing_page_mascot.png';
 
@@ -400,6 +403,40 @@ const speakers = [
   },
 ];
 
+// ─── Investor Data ────────────────────────────────────────────────────────────
+const investors = [
+  {
+    name: 'Nivetha Muralidharan',
+    company: 'D2C Amazon PPC Strategist',
+    photo: investor1,
+    linkedin: 'https://www.linkedin.com/in/nivethamuralidharan/?isSelfProfile=false'
+  },
+  {
+    name: 'Investor 2',
+    company: 'Managing Director of Matrix Partners India',
+    photo: null,
+    linkedin: 'https://www.linkedin.com/'
+  },
+  {
+    name: 'Investor 3',
+    company: 'General Partner of Accel Partners',
+    photo: null,
+    linkedin: 'https://www.linkedin.com/'
+  },
+  {
+    name: 'Investor 4',
+    company: 'Founder of 100X.VC',
+    photo: null,
+    linkedin: 'https://www.linkedin.com/'
+  },
+  {
+    name: 'Investor 5',
+    company: 'Principal of Kalaari Capital',
+    photo: null,
+    linkedin: 'https://www.linkedin.com/'
+  },
+];
+
 const SpeakerCard = ({ speaker }) => {
   const atIndex = speaker.company ? speaker.company.indexOf(' of ') : -1;
   const role = atIndex !== -1 ? speaker.company.slice(0, atIndex) : speaker.company;
@@ -408,12 +445,20 @@ const SpeakerCard = ({ speaker }) => {
   return (
     <div className="group relative shrink-0 w-64 md:w-72 border-4 border-black bg-white shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1.5 hover:translate-y-1.5 transition-all duration-300 mx-4 select-none flex flex-col justify-between">
       <div className="relative h-64 md:h-72 border-b-4 border-black overflow-hidden bg-gray-200 shrink-0">
-        <img
-          src={speaker.photo}
-          alt={speaker.name}
-          draggable={false}
-          className="w-full h-full object-cover transition-all duration-500 pointer-events-none"
-        />
+        {speaker.photo ? (
+          <img
+            src={speaker.photo}
+            alt={speaker.name}
+            draggable={false}
+            className="w-full h-full object-cover transition-all duration-500 pointer-events-none"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
+            <span className="text-5xl font-black text-white/20 uppercase tracking-tighter select-none">
+              {speaker.name.split(' ').map(w => w[0]).join('').slice(0, 2)}
+            </span>
+          </div>
+        )}
         <a href={speaker.linkedin} target="_blank" rel="noopener noreferrer"
           className="absolute bottom-4 right-4 w-10 h-10 bg-[#1f2022] border-4 border-black flex items-center justify-center text-white hover:bg-black transition-colors shadow-[3px_3px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
           onClick={e => e.stopPropagation()}>
@@ -577,9 +622,122 @@ const SpeakersCarousel = () => {
   );
 };
 
+// ─── Investors Carousel (identical mechanics, uses investors data) ────────────
+const InvestorsCarousel = () => {
+  const outerRef = useRef(null);
+  const innerRef = useRef(null);
+  const isPausedRef = useRef(false);
+  const isDraggingRef = useRef(false);
+  const offsetRef = useRef(0);
+  const dragStartXRef = useRef(0);
+  const dragStartOffsetRef = useRef(0);
+  const rafRef = useRef(null);
+  const SPEED = 3;
+  const halfWidthRef = useRef(0);
+
+  useEffect(() => {
+    if (innerRef.current) {
+      halfWidthRef.current = innerRef.current.scrollWidth / 2;
+    }
+  }, []);
+
+  useEffect(() => {
+    const step = () => {
+      if (!isPausedRef.current && !isDraggingRef.current) {
+        offsetRef.current -= SPEED;
+        if (Math.abs(offsetRef.current) >= halfWidthRef.current) {
+          offsetRef.current = 0;
+        }
+      }
+      if (innerRef.current) {
+        innerRef.current.style.transform = `translateX(${offsetRef.current}px)`;
+      }
+      rafRef.current = requestAnimationFrame(step);
+    };
+    rafRef.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
+
+  const scroll = (dir) => {
+    const cardWidth = 288 + 32;
+    const target = offsetRef.current + dir * -(cardWidth * 2);
+    const start = offsetRef.current;
+    const duration = 500;
+    const startTime = performance.now();
+    const animate = (now) => {
+      const t = Math.min((now - startTime) / duration, 1);
+      const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      offsetRef.current = start + (target - start) * ease;
+      if (innerRef.current) {
+        innerRef.current.style.transform = `translateX(${offsetRef.current}px)`;
+      }
+      if (t < 1) requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+  };
+
+  const onMouseDown = (e) => { isDraggingRef.current = true; dragStartXRef.current = e.clientX; dragStartOffsetRef.current = offsetRef.current; e.preventDefault(); };
+  const onMouseMove = (e) => { if (!isDraggingRef.current) return; offsetRef.current = dragStartOffsetRef.current + (e.clientX - dragStartXRef.current); };
+  const onMouseUp = () => { isDraggingRef.current = false; };
+  const onTouchStart = (e) => { isDraggingRef.current = true; dragStartXRef.current = e.touches[0].clientX; dragStartOffsetRef.current = offsetRef.current; };
+  const onTouchMove = (e) => { offsetRef.current = dragStartOffsetRef.current + (e.touches[0].clientX - dragStartXRef.current); };
+  const onTouchEnd = () => { isDraggingRef.current = false; };
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => { isPausedRef.current = true; }}
+      onMouseLeave={() => { isPausedRef.current = false; isDraggingRef.current = false; }}
+    >
+      {/* Arrow buttons */}
+      <div className="flex justify-end gap-3 px-4 sm:px-6 lg:px-24 mb-6">
+        <button
+          onClick={() => scroll(-1)}
+          className="w-12 h-12 border-4 border-black bg-white flex items-center justify-center font-black text-xl shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all duration-150"
+          aria-label="Previous investors"
+        >
+          ←
+        </button>
+        <button
+          onClick={() => scroll(1)}
+          className="w-12 h-12 border-4 border-black bg-[#0f50e3] text-white flex items-center justify-center font-black text-xl shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all duration-150"
+          aria-label="Next investors"
+        >
+          →
+        </button>
+      </div>
+
+      <div
+        ref={outerRef}
+        className={`overflow-hidden pb-6 pt-2 ${isDraggingRef.current ? 'cursor-grabbing' : 'cursor-grab'}`}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseUp}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
+        <div
+          ref={innerRef}
+          className="flex"
+          style={{ willChange: 'transform' }}
+        >
+          {[...Array(4)].map((_, i) =>
+            investors.map((investor, index) => (
+              <SpeakerCard key={`inv-${i}-${index}`} speaker={investor} />
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── Main Layout ─────────────────────────────────────────────────────────────
 const MainLayout = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [guestsTab, setGuestsTab] = useState('guests'); // 'guests' | 'investors'
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [authModal, setAuthModal] = useState({ open: false, pass: '', source: '' });
   const [showDashboard, setShowDashboard] = useState(false);
@@ -1596,16 +1754,73 @@ const MainLayout = () => {
       <div className="mt-8 md:mt-10 mx-4 sm:mx-6 lg:mx-24 h-[3px]" style={{ background: 'linear-gradient(to right, transparent, #a80d11 20%, #1f2022 50%, #0f50e3 80%, transparent)' }} />
 
       <div id="speakers" className="py-12 md:py-20 relative">
-        <div className="text-center mb-10 md:mb-14 relative z-10">
-          <p className="font-black uppercase tracking-[0.35em] text-gray-400 text-xs md:text-sm mb-4">
-            Hear from the best
-          </p>
-          <h2 className="text-5xl sm:text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none text-black">
-            Our <br />
-            <span style={redGrad}>Guests.</span>
-          </h2>
+        <div className="mb-10 md:mb-14 relative z-10 px-4 sm:px-6 lg:px-24">
+
+          {/* Centered top: label + title */}
+          <div className="text-center mb-8">
+            <p className="font-black uppercase tracking-[0.35em] text-gray-400 text-xs md:text-sm mb-4">
+              Hear from the best
+            </p>
+            <h2 className="text-5xl sm:text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none text-black">
+              Our <br />
+              <span
+                key={guestsTab}
+                style={guestsTab === 'guests' ? redGrad : blueGrad}
+              >
+                {guestsTab === 'guests' ? 'Guests.' : 'Investors.'}
+              </span>
+            </h2>
+          </div>
+
+          {/* Left-aligned toggle buttons */}
+          <div className="flex gap-3">
+            <button
+              id="guests-tab-btn"
+              onClick={() => setGuestsTab('guests')}
+              className={`px-6 py-3 border-4 border-black font-black uppercase tracking-[0.15em] text-sm transition-all duration-200 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 ${guestsTab === 'guests'
+                ? 'bg-[#bf1d21] text-white border-[#0f50e3]'
+                : 'bg-white text-black'
+                }`}
+            >
+              Guests
+            </button>
+            <button
+              id="investors-tab-btn"
+              onClick={() => setGuestsTab('investors')}
+              className={`px-6 py-3 border-4 border-black font-black uppercase tracking-[0.15em] text-sm transition-all duration-200 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 ${guestsTab === 'investors'
+                ? 'bg-[#0f50e3] text-white border-[#0f50e3]'
+                : 'bg-white text-black'
+                }`}
+            >
+              Investors
+            </button>
+          </div>
+
         </div>
-        <SpeakersCarousel />
+
+        <AnimatePresence mode="wait">
+          {guestsTab === 'guests' ? (
+            <motion.div
+              key="guests-carousel"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 30 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <SpeakersCarousel />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="investors-carousel"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -30 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <InvestorsCarousel />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       <div className="mx-4 sm:mx-6 lg:mx-24 h-[2px]" style={{ background: 'linear-gradient(to right, transparent, #a80d11 20%, #1f2022 50%, #0f50e3 80%, transparent)' }} />
 

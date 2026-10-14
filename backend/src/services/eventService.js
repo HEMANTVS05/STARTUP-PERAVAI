@@ -30,7 +30,7 @@ async function registerForEvent(uid, eventId, extraData = {}) {
   const eventRef = db.collection(COLLECTION).doc(eventId);
   const regRef   = db.collection(EVENT_REGS).doc(registrationDocId);
 
-  return db.runTransaction(async (txn) => {
+  const result = await db.runTransaction(async (txn) => {
     const [eventDoc, regDoc] = await Promise.all([txn.get(eventRef), txn.get(regRef)]);
 
     if (!eventDoc.exists) throw Object.assign(new Error('Event not found.'), { status: 404 });
@@ -76,6 +76,18 @@ async function registerForEvent(uid, eventId, extraData = {}) {
 
     return { id: registrationDocId, ...payload };
   });
+
+  try {
+    const userReg = await db.collection('registrations').doc(uid).get();
+    if (userReg.exists) {
+      const { syncIndividualEvent } = require('./individualEventService');
+      await syncIndividualEvent(uid, userReg.data());
+    }
+  } catch (err) {
+    console.error('Failed to sync individual event in registerForEvent:', err);
+  }
+
+  return result;
 }
 
 /**

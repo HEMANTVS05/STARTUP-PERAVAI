@@ -134,6 +134,22 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ── Individual Events (bootcamp, art_of_selling_nothing, riseher) ────────
+    match /bootcamp/{docId} {
+      allow read: if isAuthenticated() && (resource.data.uid == request.auth.uid || hasAdminClaim() || exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+      allow write: if false; // Backend only
+    }
+
+    match /art_of_selling_nothing/{docId} {
+      allow read: if isAuthenticated() && (resource.data.uid == request.auth.uid || hasAdminClaim() || exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+      allow write: if false; // Backend only
+    }
+
+    match /riseher/{docId} {
+      allow read: if isAuthenticated() && (resource.data.uid == request.auth.uid || hasAdminClaim() || exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+      allow write: if false; // Backend only
+    }
+
     // ── DEFAULT: deny everything not explicitly listed ────────────────────────
     match /{document=**} {
       allow read, write: if false;
