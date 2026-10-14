@@ -354,12 +354,6 @@ const speakers = [
     linkedin: 'https://www.linkedin.com/in/ckknaturals/?isSelfProfile=false'
   },
   {
-    name: 'Jahabar Sadique',
-    company: 'Co-Founder of Chai Kings',
-    photo: speaker3,
-    linkedin: 'https://www.linkedin.com/in/jahabarsadique/?isSelfProfile=false'
-  },
-  {
     name: 'Singai G Ramachandran',
     company: 'Chairperson of StartupTN',
     photo: speaker4,
