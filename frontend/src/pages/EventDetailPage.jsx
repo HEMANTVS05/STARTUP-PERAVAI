@@ -142,7 +142,7 @@ const GROUP_EVENTS = [
     ],
     coverImage: pitchPoster,
     posters: [pitchRulesPoster],
-    fee: 700,
+    fee: 500,
     isGroup: true,
   },
   {
@@ -221,6 +221,7 @@ const INDIVIDUAL_EVENTS = [
       </>
     ),
     venue: 'MBA Seminar Hall 2', day: 'Both Days', time: '11:30 AM Onwards', accent: '#f43b38', accentLight: '#fef2f2',
+    fee: 500,
     rules: [
       { title: '1. Attendance', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Full attendance on both days is mandatory. Partial attendance will result in disqualification from certification.' },
       { title: '2. Prerequisites', body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium. No prior experience is required. Bring your own laptop and a willingness to learn.' },
@@ -257,6 +258,7 @@ const INDIVIDUAL_EVENTS = [
       </>
     ),
     venue: 'Hi-Tech Hall 2', day: 'Day 1', time: '9 AM Onwards', accent: '#8504fc', accentLight: '#faf5ff',
+    fee: 200,
     rules: [
       { title: '1. Solo Event', body: 'This is a solo event.' },
       { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
@@ -290,6 +292,7 @@ const INDIVIDUAL_EVENTS = [
       </>
     ),
     venue: 'MBA Seminar Hall 1', day: 'Both Days', time: '9 AM Onwards', accent: '#c50637', accentLight: '#fff1f2',
+    fee: 200,
     rules: [
       { title: '1. Solo Event', body: 'This is an individual event open to all interested participants.' },
       { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of registration.' },
@@ -459,8 +462,8 @@ const EventDetailPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="font-black uppercase leading-[0.9] tracking-tighter mb-8"
-            style={{ 
-              fontSize: 'clamp(40px, 8vw, 85px)', 
+            style={{
+              fontSize: 'clamp(40px, 8vw, 85px)',
               color: '#0a0a0a',
               letterSpacing: '-0.03em'
             }}
@@ -484,7 +487,7 @@ const EventDetailPage = () => {
                 key={i}
                 className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl shadow-sm border border-black/5 hover:border-black/10 transition-colors"
               >
-                <div 
+                <div
                   className="flex items-center justify-center w-8 h-8 rounded-lg"
                   style={{ background: accentLight, color: accent }}
                 >
@@ -497,9 +500,9 @@ const EventDetailPage = () => {
             ))}
           </motion.div>
         </div>
-        
+
         {/* Animated Divider */}
-        <motion.div 
+        <motion.div
           initial={{ scaleX: 0, opacity: 0 }}
           animate={{ scaleX: 1, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.4, ease: 'easeInOut' }}

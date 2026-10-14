@@ -224,7 +224,7 @@ const INDIVIDUAL_EVENTS = [
         </div>
       </>
     ),
-    venue: 'MBA Seminar Hall 2', day: 'Both Days', time: '11:30 AM Onwards', accent: '#f43b38', accentLight: '#fef2f2',
+    venue: 'MBA Seminar Hall 2', day: 'Both Days', time: '11:30 AM Onwards', accent: '#f43b38', accentLight: '#fef2f2', fee: 500,
     rules: [
       { title: '1. Attendance', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Full attendance on both days is mandatory. Partial attendance will result in disqualification from certification.' },
       { title: '2. Prerequisites', body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium. No prior experience is required. Bring your own laptop and a willingness to learn.' },
@@ -261,7 +261,7 @@ const INDIVIDUAL_EVENTS = [
         </div>
       </>
     ),
-    venue: 'Hi-Tech Hall 2', day: 'Day 1', time: '9 AM Onwards', accent: '#8504fc', accentLight: '#faf5ff',
+    venue: 'Hi-Tech Hall 2', day: 'Day 1', time: '9 AM Onwards', accent: '#8504fc', accentLight: '#faf5ff', fee: 200,
     rules: [
       { title: '1. Solo Event', body: 'This is a solo event.' },
       { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
@@ -293,7 +293,7 @@ const INDIVIDUAL_EVENTS = [
         </div>
       </>
     ),
-    venue: 'MBA Seminar Hall 1', day: 'Both Days', time: '9 AM Onwards', accent: '#c50637', accentLight: '#fff1f2',
+    venue: 'MBA Seminar Hall 1', day: 'Both Days', time: '9 AM Onwards', accent: '#c50637', accentLight: '#fff1f2', fee: 200,
     rules: [
       { title: '1. Solo Event', body: 'This is an individual event open to all interested participants.' },
       { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of registration.' },
@@ -1311,6 +1311,14 @@ const LearnMoreModal = ({ evt, isGroup, onClose, onRegister }) => {
                 <h2 className="text-2xl font-black uppercase tracking-tighter text-black leading-none">
                   {evt.name}
                 </h2>
+                {evt.fee && (
+                  <span
+                    className="inline-block mt-2 text-[11px] font-black uppercase tracking-widest px-3 py-1 rounded-full"
+                    style={{ background: evt.accentLight, color: evt.accent, border: `1.5px solid ${evt.accent}` }}
+                  >
+                    ₹{evt.fee} Entry Fee
+                  </span>
+                )}
               </div>
             </div>
             <button
