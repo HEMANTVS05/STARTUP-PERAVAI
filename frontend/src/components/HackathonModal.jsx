@@ -54,10 +54,17 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
   const [error, setError] = useState('');
 
   // Initialize hasPaid from backend state
-  const isAlreadyPaid = Array.isArray(registration?.paidEvents) && registration.paidEvents.includes('hackathon');
+  const isAlreadyPaid = (Array.isArray(registration?.paidEvents) && registration.paidEvents.includes('hackathon')) ||
+    (Array.isArray(registration?.registeredEvents) && registration.registeredEvents.includes('hackathon'));
   const [hasPaid, setHasPaid] = useState(isAlreadyPaid);
   // 'info' | 'payment' | 'paid-success' — then hasPaid switches to choice
   const [paymentStep, setPaymentStep] = useState(isAlreadyPaid ? 'paid-success' : 'info');
+
+  useEffect(() => {
+    if (isAlreadyPaid) {
+      setHasPaid(true);
+    }
+  }, [isAlreadyPaid]);
 
   // Loaded problem statements
   const [problemStatements, setProblemStatements] = useState([]);
