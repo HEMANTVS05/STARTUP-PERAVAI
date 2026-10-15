@@ -626,7 +626,7 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
               </div>
               <div className="flex justify-center pt-2">
                 <RazorpayCheckoutButton
-                  amount={100}
+                  amount={150000}
                   currency="INR"
                   prefillName={registration?.name || user?.displayName || ''}
                   prefillEmail={registration?.email || user?.email || ''}
