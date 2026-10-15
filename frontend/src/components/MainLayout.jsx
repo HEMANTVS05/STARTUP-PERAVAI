@@ -17,6 +17,7 @@ import VisitorDetailsModal from './VisitorDetailsModal';
 import { fetchUserTeamData } from '../services/hackathonService';
 import PartnerModal from './PartnerModal';
 import GroupEventModal from './GroupEventModal';
+import EventDateShowcase from './EventDateShowcase';
 
 import speaker1 from '../assets/speaker1.png';
 import speaker2 from '../assets/speaker2.jpg';
@@ -1356,12 +1357,15 @@ const MainLayout = () => {
             />
           </div>
 
+          {/* ── EVENT DATES SHOWCASE (OCT 30 & 31) ── */}
+          <EventDateShowcase />
+
           {/* ── FREE Visitor Pass Hero Banner ── */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 1.25, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-10 md:mt-14 w-full"
+            transition={{ duration: 0.7, delay: 1.35, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-4 md:mt-5 w-full"
           >
             <div className="relative border-4 border-black bg-[#1f2022] shadow-[6px_6px_0px_rgba(168,13,17,1)] flex items-center gap-6 md:gap-10 px-6 md:px-10 py-5 md:py-6 overflow-hidden">
 
