@@ -109,6 +109,7 @@ const GroupEventModal = ({ isOpen, onClose, event, eventId: propEventId, eventNa
             setHasPaid(true);
             setView('choice');
           } else {
+            setHasPaid(false);
             setView('choice');
           }
         }
@@ -122,7 +123,19 @@ const GroupEventModal = ({ isOpen, onClose, event, eventId: propEventId, eventNa
 
     init();
     return () => { if (unsubscribe) unsubscribe(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, user, eventId]);
+
+  // ── Keep hasPaid in sync with live registration data ───────────────────────
+  // This fires when AuthContext's onSnapshot listener updates registration
+  // (e.g. after payment completes and refreshRegistration() resolves).
+  useEffect(() => {
+    if (!registration || !eventId) return;
+    const paidEvents = registration?.paidEvents || [];
+    if (paidEvents.includes(eventId)) {
+      setHasPaid(true);
+    }
+  }, [registration, eventId]);
 
   // ── Create team ───────────────────────────────────────────────────────────
   const handleCreateTeam = async (e) => {
@@ -382,15 +395,18 @@ const GroupEventModal = ({ isOpen, onClose, event, eventId: propEventId, eventNa
                   prefillContact={registration?.phone || ''}
                   onSuccess={async () => {
                     try {
-                      // Save payment immediately to backend so they don't lose it if they close the modal
-                      const currentPaid = registration?.paidEvents || [];
-                      if (!currentPaid.includes(eventId)) {
+                      // Fetch fresh registration data to avoid stale closure bug
+                      // where paidEvents might be outdated from when the component rendered.
+                      const freshRes = await api.get('/api/registrations');
+                      const freshPaid = freshRes.data?.paidEvents || [];
+                      if (!freshPaid.includes(eventId)) {
                         await api.patch('/api/registrations', {
-                          paidEvents: [...currentPaid, eventId],
+                          paidEvents: [...freshPaid, eventId],
                           paymentStatus: 'paid',
                         });
-                        await refreshRegistration();
                       }
+                      // Refresh context so rest of app reflects paid status immediately
+                      await refreshRegistration();
                     } catch (err) {
                       console.error("Failed to record payment in profile:", err);
                     }
@@ -398,7 +414,7 @@ const GroupEventModal = ({ isOpen, onClose, event, eventId: propEventId, eventNa
                     confetti({ particleCount: 120, spread: 70, origin: { x: 1, y: 0.6 }, colors: ['#a80d11', '#d82221', '#0b2140', '#f59e0b', '#fff'] });
                     setTimeout(() => confetti({ particleCount: 80, spread: 100, origin: { x: 0.5, y: 0.4 }, colors: ['#a80d11', '#fbbf24', '#fff', '#0f50e3'] }), 250);
                     setPaymentStep('paid-success');
-                    setHasPaid(true); 
+                    setHasPaid(true);
                   }}
                 />
               </div>
