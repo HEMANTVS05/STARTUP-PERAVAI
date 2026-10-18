@@ -108,7 +108,7 @@ const GROUP_EVENTS = [
 
     coverImage: rupeesPoster,
     posters: [rupeesRulesPoster],
-    fee: 600,
+    fee: 1,
   },
   {
     id: 'pitch-perfect', name: 'Pitch Perfect', limit: '1–5 Members',
