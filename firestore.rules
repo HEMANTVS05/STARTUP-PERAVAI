@@ -150,6 +150,12 @@ service cloud.firestore {
       allow write: if false; // Backend only
     }
 
+    // ── Social Impact Awards Nominations ──────────────────────────────────────
+    match /award_show/{docId} {
+      allow create: if true;
+      allow read, update, delete: if hasAdminClaim() || exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
     // ── DEFAULT: deny everything not explicitly listed ────────────────────────
     match /{document=**} {
       allow read, write: if false;

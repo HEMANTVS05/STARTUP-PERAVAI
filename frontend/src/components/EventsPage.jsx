@@ -143,7 +143,7 @@ const GROUP_EVENTS = [
     ],
     coverImage: pitchPoster, // Placeholder
     posters: [pitchRulesPoster], // Placeholder
-    fee: 500,
+    fee: 1,
   },
   {
     id: 'scale-up-studio', name: 'ScaleUp Studio', limit: 'Limit 3',

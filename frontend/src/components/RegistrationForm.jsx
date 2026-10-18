@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight, Loader2, User, Mail, Phone, GraduationCap,
   Building2, MapPin, Briefcase, ChevronLeft, CreditCard,
-  Lock, CheckCircle2, Shield, Zap, Crown, Ticket, X
+  Lock, CheckCircle2, Shield, Zap, Crown, Ticket, X, Users
 } from 'lucide-react';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
@@ -210,7 +210,7 @@ const PaymentGateway = ({ passType, setPassType, registrationData, onSuccess, on
 const RegistrationForm = ({ passType, onSuccess, isPaymentOnly = false, onClose }) => {
   const { user, refreshRegistration } = useAuth();
   const [step, setStep] = useState(isPaymentOnly ? 'payment' : 'role'); // 'role' | 'details' | 'payment'
-  const [role, setRole] = useState(''); // 'student' | 'startup'
+  const [role, setRole] = useState(''); // 'student' | 'startup' | 'others'
   const [error, setError] = useState('');
   const [localPass, setLocalPass] = useState(passType || 'Visitor\'s Pass');
   const [savingProfile, setSavingProfile] = useState(false);
@@ -235,17 +235,31 @@ const RegistrationForm = ({ passType, onSuccess, isPaymentOnly = false, onClose 
     location: '',
   });
 
+  // Others fields
+  const [others, setOthers] = useState({
+    firstName: '', lastName: '',
+    email: user?.email || '',
+    phone: user?.phoneNumber || '',
+    location: '',
+    occupation: '',
+  });
+
   const setS = (field) => (e) => setStudent(f => ({ ...f, [field]: e.target.value }));
   const setSt = (field) => (e) => setStartup(f => ({ ...f, [field]: e.target.value }));
+  const setOt = (field) => (e) => setOthers(f => ({ ...f, [field]: e.target.value }));
 
   const validateDetails = () => {
     if (role === 'student') {
       const { firstName, lastName, email, phone, location, college, year, department } = student;
       if (!firstName || !lastName || !email || !phone || !location || !college || !year || !department)
         return 'Please fill in all required fields.';
-    } else {
+    } else if (role === 'startup') {
       const { firstName, lastName, email, phone, companyName, location } = startup;
       if (!firstName || !lastName || !email || !phone || !companyName || !location)
+        return 'Please fill in all required fields.';
+    } else if (role === 'others') {
+      const { firstName, lastName, email, phone, location, occupation } = others;
+      if (!firstName || !lastName || !email || !phone || !location || !occupation)
         return 'Please fill in all required fields.';
     }
     return '';
@@ -266,15 +280,28 @@ const RegistrationForm = ({ passType, onSuccess, isPaymentOnly = false, onClose 
         department: student.department,
       };
     }
+    if (role === 'startup') {
+      return {
+        role: 'startup',
+        name: `${startup.firstName} ${startup.lastName}`,
+        firstName: startup.firstName,
+        lastName: startup.lastName,
+        email: startup.email,
+        phone: startup.phone,
+        companyName: startup.companyName,
+        location: startup.location,
+      };
+    }
+    // others
     return {
-      role: 'startup',
-      name: `${startup.firstName} ${startup.lastName}`,
-      firstName: startup.firstName,
-      lastName: startup.lastName,
-      email: startup.email,
-      phone: startup.phone,
-      companyName: startup.companyName,
-      location: startup.location,
+      role: 'others',
+      name: `${others.firstName} ${others.lastName}`,
+      firstName: others.firstName,
+      lastName: others.lastName,
+      email: others.email,
+      phone: others.phone,
+      location: others.location,
+      occupation: others.occupation,
     };
   };
 
@@ -356,14 +383,15 @@ const RegistrationForm = ({ passType, onSuccess, isPaymentOnly = false, onClose 
                 <h2 className="text-3xl font-black uppercase tracking-tight border-b-4 border-black pb-5 mb-6">
                   Who are you?
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Row 1: Student + Startup Owner — same size as shown */}
+                <div className="grid grid-cols-2 gap-4">
                   {/* Student card */}
                   <button onClick={() => setRole('student')}
-                    className={`p-6 border-4 text-left transition-all duration-150 group
+                    className={`p-6 border-4 text-left transition-all duration-150
                       ${role === 'student'
                         ? 'border-black bg-black text-white shadow-[4px_4px_0px_rgba(0,0,0,0.3)]'
                         : 'border-black bg-white hover:bg-gray-50 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1'}`}>
-                    <GraduationCap className={`w-8 h-8 mb-3 ${role === 'student' ? 'text-white' : 'text-black'}`} />
+                    <GraduationCap className={`w-8 h-8 mb-4 ${role === 'student' ? 'text-white' : 'text-black'}`} />
                     <p className="font-black uppercase tracking-tight text-lg">Student</p>
                     <p className={`font-bold text-xs mt-1 uppercase tracking-widest ${role === 'student' ? 'text-white/70' : 'text-gray-400'}`}>
                       College / University
@@ -371,14 +399,30 @@ const RegistrationForm = ({ passType, onSuccess, isPaymentOnly = false, onClose 
                   </button>
                   {/* Startup owner card */}
                   <button onClick={() => setRole('startup')}
-                    className={`p-6 border-4 text-left transition-all duration-150 group
+                    className={`p-6 border-4 text-left transition-all duration-150
                       ${role === 'startup'
                         ? 'border-black bg-black text-white shadow-[4px_4px_0px_rgba(0,0,0,0.3)]'
                         : 'border-black bg-white hover:bg-gray-50 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1'}`}>
-                    <Briefcase className={`w-8 h-8 mb-3 ${role === 'startup' ? 'text-white' : 'text-black'}`} />
+                    <Briefcase className={`w-8 h-8 mb-4 ${role === 'startup' ? 'text-white' : 'text-black'}`} />
                     <p className="font-black uppercase tracking-tight text-lg">Startup Owner</p>
                     <p className={`font-bold text-xs mt-1 uppercase tracking-widest ${role === 'startup' ? 'text-white/70' : 'text-gray-400'}`}>
                       Founder / Co-founder
+                    </p>
+                  </button>
+                </div>
+
+                {/* Row 2: Others — centred, same card width as each card above */}
+                <div className="flex justify-center">
+                  <button onClick={() => setRole('others')}
+                    style={{ width: 'calc(50% - 8px)' }}
+                    className={`p-6 border-4 text-left transition-all duration-150
+                      ${role === 'others'
+                        ? 'border-black bg-black text-white shadow-[4px_4px_0px_rgba(0,0,0,0.3)]'
+                        : 'border-black bg-white hover:bg-gray-50 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1'}`}>
+                    <Users className={`w-8 h-8 mb-4 ${role === 'others' ? 'text-white' : 'text-black'}`} />
+                    <p className="font-black uppercase tracking-tight text-lg">Others</p>
+                    <p className={`font-bold text-xs mt-1 uppercase tracking-widest ${role === 'others' ? 'text-white/70' : 'text-gray-400'}`}>
+                      PROFESSIONAL / FREELANCER
                     </p>
                   </button>
                 </div>
@@ -386,7 +430,7 @@ const RegistrationForm = ({ passType, onSuccess, isPaymentOnly = false, onClose 
                 {role && (
                   <button onClick={() => { setError(''); setStep('details'); }}
                     className="w-full flex items-center justify-center gap-3 py-4 border-4 border-black font-black uppercase tracking-[0.15em] text-sm bg-[#1f2022] text-white shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
-                    Continue as {role === 'student' ? 'Student' : 'Startup Owner'} <ArrowRight className="w-5 h-5" />
+                    Continue as {role === 'student' ? 'Student' : role === 'startup' ? 'Startup Owner' : 'Others'} <ArrowRight className="w-5 h-5" />
                   </button>
                 )}
               </motion.div>
@@ -407,21 +451,26 @@ const RegistrationForm = ({ passType, onSuccess, isPaymentOnly = false, onClose 
                 {/* Common: First / Last name */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Field id="reg-first" label="First Name" icon={User} type="text"
-                    placeholder="Your Name" value={role === 'student' ? student.firstName : startup.firstName}
-                    onChange={role === 'student' ? setS('firstName') : setSt('firstName')} required />
+                    placeholder="Your Name"
+                    value={role === 'student' ? student.firstName : role === 'startup' ? startup.firstName : others.firstName}
+                    onChange={role === 'student' ? setS('firstName') : role === 'startup' ? setSt('firstName') : setOt('firstName')} required />
                   <Field id="reg-last" label="Last Name" icon={User} type="text"
-                    placeholder="Your Last Name" value={role === 'student' ? student.lastName : startup.lastName}
-                    onChange={role === 'student' ? setS('lastName') : setSt('lastName')} required />
+                    placeholder="Your Last Name"
+                    value={role === 'student' ? student.lastName : role === 'startup' ? startup.lastName : others.lastName}
+                    onChange={role === 'student' ? setS('lastName') : role === 'startup' ? setSt('lastName') : setOt('lastName')} required />
                 </div>
                 <Field id="reg-email" label="Email" icon={Mail} type="email"
-                  placeholder="you@example.com" value={role === 'student' ? student.email : startup.email}
-                  onChange={role === 'student' ? setS('email') : setSt('email')} required />
+                  placeholder="you@example.com"
+                  value={role === 'student' ? student.email : role === 'startup' ? startup.email : others.email}
+                  onChange={role === 'student' ? setS('email') : role === 'startup' ? setSt('email') : setOt('email')} required />
                 <Field id="reg-phone" label="Contact Number" icon={Phone} type="tel"
-                  placeholder="Your Contact Number" value={role === 'student' ? student.phone : startup.phone}
-                  onChange={role === 'student' ? setS('phone') : setSt('phone')} required />
+                  placeholder="Your Contact Number"
+                  value={role === 'student' ? student.phone : role === 'startup' ? startup.phone : others.phone}
+                  onChange={role === 'student' ? setS('phone') : role === 'startup' ? setSt('phone') : setOt('phone')} required />
                 <Field id="reg-location" label="Location (City)" icon={MapPin} type="text"
-                  placeholder="e.g. Chennai" value={role === 'student' ? student.location : startup.location}
-                  onChange={role === 'student' ? setS('location') : setSt('location')} required />
+                  placeholder="e.g. Chennai"
+                  value={role === 'student' ? student.location : role === 'startup' ? startup.location : others.location}
+                  onChange={role === 'student' ? setS('location') : role === 'startup' ? setSt('location') : setOt('location')} required />
 
                 {/* Student-specific */}
                 {role === 'student' && (
@@ -448,6 +497,13 @@ const RegistrationForm = ({ passType, onSuccess, isPaymentOnly = false, onClose 
                   <Field id="reg-company" label="Startup Company Name" icon={Briefcase} type="text"
                     placeholder="e.g. TechNova Solutions"
                     value={startup.companyName} onChange={setSt('companyName')} required />
+                )}
+
+                {/* Others-specific */}
+                {role === 'others' && (
+                  <Field id="reg-occupation" label="Occupation / Designation" icon={Users} type="text"
+                    placeholder="e.g. Software Engineer, Investor, Faculty…"
+                    value={others.occupation} onChange={setOt('occupation')} required />
                 )}
 
                 <ErrorMsg msg={error} />

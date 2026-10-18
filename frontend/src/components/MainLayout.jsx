@@ -407,16 +407,16 @@ const investors = [
     linkedin: 'https://www.linkedin.com/in/nivethamuralidharan/?isSelfProfile=false'
   },
   {
-    name: 'Investor 2',
-    company: 'Managing Director of Matrix Partners India',
+    name: 'Kirithiga Sundaramoorthy',
+    company: ' Manager at CUBE84',
     photo: null,
-    linkedin: 'https://www.linkedin.com/'
+    linkedin: 'https://www.linkedin.com/in/kirithigasundaramoorthy/?isSelfProfile=false'
   },
   {
-    name: 'Investor 3',
-    company: 'General Partner of Accel Partners',
+    name: 'NAS Suresh krishna',
+    company: 'Founder & Studio Lead at BuildWithMe.Studio',
     photo: null,
-    linkedin: 'https://www.linkedin.com/'
+    linkedin: 'https://www.linkedin.com/in/nas-suresh-krishna-02920417b/?isSelfProfile=false'
   },
   {
     name: 'Investor 4',

@@ -1078,14 +1078,6 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
                   </span>
                   <div className="flex items-center gap-3">
                     <h4 className="text-3xl font-black uppercase tracking-tight">{activeTeamData.team.teamName}</h4>
-                    {activeTeamData.team.leaderUid === user?.uid && (
-                      <button
-                        onClick={handleEditClick}
-                        className="px-3 py-1 text-xs border-2 border-black bg-white hover:bg-black hover:text-white transition-colors font-black uppercase tracking-widest shadow-[2px_2px_0px_rgba(0,0,0,1)]"
-                      >
-                        Edit Team
-                      </button>
-                    )}
                   </div>
                 </div>
                 <div className="text-right">
