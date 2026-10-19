@@ -109,6 +109,30 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
       setError('');
 
       try {
+        // ── CRITICAL FIX: Always fetch FRESH registration data from the server.
+        // After a Razorpay redirect the AuthContext's `registration` object can be
+        // stale (fetched before Firestore wrote the payment record).
+        // This caused users to see "Continue to Payment" after successfully paying.
+        if (user) {
+          try {
+            const freshRes = await api.get('/api/registrations');
+            const freshPaid = freshRes.data?.paidEvents || [];
+            const freshRegistered = freshRes.data?.registeredEvents || [];
+            const freshlyPaid = freshPaid.includes('hackathon') || freshRegistered.includes('hackathon');
+            if (freshlyPaid) {
+              setHasPaid(true);
+              setPaymentStep('paid-success');
+            }
+            // Sync context if fresh data is newer
+            const contextPaid = registration?.paidEvents || [];
+            if (freshPaid.length > contextPaid.length) {
+              await refreshRegistration();
+            }
+          } catch (fetchErr) {
+            console.warn('HackathonModal: fresh registration fetch failed, falling back to context', fetchErr);
+          }
+        }
+
         // Load problem statements
         const psList = await fetchProblemStatements();
         setProblemStatements(psList);

@@ -61,6 +61,28 @@ async function syncIndividualEvent(uid, userData) {
     tasks.push(db.collection(ART_COLLECTION).doc(uid).set(artDoc, { merge: true }));
   }
 
+  // Rise Her check
+  if (allEvents.has('riseher') || allEvents.has('rise-her')) {
+    const riseRef = db.collection('riseher').doc(uid);
+    const risePromise = (async () => {
+      const existing = await riseRef.get();
+      const existingData = existing.exists ? existing.data() : {};
+      const riseDoc = {
+        ...baseInfo,
+        eventId: 'riseher',
+        eventName: 'Rise Her',
+        submitterEmail: userData.email || existingData.submitterEmail || '',
+        startupName: existingData.startupName || 'Pending Idea Submission',
+        ideaBrief: existingData.ideaBrief || 'Pending Idea Submission',
+        pitchDeckUrl: existingData.pitchDeckUrl || '',
+        submittedAt: existingData.submittedAt || userData.registeredAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      return riseRef.set(riseDoc, { merge: true });
+    })();
+    tasks.push(risePromise);
+  }
+
   if (tasks.length > 0) {
     await Promise.all(tasks);
   }
@@ -84,6 +106,7 @@ async function syncAllExistingIndividualEvents() {
   const snap = await db.collection('registrations').get();
   let bootcampCount = 0;
   let artCount = 0;
+  let riseherCount = 0;
 
   for (const doc of snap.docs) {
     const data = doc.data();
@@ -99,11 +122,16 @@ async function syncAllExistingIndividualEvents() {
       await syncIndividualEvent(doc.id, data);
       artCount++;
     }
+    if (all.has('riseher') || all.has('rise-her')) {
+      await syncIndividualEvent(doc.id, data);
+      riseherCount++;
+    }
   }
 
   console.log(`Synced ${bootcampCount} bootcamp registrations to /${BOOTCAMP_COLLECTION}`);
   console.log(`Synced ${artCount} registrations to /${ART_COLLECTION}`);
-  return { bootcampCount, artCount };
+  console.log(`Synced ${riseherCount} registrations to /riseher`);
+  return { bootcampCount, artCount, riseherCount };
 }
 
 module.exports = {

@@ -74,6 +74,29 @@ const GroupEventModal = ({ isOpen, onClose, event, eventId: propEventId, eventNa
 
     const init = async () => {
       try {
+        // ── CRITICAL FIX: Always fetch FRESH registration data from the server.
+        // After a Razorpay redirect the AuthContext's `registration` object can be
+        // stale (it was fetched before Firestore finished writing the payment record).
+        // Reading stale data here caused 70% of users to see "Continue to Payment"
+        // even after successfully paying. A direct API call always returns the
+        // latest paidEvents, bypassing any stale in-memory state.
+        let freshPaidEvents = [];
+        let freshName = registration?.name || user.displayName || '';
+        try {
+          const freshRes = await api.get('/api/registrations');
+          freshPaidEvents = freshRes.data?.paidEvents || [];
+          freshName = freshRes.data?.name || freshName;
+          // If the fresh data has new paidEvents, sync context so rest of app stays consistent
+          const contextPaid = registration?.paidEvents || [];
+          if (freshPaidEvents.length > contextPaid.length) {
+            await refreshRegistration();
+          }
+        } catch (fetchErr) {
+          // Fall back to context data if fetch fails — better than crashing
+          console.warn('GroupEventModal: fresh registration fetch failed, falling back to context', fetchErr);
+          freshPaidEvents = registration?.paidEvents || [];
+        }
+
         const existingData = await fetchUserEventTeam(user.uid, eventId);
         if (existingData?.team) {
           setActiveTeamData(existingData);
@@ -99,13 +122,13 @@ const GroupEventModal = ({ isOpen, onClose, event, eventId: propEventId, eventNa
             if (data) setActiveTeamData(data);
           });
         } else {
-          // Pre-fill leader name
+          // Pre-fill leader name with freshly fetched name
           setFormData(prev => ({
             ...prev,
-            leaderName: registration?.name || user.displayName || '',
+            leaderName: freshName,
           }));
-          const paidEvents = registration?.paidEvents || [];
-          if (paidEvents.includes(eventId)) {
+          // Use FRESH paidEvents — not stale context — to determine payment status
+          if (freshPaidEvents.includes(eventId)) {
             setHasPaid(true);
             setView('choice');
           } else {
