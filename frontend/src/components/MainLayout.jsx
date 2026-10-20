@@ -31,6 +31,18 @@ import speaker9 from '../assets/speaker9.jpg';
 import speaker10 from '../assets/speaker10.png';
 
 import investor1 from '../assets/i1.jpg';
+import investor2 from '../assets/i2.png';
+import investor3 from '../assets/i3.png';
+import investor4 from '../assets/i4.png';
+import investor5 from '../assets/i5.png';
+import investor6 from '../assets/i6.png';
+import investor7 from '../assets/i7.png';
+import investor8 from '../assets/i8.png';
+import investor9 from '../assets/i9.png';
+import investor10 from '../assets/i10.png';
+import investor11 from '../assets/i11.png';
+import investor12 from '../assets/i12.png';
+import investor13 from '../assets/i13.png';
 
 import eventBrochure from '../assets/EVENT_BROCHURE.pdf';
 import landingMascot from '../assets/landing_page_mascot.png';
@@ -402,33 +414,81 @@ const speakers = [
 const investors = [
   {
     name: 'Nivetha Muralidharan',
-    company: 'D2C Amazon PPC Strategist',
+    company: 'PPC Strategist of D2C Amazon',
     photo: investor1,
     linkedin: 'https://www.linkedin.com/in/nivethamuralidharan/?isSelfProfile=false'
   },
   {
     name: 'Kirithiga Sundaramoorthy',
-    company: ' Manager at CUBE84',
-    photo: null,
+    company: ' Manager of CUBE84',
+    photo: investor2,
     linkedin: 'https://www.linkedin.com/in/kirithigasundaramoorthy/?isSelfProfile=false'
   },
   {
     name: 'NAS Suresh krishna',
-    company: 'Founder & Studio Lead at BuildWithMe.Studio',
-    photo: null,
+    company: 'Founder & Studio Lead of BuildWithMe.Studio',
+    photo: investor3,
     linkedin: 'https://www.linkedin.com/in/nas-suresh-krishna-02920417b/?isSelfProfile=false'
   },
   {
-    name: 'Investor 4',
-    company: 'Founder of 100X.VC',
-    photo: null,
-    linkedin: 'https://www.linkedin.com/'
+    name: 'Alok Saraogi',
+    company: 'SVP & Head Marketing of TVS Automobile Solutions',
+    photo: investor4,
+    linkedin: 'https://www.linkedin.com/in/saraogialok/?isSelfProfile=false'
   },
   {
-    name: 'Investor 5',
+    name: 'Kaushik Srikanth',
+    company: 'Senior Associate - Investments of The Chennai Angels',
+    photo: investor5,
+    linkedin: 'https://www.linkedin.com/in/kaus87/?isSelfProfile=false'
+  },
+  {
+    name: 'Srikanth Meenakshi',
+    company: 'Co-founder of PrimeInvestor',
+    photo: investor6,
+    linkedin: 'https://www.linkedin.com/in/srikanthmeenakshi/?isSelfProfile=false'
+  },
+  {
+    name: 'Sathish Sampath',
+    company: 'Software Engineer of Newage Software & Solutions',
+    photo: investor7,
+    linkedin: 'https://www.linkedin.com/in/sathishsmpth/?isSelfProfile=false'
+  },
+  {
+    name: 'Senthilkumar Rajendran',
     company: 'Principal of Kalaari Capital',
-    photo: null,
-    linkedin: 'https://www.linkedin.com/'
+    photo: investor8,
+    linkedin: 'https://www.linkedin.com/in/senthilkumar-rajendran-13aa585/?isSelfProfile=false'
+  },
+  {
+    name: 'Raghavender R',
+    company: 'Partner of BPCA One',
+    photo: investor9,
+    linkedin: 'https://www.linkedin.com/in/raghavender-r/?isSelfProfile=false'
+  },
+  {
+    name: 'Amrish Krishnan',
+    company: 'Mission Director of MyProBuddy Ventures',
+    photo: investor10,
+    linkedin: 'https://www.linkedin.com/in/amrish-krishnan/?isSelfProfile=false'
+  },
+  {
+    name: 'Gowtham Sarvesh',
+    company: 'Partner & COO of Keiretsu Chennai & Singapore',
+    photo: investor11,
+    linkedin: 'https://www.linkedin.com/in/sarveshgowtham/?isSelfProfile=false'
+  },
+  {
+    name: 'Sharon Sabina Natarajan',
+    company: 'Founder of Astrea Beauty',
+    photo: investor12,
+    linkedin: 'https://www.linkedin.com/in/sharon-sabina-natarajan-348ab126/?isSelfProfile=false'
+  },
+  {
+    name: 'Rajiv Ramakrishnan',
+    company: 'Director of Rajiv\'s School of Music and Dance',
+    photo: investor13,
+    linkedin: 'https://www.linkedin.com/in/rajiv-ramakrishnan/?isSelfProfile=false'
   },
 ];
 
