@@ -31,22 +31,21 @@ const { syncIndividualEvent } = require('./individualEventService');
 async function upsertRegistration(uid, data) {
   const ref = db.collection(COLLECTION).doc(uid);
 
-  // Check for existing registration
   const existing = await ref.get();
-  if (existing.exists) {
-    throw Object.assign(new Error('Registration already exists for this user.'), { status: 409 });
-  }
+  const existingData = existing.exists ? existing.data() : {};
 
   const payload = {
     checkedInDay1: false,
     checkedInDay2: false,
+    ...existingData,
     ...data,
     uid,
-    registeredAt: new Date().toISOString(),
-    status: 'pending',
+    registeredAt: existingData.registeredAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: existingData.status || data.status || 'pending',
   };
 
-  await ref.set(payload);
+  await ref.set(payload, { merge: true });
   await syncIndividualEvent(uid, payload).catch(err => console.error('Failed to sync individual event:', err));
   return { id: uid, ...payload };
 }

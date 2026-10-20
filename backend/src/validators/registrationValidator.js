@@ -7,9 +7,6 @@ function validateRegistration(body) {
   const errors = [];
   const { role, name, email, phone, location } = body;
 
-  if (!['student', 'startup'].includes(role)) {
-    errors.push('role must be "student" or "startup".');
-  }
   if (!name || typeof name !== 'string' || name.trim().length < 2) {
     errors.push('name is required (min 2 characters).');
   }
@@ -25,7 +22,7 @@ function validateRegistration(body) {
 
   if (role === 'student') {
     if (!body.college?.trim()) errors.push('college is required for students.');
-    if (!body.year?.trim())    errors.push('year is required for students.');
+    if (!body.year?.trim()) errors.push('year is required for students.');
     if (!body.department?.trim()) errors.push('department is required for students.');
   }
 

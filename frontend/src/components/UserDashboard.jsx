@@ -194,10 +194,12 @@ export const PassCard = ({ registration, user, passType, eventName, qrSuffix, on
             {[
               registration.role === 'startup'
                 ? { Icon: Briefcase, label: 'Company', value: registration.companyName }
-                : { Icon: Building2, label: 'Institution', value: registration.college },
-              registration.role === 'startup'
-                ? { Icon: MapPin, label: 'City', value: registration.location }
-                : { Icon: GraduationCap, label: 'Academics', value: (registration.year && registration.department) ? `${registration.year} · ${registration.department}` : '' },
+                : registration.role === 'others'
+                  ? { Icon: Briefcase, label: 'Occupation', value: registration.occupation }
+                  : { Icon: Building2, label: 'Institution', value: registration.college },
+              registration.role === 'student'
+                ? { Icon: GraduationCap, label: 'Academics', value: (registration.year && registration.department) ? `${registration.year} · ${registration.department}` : '' }
+                : { Icon: MapPin, label: 'City', value: registration.location },
             ].map(({ Icon, label, value }, i) => {
               if (!value || typeof value !== 'string' || value.includes('undefined') || value.trim() === '') return null;
               return (
