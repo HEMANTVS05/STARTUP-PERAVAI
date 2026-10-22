@@ -224,7 +224,7 @@ const INDIVIDUAL_EVENTS = [
         </div>
       </>
     ),
-    venue: 'MBA Seminar Hall 2', day: 'Both Days', time: '11:30 AM Onwards', accent: '#f43b38', accentLight: '#fef2f2', fee: 500,
+    venue: 'MBA Seminar Hall 2', day: 'Both Days', time: '11:30 AM Onwards', accent: '#f43b38', accentLight: '#fef2f2', fee: 300,
     rules: [
       { title: '1. Attendance', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Full attendance on both days is mandatory. Partial attendance will result in disqualification from certification.' },
       { title: '2. Prerequisites', body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium. No prior experience is required. Bring your own laptop and a willingness to learn.' },
