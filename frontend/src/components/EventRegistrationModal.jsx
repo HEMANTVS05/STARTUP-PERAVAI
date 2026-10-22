@@ -540,7 +540,7 @@ const EventRegistrationModal = ({ event, onClose }) => {
       case 'phoenix-protocol': return 500;
       case 'junk-to-genius': return 500;
       case 'illogical-marketing': return 200;
-      case 'design-thinking-bootcamp': return 300;
+      case 'design-thinking-bootcamp': return 1;
       case 'masterclass': return 100;
       case 'riseher': return 200;
       default: return 0;
