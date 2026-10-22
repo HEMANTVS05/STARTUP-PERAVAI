@@ -1417,7 +1417,7 @@ const MainLayout = () => {
             />
           </div>
 
-          {/* ── EVENT DATES SHOWCASE (OCT 30 & 31) ── */}
+          {/* ── EVENT DATES SHOWCASE (NOV 5 & 6) ── */}
           <EventDateShowcase />
 
           {/* ── FREE Visitor Pass Hero Banner ── */}
@@ -2028,7 +2028,7 @@ const MainLayout = () => {
         >
           {[...Array(2)].map((_, ri) => (
             <span key={ri} className="flex gap-12 shrink-0">
-              {['Easwari Startup Peravai', '\u2605 Oct 30 & 31', 'Easwari Engineering College', '\u2605 8000+ Participants', 'Pitch \u00b7 Network \u00b7 Grow', '\u2605 Register Now', "Tamil Nadu's Biggest Student Startup Summit", '\u2605 Limited Passes'].map((t, i) => (
+              {['Easwari Startup Peravai', '\u2605 Nov 5 & 6', 'Easwari Engineering College', '\u2605 8000+ Participants', 'Pitch \u00b7 Network \u00b7 Grow', '\u2605 Register Now', "Tamil Nadu's Biggest Student Startup Summit", '\u2605 Limited Passes'].map((t, i) => (
                 <span key={i} className="font-black uppercase tracking-[0.25em] text-sm text-white/80">{t}</span>
               ))}
             </span>

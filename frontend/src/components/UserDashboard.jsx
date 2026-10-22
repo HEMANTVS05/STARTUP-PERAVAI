@@ -288,7 +288,7 @@ export const PassCard = ({ registration, user, passType, eventName, qrSuffix, on
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: t.entryBorder, paddingTop: '14px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Calendar style={{ width: '13px', height: '13px', color: t.subText }} />
-            <span style={{ fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.12em', color: t.footerText }}>Oct 30 & 31, 2026</span>
+            <span style={{ fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.12em', color: t.footerText }}>Nov 5 & 6, 2026</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <MapPin style={{ width: '13px', height: '13px', color: t.subText }} />

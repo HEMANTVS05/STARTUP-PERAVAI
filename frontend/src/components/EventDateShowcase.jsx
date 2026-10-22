@@ -7,7 +7,7 @@ export default function EventDateShowcase() {
 
   const handleGoogleCalendar = (e) => {
     e.stopPropagation();
-    const gCalUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Easwari+Startup+Peravai+2026&dates=20261030T033000Z/20261031T133000Z&details=Tamil+Nadu's+Biggest+Student+Startup+Summit.+2-Day+Mega+Conclave+at+Easwari+Engineering+College.&location=Easwari+Engineering+College%2C+Ramapuram%2C+Chennai";
+    const gCalUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Easwari+Startup+Peravai+2026&dates=20261105T033000Z/20261106T133000Z&details=Tamil+Nadu's+Biggest+Student+Startup+Summit.+2-Day+Mega+Conclave+at+Easwari+Engineering+College.&location=Easwari+Engineering+College%2C+Ramapuram%2C+Chennai";
     window.open(gCalUrl, '_blank', 'noopener,noreferrer');
     setShowCalendarMenu(false);
   };
@@ -46,7 +46,7 @@ export default function EventDateShowcase() {
             </span>
           </div>
 
-          {/* ── Center: The Dates (30th & 31st October) ── */}
+          {/* ── Center: The Dates (5th & 6th November) ── */}
           <div className="flex items-center gap-2 sm:gap-3.5 shrink-0">
             {/* Day 1 Pill */}
             <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 bg-white border-2 border-black shadow-[3px_3px_0px_#a80d11]">
@@ -54,7 +54,7 @@ export default function EventDateShowcase() {
                 DAY 1
               </span>
               <span className="font-black text-lg sm:text-2xl text-[#1f2022] tracking-tight leading-none">
-                30<span className="text-xs uppercase text-[#a80d11]">TH</span>
+                5<span className="text-xs uppercase text-[#a80d11]">TH</span>
               </span>
             </div>
 
@@ -66,14 +66,14 @@ export default function EventDateShowcase() {
                 DAY 2
               </span>
               <span className="font-black text-lg sm:text-2xl text-[#1f2022] tracking-tight leading-none">
-                31<span className="text-xs uppercase text-[#0f50e3]">ST</span>
+                6<span className="text-xs uppercase text-[#0f50e3]">TH</span>
               </span>
             </div>
 
             {/* Month & Year badge */}
             <div className="flex flex-col text-left pl-1">
               <span className="font-black text-base sm:text-xl uppercase tracking-wider text-[#1f2022] leading-none">
-                OCTOBER
+                NOVEMBER
               </span>
               <span className="font-bold text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-gray-500 leading-tight">
                 2026 • CHENNAI

@@ -8,7 +8,7 @@ import poster2 from '../assets/chaikings.png';
 const SESSIONS = {
   day1: {
     label: 'Day 1',
-    date: 'Oct 30, 2026',
+    date: 'Nov 5, 2026',
     color: '#a80d11',
     sessions: [
       {
@@ -47,7 +47,7 @@ const SESSIONS = {
   },
   day2: {
     label: 'Day 2',
-    date: 'Oct 31, 2026',
+    date: 'Nov 6, 2026',
     color: '#0b2140',
     sessions: [
       {/*
@@ -341,7 +341,7 @@ const SessionPickerModal = ({ isOpen, onSkip, onNext, onBack }) => {
                   </div>
                   <div>
                     <p className="font-black text-xl uppercase tracking-tight text-black">Day 1</p>
-                    <p className="text-xs text-black/40 font-black uppercase tracking-widest">Oct 30, 2026</p>
+                    <p className="text-xs text-black/40 font-black uppercase tracking-widest">Nov 5, 2026</p>
                   </div>
                 </div>
 
@@ -367,7 +367,7 @@ const SessionPickerModal = ({ isOpen, onSkip, onNext, onBack }) => {
                   </div>
                   <div>
                     <p className="font-black text-xl uppercase tracking-tight text-black">Day 2</p>
-                    <p className="text-xs text-black/40 font-black uppercase tracking-widest">Oct 31, 2026</p>
+                    <p className="text-xs text-black/40 font-black uppercase tracking-widest">Nov 6, 2026</p>
                   </div>
                 </div>
 
