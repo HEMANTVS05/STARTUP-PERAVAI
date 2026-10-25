@@ -10,8 +10,7 @@ const getMyEventTeam = async (req, res, next) => {
     const { eventId } = req.params;
     if (!eventId) return res.status(400).json({ error: 'eventId is required.' });
     const data = await getUserEventTeam(req.user.uid, eventId);
-    if (!data) return res.status(404).json({ error: 'You are not in a team for this event.' });
-    res.json(data);
+    res.json(data || null);
   } catch (err) { next(err); }
 };
 

@@ -55,28 +55,21 @@ export const DEFAULT_PROBLEM_STATEMENTS = [
 ];
 
 /**
- * Fetch problem statements from `problem_statements` collection.
- * Seeds default items if collection is empty.
+ * Fetch problem statements safely.
+ * Returns DEFAULT_PROBLEM_STATEMENTS without attempting forbidden client-side writes.
  */
 export async function fetchProblemStatements() {
   try {
     const colRef = collection(db, 'problem_statements');
     const snapshot = await getDocs(colRef);
 
-    if (snapshot.empty) {
-      // Seed default problem statements into Firestore
-      const seedPromises = DEFAULT_PROBLEM_STATEMENTS.map(ps =>
-        setDoc(doc(db, 'problem_statements', ps.id), ps)
-      );
-      await Promise.all(seedPromises);
-      return DEFAULT_PROBLEM_STATEMENTS;
+    if (!snapshot.empty) {
+      return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     }
-
-    return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
   } catch (err) {
-    console.error('Error fetching problem statements:', err);
-    return DEFAULT_PROBLEM_STATEMENTS;
+    // Silently fall back to default problem statements
   }
+  return DEFAULT_PROBLEM_STATEMENTS;
 }
 
 /**
@@ -111,13 +104,17 @@ export async function updateUserProfile(uid, profileData) {
 }
 
 /**
- * Get user profile doc from `users` collection
+ * Get user profile doc from `users` collection safely
  */
 export async function getUserProfile(uid) {
   if (!uid) return null;
-  const userSnap = await getDoc(doc(db, 'users', uid));
-  if (userSnap.exists()) {
-    return userSnap.data();
+  try {
+    const userSnap = await getDoc(doc(db, 'users', uid));
+    if (userSnap.exists()) {
+      return userSnap.data();
+    }
+  } catch (err) {
+    // ignore read error
   }
   return null;
 }
@@ -216,9 +213,15 @@ export async function fetchUserTeamData(uid) {
   if (!uid) return null;
   try {
     const { data } = await api.get('/api/teams/me');
-    return data; // { team, members }
+    return data || null; // { team, members }
   } catch (err) {
-    if (err.response?.status === 404) return null;
+    if (
+      err.response?.status === 404 ||
+      err.status === 404 ||
+      err.message?.includes('not in a team')
+    ) {
+      return null;
+    }
     console.error('fetchUserTeamData:', err);
     return null;
   }

@@ -37,7 +37,10 @@ api.interceptors.response.use(
     if (error.response?.data?.details && Array.isArray(error.response.data.details)) {
       message = `${message} ${error.response.data.details.join(' ')}`;
     }
-    return Promise.reject(new Error(message));
+    const err = new Error(message);
+    err.response = error.response;
+    err.status = error.response?.status;
+    return Promise.reject(err);
   }
 );
 

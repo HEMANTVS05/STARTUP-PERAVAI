@@ -11,8 +11,7 @@ const { validateCreateTeam, validateJoinTeam } = require('../validators/teamVali
 const getMyTeam = async (req, res, next) => {
   try {
     const data = await getUserTeam(req.user.uid);
-    if (!data) return res.status(404).json({ error: 'You are not in a team.' });
-    res.json(data);
+    res.json(data || null);
   } catch (err) { next(err); }
 };
 

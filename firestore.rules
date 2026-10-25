@@ -118,9 +118,9 @@ service cloud.firestore {
     }
 
     // ── /problem_statements ───────────────────────────────────────────────────
-    // Read-only for authenticated users.
+    // Read-only public competition tracks.
     match /problem_statements/{psId} {
-      allow read: if isAuthenticated();
+      allow read: if true;
       allow write: if false;
     }
 

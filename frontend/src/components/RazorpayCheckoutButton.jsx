@@ -1,6 +1,27 @@
 import React, { useState } from 'react';
 import api from '../utils/api';
 
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const existing = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+    if (existing) {
+      existing.addEventListener('load', () => resolve(true));
+      existing.addEventListener('error', () => resolve(false));
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 const RazorpayCheckoutButton = ({
   amount = 100,
   currency = 'INR',
@@ -15,6 +36,11 @@ const RazorpayCheckoutButton = ({
   const handlePayment = async () => {
     setLoading(true);
     try {
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded || !window.Razorpay) {
+        throw new Error('Failed to load Razorpay checkout SDK. Please disable aggressive ad-blockers or try again.');
+      }
+
       // Step 1: Create Order
       const orderResponse = await api.post('/api/payment/create-order', {
         amount,

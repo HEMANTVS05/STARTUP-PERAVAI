@@ -38,9 +38,15 @@ export async function fetchUserEventTeam(uid, eventId) {
   if (!uid || !eventId) return null;
   try {
     const { data } = await api.get(`/api/event-teams/${eventId}/me`);
-    return data; // { team: {...}, members: [...] }
+    return data || null; // { team: {...}, members: [...] }
   } catch (err) {
-    if (err.response?.status === 404) return null; // Not in a team — normal case
+    if (
+      err.response?.status === 404 ||
+      err.status === 404 ||
+      err.message?.includes('not in a team')
+    ) {
+      return null; // Not in a team — normal case
+    }
     console.error(`fetchUserEventTeam(${eventId}):`, err);
     return null;
   }
