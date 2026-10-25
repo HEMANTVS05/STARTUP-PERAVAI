@@ -56,7 +56,7 @@ const GroupEventModal = ({ isOpen, onClose, event, eventId: propEventId, eventNa
   const [copiedCode, setCopiedCode]       = useState(false);
 
   const [formData, setFormData] = useState({
-    teamName: '', leaderName: '', maxMembers: 3, invitedEmails: ['', ''],
+    teamName: '', leaderName: '', maxMembers: 3, invitedEmails: ['', ''], startupDomain: '',
   });
   const [memberProfile, setMemberProfile] = useState({ name: '', });
 
@@ -170,12 +170,16 @@ const GroupEventModal = ({ isOpen, onClose, event, eventId: propEventId, eventNa
     setSubmitting(true);
     try {
       // 1. Create team
-      const { data } = await api.post(`/api/event-teams/${eventId}`, {
+      const payload = {
         teamName: formData.teamName,
         leaderName: formData.leaderName,
         maxMembers: formData.maxMembers,
         invitedEmails: formData.invitedEmails.filter(Boolean),
-      });
+      };
+      if (eventId === 'pitch-perfect' && formData.startupDomain.trim()) {
+        payload.startupDomain = formData.startupDomain.trim();
+      }
+      const { data } = await api.post(`/api/event-teams/${eventId}`, payload);
       setCreatedTeam(data);
 
       // 2. Add event to registeredEvents
@@ -200,6 +204,7 @@ const GroupEventModal = ({ isOpen, onClose, event, eventId: propEventId, eventNa
           invitedEmails: formData.invitedEmails.filter(Boolean),
           joinedMemberUids: [user.uid],
           status: 'active',
+          ...(formData.startupDomain.trim() ? { startupDomain: formData.startupDomain.trim() } : {}),
         },
         members: [{
           id: `${data.teamId}_${user.uid}`,
@@ -482,27 +487,37 @@ const GroupEventModal = ({ isOpen, onClose, event, eventId: propEventId, eventNa
                 </div>
 
                 {eventId === 'pitch-perfect' && (
-                  <div className="space-y-1">
-                    <label className={labelCls}><Users className="w-3.5 h-3.5 text-black" /> Team Size (Including You)</label>
-                    <select
-                      value={formData.maxMembers}
-                      onChange={(e) => {
-                        const newSize = parseInt(e.target.value, 10);
-                        setFormData(prev => ({
-                          ...prev,
-                          maxMembers: newSize,
-                          invitedEmails: Array(Math.max(0, newSize - 1)).fill(''),
-                        }));
-                      }}
-                      className={inputCls}
-                    >
-                      <option value={1}>1 Member (Just me)</option>
-                      <option value={2}>2 Members</option>
-                      <option value={3}>3 Members</option>
-                      <option value={4}>4 Members</option>
-                      <option value={5}>5 Members</option>
-                    </select>
-                  </div>
+                  <>
+                    <div className="space-y-1">
+                      <label className={labelCls}><Users className="w-3.5 h-3.5 text-black" /> Team Size (Including You)</label>
+                      <select
+                        value={formData.maxMembers}
+                        onChange={(e) => {
+                          const newSize = parseInt(e.target.value, 10);
+                          setFormData(prev => ({
+                            ...prev,
+                            maxMembers: newSize,
+                            invitedEmails: Array(Math.max(0, newSize - 1)).fill(''),
+                          }));
+                        }}
+                        className={inputCls}
+                      >
+                        <option value={1}>1 Member (Just me)</option>
+                        <option value={2}>2 Members</option>
+                        <option value={3}>3 Members</option>
+                        <option value={4}>4 Members</option>
+                        <option value={5}>5 Members</option>
+                      </select>
+                    </div>
+                    <Field
+                      id="startupDomain"
+                      label="Which domain does your startup belong to?"
+                      icon={Sparkles}
+                      placeholder="Please enter the domain in which your startup operates"
+                      value={formData.startupDomain}
+                      onChange={e => setFormData(p => ({ ...p, startupDomain: e.target.value }))}
+                    />
+                  </>
                 )}
 
                 {/* Member Emails */}
@@ -612,6 +627,12 @@ const GroupEventModal = ({ isOpen, onClose, event, eventId: propEventId, eventNa
                   <div className="flex items-center gap-3">
                     <h4 className="text-3xl font-black uppercase tracking-tight">{activeTeamData.team.teamName}</h4>
                   </div>
+                  {activeTeamData.team.startupDomain && (
+                    <p className="font-bold text-xs text-gray-600 mt-1">
+                      <span className="font-black text-black uppercase tracking-widest">Domain: </span>
+                      {activeTeamData.team.startupDomain}
+                    </p>
+                  )}
                 </div>
                 <div className="text-right">
                   <p className="font-black text-xs uppercase tracking-widest text-gray-500">Team Size</p>

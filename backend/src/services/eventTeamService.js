@@ -59,7 +59,7 @@ async function getUserEventTeam(uid, eventId) {
 
 /** Create a new event team */
 async function createEventTeam(eventId, leaderUser, formData) {
-  const { teamName, leaderName, maxMembers, invitedEmails } = formData;
+  const { teamName, leaderName, maxMembers, invitedEmails, startupDomain } = formData;
 
   const available = await isEventTeamNameAvailable(eventId, teamName);
   if (!available) {
@@ -95,6 +95,7 @@ async function createEventTeam(eventId, leaderUser, formData) {
     joinedMemberUids: [leaderUser.uid],
     status: 'active',
     createdAt: now,
+    ...(startupDomain ? { startupDomain: startupDomain.trim() } : {}),
   });
   batch.set(memberRef, {
     teamId, teamCode, eventId,
