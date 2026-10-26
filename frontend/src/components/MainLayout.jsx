@@ -1197,9 +1197,9 @@ const MainLayout = () => {
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
           <h1 className="flex items-center gap-4 md:gap-6 text-3xl md:text-4xl lg:text-5xl font-black uppercase text-blue-600 tracking-tighter leading-none">
+            <img src="tn_govt.png" alt="tn_govt" className="h-35 md:h-30 w-28 object-contain" />
             <img src="EEC_text_logo.png" alt="Easwari Logo" className="h-25 md:h-23 w-60 object-contain" />
             <img src="peravai_logo.png" alt="Peravai Logo" className="h-30 md:h-30 w-60 object-contain" />
-            <img src="tn_govt.png" alt="tn_govt" className="h-35 md:h-30 w-28 object-contain" />
           </h1>
 
           {/* Desktop nav */}

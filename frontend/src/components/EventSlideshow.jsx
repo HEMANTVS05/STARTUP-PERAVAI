@@ -5,7 +5,6 @@ import minister from "../assets/minister1.jpeg";
 import team from "../assets/team1.jpeg";
 import video1 from "../assets/video_1.mp4";
 import msme from "../assets/MSME.jpeg";
-import awards from "../assets/awards.jpeg";
 
 const events = [
   {
@@ -30,12 +29,6 @@ const events = [
     description: "Peravai team with the Hon’ble MSME Minister and StartupTN Chairman on expanding Peravai’s vision, reach, and opportunities for young entrepreneurs across Tamil Nadu.",
     image: msme,
   },
-  {
-    id: 4,
-    title: "Social Impact Startup Awards",
-    description: "We believe technology is best utilised when it addresses challenges at the grassroots. At the Peravai, we aim to recognise and honour startups that are driving meaningful change and creating lasting impact in society.",
-    image: awards,
-  }
 ];
 
 const videos = [
