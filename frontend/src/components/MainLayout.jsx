@@ -1534,7 +1534,7 @@ const MainLayout = () => {
               >
                 {[...Array(4)].map((_, i) => (
                   <React.Fragment key={i}>
-                    {['StartupTN.png', 'airtel.png', 'shortfundly.png', 'aspireforher.png', 'cumta.png', 'icc.png', 'overqualifiedhousewives.png', 'tnrise.png', 'nebula.png', 'zenu.png', 'haris.png'].map((logo, index) => (
+                    {['StartupTN.png', 'airtel.png', 'shortfundly.png', 'cumta.png', 'icc.png', 'tnrise.png', 'nebula.png', 'zenu.png', 'haris.png'].map((logo, index) => (
                       <img
                         key={`${i}-${index}`}
                         src={`/logos/${logo}`}
