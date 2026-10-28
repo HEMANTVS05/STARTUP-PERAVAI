@@ -1687,8 +1687,9 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
                     const isPaidOnly = PAYMENT_ONLY.includes(event.id);
                     const isRegistered = registration?.registeredEvents?.includes(event.id)
                       || (isPaidOnly && registration?.paidEvents?.includes(event.id));
+
+                    // Already registered — always show green badge (even for hackathon)
                     if (isRegistered) {
-                      // Non-clickable green badge for registered events
                       return (
                         <span
                           className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-5 py-2.5 text-white border-4 cursor-default select-none"
@@ -1698,6 +1699,19 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
                         </span>
                       );
                     }
+
+                    // Hackathon: closed for new registrations
+                    if (event.id === 'hackathon') {
+                      return (
+                        <span
+                          className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-5 py-2.5 text-white border-4 cursor-default select-none"
+                          style={{ background: '#dc2626', borderColor: '#991b1b' }}
+                        >
+                          Registration Closed
+                        </span>
+                      );
+                    }
+
                     return (
                       <button
                         onClick={(e) => { e.stopPropagation(); onRegister(event); }}
