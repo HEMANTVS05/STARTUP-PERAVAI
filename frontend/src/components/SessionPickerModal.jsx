@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mic, Users, ChevronRight, SkipForward } from 'lucide-react';
 import poster1 from '../assets/ippopay.png';
-import poster2 from '../assets/chaikings.png';
+import poster2 from '../assets/tender_cuts.png';
 
 // ── Session Data ────────────────────────────────────────────────────────────────
 const SESSIONS = {
@@ -14,7 +14,7 @@ const SESSIONS = {
       {
         id: 'd1-p1', type: 'podcast',
         title: "Mohan K",
-        time: 'Ippopay Co-Founder',
+        time: 'Ippopay - Co-Founder',
         titleColor: '#19afd0',
         desc: 'Are you fascinated by FinTech and curious about how UPI, digital payments and merchant transactions actually work in India? Join Mohan K, Co-Founder & CEO of IppoPay, for a live podcast on the technology, innovation and business transforming the way India pays. Perfect for students, aspiring FinTech founders and anyone curious about the future of digital payments in India.',
         poster: poster1,
@@ -50,14 +50,14 @@ const SESSIONS = {
     date: 'Nov 6, 2026',
     color: '#0b2140',
     sessions: [
-      {/*
+      {
         id: 'd2-p1', type: 'podcast',
-        title: 'Jahabar sadique',
-        time: 'Chai Kings Co-Founder',
-        titleColor: '#00a652',   // teal — original Chai Kings popup color
-        desc: 'For those curious about entrepreneurship, consumer brands and building a successful franchise, this conversation with Jahabar Sadique, Co-Founder of Chai Kings, explores how a simple idea can grow into a recognisable homegrown brand through customer insight, branding, operations and smart expansion. Join us for a live podcast on building, scaling and creating a successful franchise business.',
+        title: 'Sasikumar Kallanai',
+        time: 'TENDER CUTS - Founder & CEO',
+        titleColor: '#b02528',
+        desc: 'Are you fascinated by fresh food and curious about how quality meat and seafood reach everyday households? Join Sasikumar Kallani, Founder & CEO of TenderCuts, for a live podcast on the entrepreneurship, innovation and vision transforming how India buys fresh meat and seafood. Perfect for students, aspiring founders and anyone curious about building trusted brands that solve real everyday problems.',
         poster: poster2,
-      */},
+      },
       {/*
         id: 'd2-p2', type: 'podcast',
         title: 'Funding in the New Economy',
