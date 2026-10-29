@@ -133,7 +133,7 @@ const GROUP_EVENTS = [
         </div>
       </>
     ),
-    venue: 'EEC', day: 'Both Days', time: '12 PM Onwards', accent: '#980000', accentLight: '#fef2f2',
+    venue: 'EEC', day: 'Both Days', time: '12:30 PM Onwards', accent: '#980000', accentLight: '#fef2f2',
     rules: [
       { title: '1. Team Size', body: 'Teams can have a minimum of 1 and a maximum of 5 members.' },
       { title: '2. Registration & Payment', body: 'The team leader must register and make the payment of ₹700 for the team. Members must join using the team code.' },
@@ -224,7 +224,7 @@ const INDIVIDUAL_EVENTS = [
         </div>
       </>
     ),
-    venue: 'MBA Seminar Hall 2', day: 'Both Days', time: '11:30 AM Onwards', accent: '#f43b38', accentLight: '#fef2f2', fee: 300,
+    venue: 'MBA Seminar Hall 2', day: 'Both Days', time: '12:30 PM Onwards', accent: '#f43b38', accentLight: '#fef2f2', fee: 300,
     rules: [
       { title: '1. Attendance', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Full attendance on both days is mandatory. Partial attendance will result in disqualification from certification.' },
       { title: '2. Prerequisites', body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium. No prior experience is required. Bring your own laptop and a willingness to learn.' },
@@ -261,7 +261,7 @@ const INDIVIDUAL_EVENTS = [
         </div>
       </>
     ),
-    venue: 'Hi-Tech Hall 2', day: 'Day 1', time: '9 AM Onwards', accent: '#8504fc', accentLight: '#faf5ff', fee: 200,
+    venue: 'Hi-Tech Hall 2', day: 'Day 2', time: '10 AM Onwards', accent: '#8504fc', accentLight: '#faf5ff', fee: 200,
     rules: [
       { title: '1. Solo Event', body: 'This is a solo event.' },
       { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of payment.' },
@@ -293,7 +293,7 @@ const INDIVIDUAL_EVENTS = [
         </div>
       </>
     ),
-    venue: 'MBA Seminar Hall 1', day: 'Both Days', time: '9 AM Onwards', accent: '#c50637', accentLight: '#fff1f2', fee: 200,
+    venue: 'MBA Seminar Hall 1', day: 'Both Days', time: '12:30 PM Onwards', accent: '#c50637', accentLight: '#fff1f2', fee: 200,
     rules: [
       { title: '1. Solo Event', body: 'This is an individual event open to all interested participants.' },
       { title: '2. Participation Confirmation', body: 'Participation will be confirmed upon completion of registration.' },
