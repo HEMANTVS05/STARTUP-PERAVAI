@@ -1395,43 +1395,21 @@ const LearnMoreModal = ({ evt, isGroup, onClose, onRegister, onJoinHackathon }) 
             style={{ borderTop: '3px solid #111', background: '#fafafa', flexShrink: 0 }}
           >
             <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">
-              {evt.id === 'hackathon' ? 'Registrations are now closed' : 'Spots are limited — secure yours now'}
+              Spots are limited — secure yours now
             </p>
-            {evt.id === 'hackathon' ? (
-              <div className="flex flex-wrap items-center gap-3">
-                <span
-                  className="flex items-center gap-2 font-black uppercase text-[11px] tracking-widest px-5 py-3 text-white cursor-default select-none"
-                  style={{
-                    background: '#dc2626',
-                    border: '2.5px solid #991b1b',
-                    boxShadow: '4px 4px 0 #111',
-                  }}
-                >
-                  Registration Closed
-                </span>
-                <button
-                  onClick={() => { onClose(); onJoinHackathon && onJoinHackathon(); }}
-                  className="flex items-center gap-2 font-black uppercase text-[11px] tracking-widest px-5 py-3 bg-black text-white hover:bg-gray-800 transition-all shadow-[4px_4px_0 #111] active:translate-x-1 active:translate-y-1"
-                  style={{ border: '2.5px solid #111' }}
-                >
-                  <Users size={13} /> Already have a team code?
-                </button>
-              </div>
-            ) : (
-              <motion.button
-                onClick={() => { onClose(); onRegister(evt); }}
-                whileTap={{ scale: 0.96 }}
-                whileHover={{ y: -2 }}
-                className="flex items-center gap-2.5 font-black uppercase text-[11px] tracking-widest px-8 py-3 text-white transition-all"
-                style={{
-                  background: evt.accent,
-                  border: `2.5px solid ${evt.accent}`,
-                  boxShadow: `4px 4px 0 #111`,
-                }}
-              >
-                Register <ArrowRight size={13} />
-              </motion.button>
-            )}
+            <motion.button
+              onClick={() => { onClose(); onRegister(evt); }}
+              whileTap={{ scale: 0.96 }}
+              whileHover={{ y: -2 }}
+              className="flex items-center gap-2.5 font-black uppercase text-[11px] tracking-widest px-8 py-3 text-white transition-all"
+              style={{
+                background: evt.accent,
+                border: `2.5px solid ${evt.accent}`,
+                boxShadow: `4px 4px 0 #111`,
+              }}
+            >
+              Register <ArrowRight size={13} />
+            </motion.button>
           </div>
         </motion.div>
       </motion.div>
@@ -1720,24 +1698,7 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
                         </span>
                       );
                     }
-                    if (event.id === 'hackathon') {
-                      return (
-                        <div className="flex flex-wrap items-center gap-2.5">
-                          <span
-                            className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-4 py-2.5 text-white border-4 cursor-default select-none"
-                            style={{ background: '#dc2626', borderColor: '#991b1b' }}
-                          >
-                            Registration Closed
-                          </span>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); onJoinHackathon ? onJoinHackathon() : onRegister(event); }}
-                            className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-4 py-2.5 bg-black text-white border-4 border-black hover:bg-gray-800 transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1"
-                          >
-                            <Users size={13} /> Already have a team code?
-                          </button>
-                        </div>
-                      );
-                    }
+
                     return (
                       <button
                         onClick={(e) => { e.stopPropagation(); onRegister(event); }}
@@ -1824,7 +1785,7 @@ const EventsPage = () => {
     }
     // Not yet registered
     if (event.id === 'hackathon') {
-      return;
+      setSelectedEvent(event);
     } else if (GROUP_EVENTS.find(g => g.id === event.id)) {
       setSelectedGroupEvent(event);
       setShowGroupModal(true);
