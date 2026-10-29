@@ -1395,34 +1395,21 @@ const LearnMoreModal = ({ evt, isGroup, onClose, onRegister }) => {
             style={{ borderTop: '3px solid #111', background: '#fafafa', flexShrink: 0 }}
           >
             <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">
-              {evt.id === 'hackathon' ? 'Registrations are now closed' : 'Spots are limited — secure yours now'}
+              Spots are limited — secure yours now
             </p>
-            {evt.id === 'hackathon' ? (
-              <span
-                className="flex items-center gap-2.5 font-black uppercase text-[11px] tracking-widest px-8 py-3 text-white cursor-default select-none"
-                style={{
-                  background: '#dc2626',
-                  border: '2.5px solid #991b1b',
-                  boxShadow: '4px 4px 0 #111',
-                }}
-              >
-                Registration Closed
-              </span>
-            ) : (
-              <motion.button
-                onClick={() => { onClose(); onRegister(evt); }}
-                whileTap={{ scale: 0.96 }}
-                whileHover={{ y: -2 }}
-                className="flex items-center gap-2.5 font-black uppercase text-[11px] tracking-widest px-8 py-3 text-white transition-all"
-                style={{
-                  background: evt.accent,
-                  border: `2.5px solid ${evt.accent}`,
-                  boxShadow: `4px 4px 0 #111`,
-                }}
-              >
-                Register <ArrowRight size={13} />
-              </motion.button>
-            )}
+            <motion.button
+              onClick={() => { onClose(); onRegister(evt); }}
+              whileTap={{ scale: 0.96 }}
+              whileHover={{ y: -2 }}
+              className="flex items-center gap-2.5 font-black uppercase text-[11px] tracking-widest px-8 py-3 text-white transition-all"
+              style={{
+                background: evt.accent,
+                border: `2.5px solid ${evt.accent}`,
+                boxShadow: `4px 4px 0 #111`,
+              }}
+            >
+              Register <ArrowRight size={13} />
+            </motion.button>
           </div>
         </motion.div>
       </motion.div>
@@ -1700,17 +1687,6 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
                     const isPaidOnly = PAYMENT_ONLY.includes(event.id);
                     const isRegistered = registration?.registeredEvents?.includes(event.id)
                       || (isPaidOnly && registration?.paidEvents?.includes(event.id));
-                    // Hackathon registrations are closed
-                    if (event.id === 'hackathon') {
-                      return (
-                        <span
-                          className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-5 py-2.5 text-white border-4 cursor-default select-none"
-                          style={{ background: '#dc2626', borderColor: '#991b1b' }}
-                        >
-                          Registration Closed
-                        </span>
-                      );
-                    }
                     if (isRegistered) {
                       // Non-clickable green badge for registered events
                       return (

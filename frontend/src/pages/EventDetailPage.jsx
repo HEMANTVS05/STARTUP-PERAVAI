@@ -648,14 +648,7 @@ const EventDetailPage = () => {
                     <div style={{ height: 2, background: '#111', marginBottom: 20 }} />
 
                     {/* Register / Registered button */}
-                    {event.id === 'hackathon' ? (
-                      <div
-                        className="w-full flex items-center justify-center gap-2 font-black uppercase text-[11px] tracking-widest py-4 text-white cursor-default select-none"
-                        style={{ background: '#dc2626', border: '3px solid #991b1b' }}
-                      >
-                        Registration Closed
-                      </div>
-                    ) : isRegistered ? (
+                    {isRegistered ? (
                       <div
                         className="w-full flex items-center justify-center gap-2 font-black uppercase text-[11px] tracking-widest py-4 text-white"
                         style={{ background: '#16a34a', border: '3px solid #15803d' }}
@@ -719,24 +712,15 @@ const EventDetailPage = () => {
               </h2>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-4">
-              {event.id === 'hackathon' ? (
-                <span
-                  className="flex items-center gap-3 font-black uppercase text-[11px] tracking-widest px-10 py-4 bg-white text-[#dc2626] border-4 border-[#991b1b] cursor-default select-none"
-                  style={{ boxShadow: '6px 6px 0 rgba(0,0,0,0.4)' }}
-                >
-                  Registration Closed
-                </span>
-              ) : (
-                <motion.button
-                  onClick={() => navigate('/events', { state: { registerEventId: event.id } })}
-                  className="flex items-center gap-3 font-black uppercase text-[11px] tracking-widest px-10 py-4 bg-white text-black border-4 border-black"
-                  style={{ boxShadow: '6px 6px 0 rgba(0,0,0,0.4)' }}
-                  whileHover={{ y: -2, boxShadow: '8px 8px 0 rgba(0,0,0,0.4)' }}
-                  whileTap={{ scale: 0.97 }}
-                >
-                  Register Now <ArrowRight size={14} />
-                </motion.button>
-              )}
+              <motion.button
+                onClick={() => navigate('/events', { state: { registerEventId: event.id } })}
+                className="flex items-center gap-3 font-black uppercase text-[11px] tracking-widest px-10 py-4 bg-white text-black border-4 border-black"
+                style={{ boxShadow: '6px 6px 0 rgba(0,0,0,0.4)' }}
+                whileHover={{ y: -2, boxShadow: '8px 8px 0 rgba(0,0,0,0.4)' }}
+                whileTap={{ scale: 0.97 }}
+              >
+                Register Now <ArrowRight size={14} />
+              </motion.button>
               <motion.button
                 onClick={() => navigate('/events')}
                 className="flex items-center gap-3 font-black uppercase text-[11px] tracking-widest px-10 py-4 text-white"
