@@ -1253,7 +1253,7 @@ const RiseHerLearnMoreModal = ({ evt, onClose, onRegister }) => {
 };
 
 /* ── Learn More Modal ─────────────────────────────────────────────────── */
-const LearnMoreModal = ({ evt, isGroup, onClose, onRegister }) => {
+const LearnMoreModal = ({ evt, isGroup, onClose, onRegister, onJoinHackathon }) => {
   if (evt.id === 'riseher') {
     return <RiseHerLearnMoreModal evt={evt} onClose={onClose} onRegister={onRegister} />;
   }
@@ -1398,16 +1398,25 @@ const LearnMoreModal = ({ evt, isGroup, onClose, onRegister }) => {
               {evt.id === 'hackathon' ? 'Registrations are now closed' : 'Spots are limited — secure yours now'}
             </p>
             {evt.id === 'hackathon' ? (
-              <span
-                className="flex items-center gap-2.5 font-black uppercase text-[11px] tracking-widest px-8 py-3 text-white cursor-default select-none"
-                style={{
-                  background: '#dc2626',
-                  border: '2.5px solid #991b1b',
-                  boxShadow: '4px 4px 0 #111',
-                }}
-              >
-                Registration Closed
-              </span>
+              <div className="flex flex-wrap items-center gap-3">
+                <span
+                  className="flex items-center gap-2 font-black uppercase text-[11px] tracking-widest px-5 py-3 text-white cursor-default select-none"
+                  style={{
+                    background: '#dc2626',
+                    border: '2.5px solid #991b1b',
+                    boxShadow: '4px 4px 0 #111',
+                  }}
+                >
+                  Registration Closed
+                </span>
+                <button
+                  onClick={() => { onClose(); onJoinHackathon && onJoinHackathon(); }}
+                  className="flex items-center gap-2 font-black uppercase text-[11px] tracking-widest px-5 py-3 bg-black text-white hover:bg-gray-800 transition-all shadow-[4px_4px_0 #111] active:translate-x-1 active:translate-y-1"
+                  style={{ border: '2.5px solid #111' }}
+                >
+                  <Users size={13} /> Already have a team code?
+                </button>
+              </div>
             ) : (
               <motion.button
                 onClick={() => { onClose(); onRegister(evt); }}
@@ -1543,7 +1552,7 @@ const SectionHeader = ({ icon: Icon, label, accent, className = "mb-8" }) => (
   </div>
 );
 
-const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister, isGroup }) => {
+const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister, onJoinHackathon, isGroup }) => {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const navigate = useNavigate();
@@ -1713,12 +1722,20 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
                     }
                     if (event.id === 'hackathon') {
                       return (
-                        <span
-                          className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-5 py-2.5 text-white border-4 cursor-default select-none"
-                          style={{ background: '#dc2626', borderColor: '#991b1b' }}
-                        >
-                          Registration Closed
-                        </span>
+                        <div className="flex flex-wrap items-center gap-2.5">
+                          <span
+                            className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-4 py-2.5 text-white border-4 cursor-default select-none"
+                            style={{ background: '#dc2626', borderColor: '#991b1b' }}
+                          >
+                            Registration Closed
+                          </span>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); onJoinHackathon ? onJoinHackathon() : onRegister(event); }}
+                            className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-4 py-2.5 bg-black text-white border-4 border-black hover:bg-gray-800 transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1"
+                          >
+                            <Users size={13} /> Already have a team code?
+                          </button>
+                        </div>
                       );
                     }
                     return (
@@ -1752,6 +1769,7 @@ const EventsPage = () => {
   }, []);
 
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [hackathonInitialView, setHackathonInitialView] = useState('');
   const [showGroupModal, setShowGroupModal] = useState(false);
   const [selectedGroupEvent, setSelectedGroupEvent] = useState(null);
   const [showPaymentAlert, setShowPaymentAlert] = useState(false);
@@ -1761,6 +1779,22 @@ const EventsPage = () => {
   const [showGeneralPassWarning, setShowGeneralPassWarning] = useState(false);
   const [showMultipleEventWarning, setShowMultipleEventWarning] = useState(false);
   const [pendingEventAfterWarning, setPendingEventAfterWarning] = useState(null);
+
+  const handleOpenHackathonJoin = () => {
+    if (!user) {
+      setAuthModal({ open: true, pass: 'EVENT PASS', source: 'hackathon-join' });
+      return;
+    }
+    if (!registration) {
+      const hackathonEvt = GROUP_EVENTS.find(e => e.id === 'hackathon');
+      setPendingEventAfterProfile(hackathonEvt);
+      setShowProfileForm(true);
+      return;
+    }
+    const hackathonEvt = GROUP_EVENTS.find(e => e.id === 'hackathon');
+    setHackathonInitialView('join');
+    setSelectedEvent(hackathonEvt);
+  };
 
   const handleRegisterClick = (event) => {
     if (!user) {
@@ -1803,10 +1837,14 @@ const EventsPage = () => {
     setSelectedEvent(null);
     setShowGroupModal(false);
     setSelectedGroupEvent(null);
+    setHackathonInitialView('');
   };
 
   useEffect(() => {
-    if (location.state?.registerEventId) {
+    if (location.state?.joinHackathon) {
+      setTimeout(() => handleOpenHackathonJoin(), 100);
+      navigate(location.pathname, { replace: true, state: {} });
+    } else if (location.state?.registerEventId) {
       const allEvents = [...GROUP_EVENTS, ...INDIVIDUAL_EVENTS];
       const eventToRegister = allEvents.find(e => e.id === location.state.registerEventId);
       if (eventToRegister) {
@@ -1886,6 +1924,7 @@ const EventsPage = () => {
         icon={Users}
         accent="#0b2140"
         onRegister={handleRegisterClick}
+        onJoinHackathon={handleOpenHackathonJoin}
         isGroup={true}
       />
 
@@ -1901,7 +1940,11 @@ const EventsPage = () => {
 
       {/* Modals */}
       {selectedEvent?.id === 'hackathon' && (
-        <HackathonModal isOpen={true} onClose={closeModals} />
+        <HackathonModal
+          isOpen={true}
+          onClose={closeModals}
+          initialView={hackathonInitialView}
+        />
       )}
       {selectedEvent && selectedEvent?.id !== 'hackathon' && !GROUP_EVENTS.find(g => g.id === selectedEvent?.id) && (
         <EventRegistrationModal event={selectedEvent} onClose={closeModals} />

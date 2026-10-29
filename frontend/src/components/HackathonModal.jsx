@@ -44,7 +44,7 @@ const ErrorMsg = ({ msg }) => msg
   )
   : null;
 
-const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
+const HackathonModal = ({ isOpen, onClose, initialJoinCode = '', initialView = '' }) => {
   const { user, registration, refreshRegistration } = useAuth();
 
   // Navigation states: 'loading' | 'choice' | 'create' | 'join' | 'success' | 'dashboard'
@@ -145,7 +145,7 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
         }
 
         if (!user) {
-          setView('choice');
+          setView(initialView || 'choice');
           setLoading(false);
           return;
         }
@@ -213,6 +213,8 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
             } catch (searchErr) {
               console.error('Auto-search team error:', searchErr);
             }
+          } else if (initialView) {
+            setView(initialView);
           } else {
             setView('choice');
           }
@@ -230,7 +232,7 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
     return () => {
       if (unsubscribe) unsubscribe();
     };
-  }, [isOpen, user, initialJoinCode]);
+  }, [isOpen, user, initialJoinCode, initialView]);
 
   // Handle Team Size Selection (2, 3, 4)
   const handleTeamSizeChange = (size) => {
@@ -601,27 +603,20 @@ const HackathonModal = ({ isOpen, onClose, initialJoinCode = '' }) => {
                 </div>
               </div>
               <div className="border-4 border-black p-6 bg-[#fff5f5] text-center">
-                <p className="font-black uppercase tracking-[0.25em] text-xs text-gray-500 mb-2">Registration Fee</p>
-                <p className="font-black text-5xl text-[#a80d11] mb-1">₹1500</p>
+                <p className="font-black uppercase tracking-[0.25em] text-xs text-[#a80d11] mb-2">Registration Closed</p>
+                <p className="font-black text-2xl text-black mb-1">New Registrations Closed</p>
                 <p className="font-bold text-xs text-gray-500 uppercase tracking-wider">Hackathon</p>
               </div>
               <p className="text-center text-xs font-bold text-gray-500">
-                Complete your payment to enter the Hackathon Team Portal.
+                New team registrations are closed. If your team leader has already paid, you can join using your Team Code.
               </p>
 
               <div className="flex flex-col gap-3 mt-4">
                 <button
-                  onClick={() => setPaymentStep('payment')}
-                  className="w-full py-4 border-4 border-black bg-[#a80d11] text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-3"
-                >
-                  Continue to Payment <ArrowRight className="w-5 h-5" />
-                </button>
-
-                <button
                   onClick={() => setView('join')}
-                  className="w-full py-3 border-4 border-black bg-white text-black font-black uppercase tracking-[0.15em] text-xs hover:bg-gray-50 transition-all flex items-center justify-center gap-2 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
+                  className="w-full py-4 border-4 border-black bg-black text-white font-black uppercase tracking-[0.15em] text-sm hover:bg-gray-800 transition-all flex items-center justify-center gap-2 shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
                 >
-                  <Users className="w-4 h-4" /> Already have a team? Join Here
+                  <Users className="w-5 h-5" /> Already have a team code? Join Here
                 </button>
 
                 <button onClick={onClose} className="w-full py-2 mt-2 text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-black transition-colors">

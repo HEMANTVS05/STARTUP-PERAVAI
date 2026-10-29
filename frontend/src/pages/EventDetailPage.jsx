@@ -656,15 +656,26 @@ const EventDetailPage = () => {
                         <CheckCircle2 size={15} /> Registered
                       </div>
                     ) : event.id === 'hackathon' ? (
-                      <div
-                        className="w-full flex items-center justify-center gap-2 font-black uppercase text-[11px] tracking-widest py-4 text-white cursor-default select-none"
-                        style={{
-                          background: '#dc2626',
-                          border: '3px solid #991b1b',
-                          boxShadow: '5px 5px 0 #111',
-                        }}
-                      >
-                        Registration Closed
+                      <div className="space-y-3">
+                        <div
+                          className="w-full flex items-center justify-center gap-2 font-black uppercase text-[11px] tracking-widest py-3.5 text-white cursor-default select-none"
+                          style={{
+                            background: '#dc2626',
+                            border: '3px solid #991b1b',
+                            boxShadow: '5px 5px 0 #111',
+                          }}
+                        >
+                          Registration Closed
+                        </div>
+                        <motion.button
+                          onClick={() => navigate('/events', { state: { joinHackathon: true } })}
+                          whileTap={{ scale: 0.97 }}
+                          whileHover={{ y: -2, boxShadow: '7px 7px 0 #111' }}
+                          className="w-full flex items-center justify-center gap-2 font-black uppercase text-[11px] tracking-widest py-3.5 bg-black text-white transition-all shadow-[5px_5px_0 #111]"
+                          style={{ border: '3px solid #111' }}
+                        >
+                          <Users size={14} /> Already have a team code?
+                        </motion.button>
                       </div>
                     ) : (
                       <motion.button
@@ -731,11 +742,21 @@ const EventDetailPage = () => {
                   <CheckCircle2 size={14} /> Registered
                 </div>
               ) : event.id === 'hackathon' ? (
-                <div
-                  className="flex items-center gap-3 font-black uppercase text-[11px] tracking-widest px-10 py-4 bg-[#dc2626] text-white border-4 border-[#991b1b] cursor-default select-none"
-                  style={{ boxShadow: '6px 6px 0 rgba(0,0,0,0.4)' }}
-                >
-                  Registration Closed
+                <div className="flex flex-col sm:flex-row items-center gap-3">
+                  <div
+                    className="flex items-center gap-3 font-black uppercase text-[11px] tracking-widest px-8 py-4 bg-[#dc2626] text-white border-4 border-[#991b1b] cursor-default select-none"
+                    style={{ boxShadow: '6px 6px 0 rgba(0,0,0,0.4)' }}
+                  >
+                    Registration Closed
+                  </div>
+                  <motion.button
+                    onClick={() => navigate('/events', { state: { joinHackathon: true } })}
+                    className="flex items-center gap-2 font-black uppercase text-[11px] tracking-widest px-8 py-4 bg-white text-black border-4 border-black hover:bg-gray-100 transition-all shadow-[6px_6px_0_rgba(0,0,0,0.4)]"
+                    whileHover={{ y: -2, boxShadow: '8px 8px 0 rgba(0,0,0,0.4)' }}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <Users size={14} /> Already have a team code?
+                  </motion.button>
                 </div>
               ) : (
                 <motion.button
