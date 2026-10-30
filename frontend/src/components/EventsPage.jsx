@@ -28,6 +28,113 @@ import pitchPoster from '../assets/pitch_cover.png';
 
 const GROUP_EVENTS = [
   {
+    id: 'pitch-perfect', name: 'Pitch Perfect', limit: '1–5 Members',
+    cardDesc: 'A two-day startup pitching competition taking young entrepreneurs from the first pitch to the investor stage.',
+    desc: (
+      <>
+        <span className="block text-xl font-black uppercase tracking-tight text-[#0b2140] mb-3">From the first pitch to the investor room</span>
+        <span className="block mt-2 text-black/75">
+          In partnership with Nebula, <strong>Pitch Perfect</strong> is a two-day startup pitching competition that gives young entrepreneurs the opportunity to take their ideas from the first pitch to the investor stage.
+        </span>
+        <span className="block font-black uppercase tracking-widest text-[#0b2140] text-sm mt-4">Day 1 - Prelims</span>
+        <span className="block mt-1 text-black/75">
+          Participants will pitch their startup ideas before a preliminary jury, presenting their problem statement, solution, business model, market opportunity and growth potential. Based on their pitch and overall potential, the strongest teams will be shortlisted for the grand finale.
+        </span>
+        <span className="block font-black uppercase tracking-widest text-[#0b2140] text-sm mt-4">Day 2 - Grand Finale</span>
+        <span className="block mt-1 text-black/75">
+          The shortlisted teams will pitch their startups directly in front of a distinguished panel of investors, presenting their ventures, answering investor questions and making their case for why their startup deserves attention and opportunity.
+        </span>
+        <div className="mt-6 p-6" style={{ background: '#f8fafc', borderLeft: '6px solid #0b2140' }}>
+          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-lg">Pitch Perfect</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">This is where young founders take their ideas one step closer to becoming real ventures.</span>
+        </div>
+      </>
+    ),
+    venue: 'EEC', day: 'Both Days', time: '12:30 PM Onwards', accent: '#980000', accentLight: '#fef2f2',
+    rules: [
+      { title: '1. Team Size', body: 'Teams can have a minimum of 1 and a maximum of 5 members.' },
+      { title: '2. Registration & Payment', body: 'The team leader must register and make the payment of ₹700 for the team. Members must join using the team code.' },
+      { title: '3. Presentation', body: 'Each team will get 5 minutes to pitch their idea, followed by a 3-minute Q&A session with the judges.' },
+      { title: '4. Format', body: 'Presentations must be in PPT or PDF format. Prototypes are highly encouraged.' },
+      { title: '5. Judging Criteria', body: 'Evaluated on innovation, business model, market research, and clarity of pitch.' },
+    ],
+    coverImage: pitchPoster, // Placeholder
+    posters: [pitchRulesPoster], // Placeholder
+    fee: 500,
+  },
+
+  {
+    id: 'scale-up-studio', name: 'ScaleUp Studio', limit: 'Limit 3',
+    cardDesc: 'Teams will select an existing Indian brand and take on the challenge of reimagining it for a new generation.',
+    desc: (
+      <>
+        <span className="block text-xl font-black uppercase tracking-tight text-[#0b2140] mb-3">What if you could rethink a brand from the ground up?</span>
+        <span className="block mt-2 text-black/75">
+          In <strong>Scale Up Studio</strong>, teams will select an existing brand and take on the challenge of reimagining it for a new generation.
+        </span>
+        <span className="block mt-2 text-black/75">
+          Participants will analyse the brand, identify opportunities for improvement and rework its identity, design, technical aspects and business strategy to create a fresh and relevant version of the brand.
+        </span>
+        <span className="block mt-2 text-black/75">
+          From rebranding and customer experience to product design, technology and business models, teams have the freedom to rethink how the brand could evolve in today's market.
+        </span>
+        <div className="mt-6 p-6" style={{ background: '#f8fafc', borderLeft: '6px solid #0b2140' }}>
+          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-lg">Scale Up Studio</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">Teams will present their reimagined brand and strategy to the jury.</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">Showcasing how their ideas can create a stronger, more relevant and future-ready business.</span>
+        </div>
+      </>
+    ),
+    venue: 'Academic Block', day: 'Day 2', time: '9 AM Onwards', accent: '#08a852ff', accentLight: '#f0fdf4',
+    rules: [
+      { title: '1. nee solu', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. A maximum of 3 members per team. Each team must register together prior to the event.' },
+      { title: '2. Round Structure', body: 'Duis aute irure dolor in reprehenderit in voluptate velit esse. The event consists of multiple elimination rounds. Teams must clear each round to advance.' },
+      { title: '3. Resources', body: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. No pre-prepared materials are allowed. All work must be done on-site during the event.' },
+      { title: '4. Time Limit', body: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi. Each round will have a strict time limit. Incomplete submissions will be disqualified.' },
+      { title: '5. Conduct', body: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa. Fair play is mandatory. Any disruption or unethical behavior results in immediate elimination.' },
+    ],
+
+    coverImage: scaleupPoster,
+    posters: [scaleupRulesPoster],
+    fee: 600,
+  },
+
+  {
+    id: 'rupees-to-reality', name: 'Rupees to Reality', limit: 'Limit 3',
+    cardDesc: 'Rupees to Reality challenges teams to turn an imaginary budget into a real-world solution.',
+    desc: (
+      <>
+        <span className="block text-xl font-black uppercase tracking-tight text-[#0b2140] mb-3">Rupees to Reality challenges teams to turn an imaginary budget into a real-world solution.</span>
+        <span className="block mt-2 text-black/75">
+          Teams will receive a virtual capital fund and a catalogue of Idea Lab equipment with their prices. Using only their given budget, they must choose their resources and design a project that addresses a real-world problem and aligns with one or more <strong>UN Sustainable Development Goals (SDGs)</strong>.
+        </span>
+        <span className="block mt-2 text-black/75">
+          The resources are not physically provided during the challenge. Teams will be judged on their idea, resource planning, creativity, uniqueness and feasibility.
+        </span>
+        <div className="mt-4">
+          <img src={rupeesOverviewImage} alt="SDG Goals" className="h-20 md:h-24 object-contain" />
+        </div>
+        <div className="mt-6 p-6" style={{ background: '#f8fafc', borderLeft: '6px solid #0b2140' }}>
+          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-lg">And the best part?</span>
+          <span className="block text-[16px] font-bold text-black/70 mt-2">The winning team gets the opportunity to bring their idea into life at the SRM Easwari Innovation Center, during Peravai. </span>
+        </div>
+      </>
+    ),
+    venue: 'Academic Block', day: 'Day 1', time: '12 PM Onwards', accent: '#eab308', accentLight: '#fefce8',
+    rules: [
+      { title: '1. Team Size', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Teams of up to 3 members. All members must be present on both days of the event.' },
+      { title: '2. Materials', body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium. Only materials provided at the venue may be used. No external materials are allowed.' },
+      { title: '3. Build Time', body: 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis. Teams have a fixed window to construct their product from the given junk materials.' },
+      { title: '4. Presentation', body: 'Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit. Each team must present their creation explaining functionality and innovation to the judges.' },
+      { title: '5. Judging Criteria', body: 'Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus. Judged on creativity, structural integrity, utility, and presentation effectiveness.' },
+    ],
+
+    coverImage: rupeesPoster,
+    posters: [rupeesRulesPoster],
+    fee: 600,
+  },
+
+  {
     id: 'hackathon', name: 'Hackathon', limit: '3–5 Members',
     cardDesc: (
       <>
@@ -74,112 +181,7 @@ const GROUP_EVENTS = [
     // posters: [hackathonPoster, hackathonRulesPoster],
     coverImage: hackathonPoster,
     posters: [hackathonRulesPoster],
-  },
-
-  {
-    id: 'rupees-to-reality', name: 'Rupees to Reality', limit: 'Limit 3',
-    cardDesc: 'Rupees to Reality challenges teams to turn an imaginary budget into a real-world solution.',
-    desc: (
-      <>
-        <span className="block text-xl font-black uppercase tracking-tight text-[#0b2140] mb-3">Rupees to Reality challenges teams to turn an imaginary budget into a real-world solution.</span>
-        <span className="block mt-2 text-black/75">
-          Teams will receive a virtual capital fund and a catalogue of Idea Lab equipment with their prices. Using only their given budget, they must choose their resources and design a project that addresses a real-world problem and aligns with one or more <strong>UN Sustainable Development Goals (SDGs)</strong>.
-        </span>
-        <span className="block mt-2 text-black/75">
-          The resources are not physically provided during the challenge. Teams will be judged on their idea, resource planning, creativity, uniqueness and feasibility.
-        </span>
-        <div className="mt-4">
-          <img src={rupeesOverviewImage} alt="SDG Goals" className="h-20 md:h-24 object-contain" />
-        </div>
-        <div className="mt-6 p-6" style={{ background: '#f8fafc', borderLeft: '6px solid #0b2140' }}>
-          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-lg">And the best part?</span>
-          <span className="block text-[16px] font-bold text-black/70 mt-2">The winning team gets the opportunity to bring their idea into life at the SRM Easwari Innovation Center, during Peravai. </span>
-        </div>
-      </>
-    ),
-    venue: 'Academic Block', day: 'Day 1', time: '12 PM Onwards', accent: '#eab308', accentLight: '#fefce8',
-    rules: [
-      { title: '1. Team Size', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Teams of up to 3 members. All members must be present on both days of the event.' },
-      { title: '2. Materials', body: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium. Only materials provided at the venue may be used. No external materials are allowed.' },
-      { title: '3. Build Time', body: 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis. Teams have a fixed window to construct their product from the given junk materials.' },
-      { title: '4. Presentation', body: 'Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit. Each team must present their creation explaining functionality and innovation to the judges.' },
-      { title: '5. Judging Criteria', body: 'Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus. Judged on creativity, structural integrity, utility, and presentation effectiveness.' },
-    ],
-
-    coverImage: rupeesPoster,
-    posters: [rupeesRulesPoster],
-    fee: 600,
-  },
-  {
-    id: 'pitch-perfect', name: 'Pitch Perfect', limit: '1–5 Members',
-    cardDesc: 'A two-day startup pitching competition taking young entrepreneurs from the first pitch to the investor stage.',
-    desc: (
-      <>
-        <span className="block text-xl font-black uppercase tracking-tight text-[#0b2140] mb-3">From the first pitch to the investor room</span>
-        <span className="block mt-2 text-black/75">
-          In partnership with Nebula, <strong>Pitch Perfect</strong> is a two-day startup pitching competition that gives young entrepreneurs the opportunity to take their ideas from the first pitch to the investor stage.
-        </span>
-        <span className="block font-black uppercase tracking-widest text-[#0b2140] text-sm mt-4">Day 1 - Prelims</span>
-        <span className="block mt-1 text-black/75">
-          Participants will pitch their startup ideas before a preliminary jury, presenting their problem statement, solution, business model, market opportunity and growth potential. Based on their pitch and overall potential, the strongest teams will be shortlisted for the grand finale.
-        </span>
-        <span className="block font-black uppercase tracking-widest text-[#0b2140] text-sm mt-4">Day 2 - Grand Finale</span>
-        <span className="block mt-1 text-black/75">
-          The shortlisted teams will pitch their startups directly in front of a distinguished panel of investors, presenting their ventures, answering investor questions and making their case for why their startup deserves attention and opportunity.
-        </span>
-        <div className="mt-6 p-6" style={{ background: '#f8fafc', borderLeft: '6px solid #0b2140' }}>
-          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-lg">Pitch Perfect</span>
-          <span className="block text-[16px] font-bold text-black/70 mt-2">This is where young founders take their ideas one step closer to becoming real ventures.</span>
-        </div>
-      </>
-    ),
-    venue: 'EEC', day: 'Both Days', time: '12:30 PM Onwards', accent: '#980000', accentLight: '#fef2f2',
-    rules: [
-      { title: '1. Team Size', body: 'Teams can have a minimum of 1 and a maximum of 5 members.' },
-      { title: '2. Registration & Payment', body: 'The team leader must register and make the payment of ₹700 for the team. Members must join using the team code.' },
-      { title: '3. Presentation', body: 'Each team will get 5 minutes to pitch their idea, followed by a 3-minute Q&A session with the judges.' },
-      { title: '4. Format', body: 'Presentations must be in PPT or PDF format. Prototypes are highly encouraged.' },
-      { title: '5. Judging Criteria', body: 'Evaluated on innovation, business model, market research, and clarity of pitch.' },
-    ],
-    coverImage: pitchPoster, // Placeholder
-    posters: [pitchRulesPoster], // Placeholder
-    fee: 500,
-  },
-  {
-    id: 'scale-up-studio', name: 'ScaleUp Studio', limit: 'Limit 3',
-    cardDesc: 'Teams will select an existing Indian brand and take on the challenge of reimagining it for a new generation.',
-    desc: (
-      <>
-        <span className="block text-xl font-black uppercase tracking-tight text-[#0b2140] mb-3">What if you could rethink a brand from the ground up?</span>
-        <span className="block mt-2 text-black/75">
-          In <strong>Scale Up Studio</strong>, teams will select an existing brand and take on the challenge of reimagining it for a new generation.
-        </span>
-        <span className="block mt-2 text-black/75">
-          Participants will analyse the brand, identify opportunities for improvement and rework its identity, design, technical aspects and business strategy to create a fresh and relevant version of the brand.
-        </span>
-        <span className="block mt-2 text-black/75">
-          From rebranding and customer experience to product design, technology and business models, teams have the freedom to rethink how the brand could evolve in today's market.
-        </span>
-        <div className="mt-6 p-6" style={{ background: '#f8fafc', borderLeft: '6px solid #0b2140' }}>
-          <span className="block font-black uppercase tracking-widest text-[#0b2140] text-lg">Scale Up Studio</span>
-          <span className="block text-[16px] font-bold text-black/70 mt-2">Teams will present their reimagined brand and strategy to the jury.</span>
-          <span className="block text-[16px] font-bold text-black/70 mt-2">Showcasing how their ideas can create a stronger, more relevant and future-ready business.</span>
-        </div>
-      </>
-    ),
-    venue: 'Academic Block', day: 'Day 2', time: '9 AM Onwards', accent: '#08a852ff', accentLight: '#f0fdf4',
-    rules: [
-      { title: '1. nee solu', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. A maximum of 3 members per team. Each team must register together prior to the event.' },
-      { title: '2. Round Structure', body: 'Duis aute irure dolor in reprehenderit in voluptate velit esse. The event consists of multiple elimination rounds. Teams must clear each round to advance.' },
-      { title: '3. Resources', body: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. No pre-prepared materials are allowed. All work must be done on-site during the event.' },
-      { title: '4. Time Limit', body: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi. Each round will have a strict time limit. Incomplete submissions will be disqualified.' },
-      { title: '5. Conduct', body: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa. Fair play is mandatory. Any disruption or unethical behavior results in immediate elimination.' },
-    ],
-
-    coverImage: scaleupPoster,
-    posters: [scaleupRulesPoster],
-    fee: 600,
-  },
+  }
 ];
 
 const INDIVIDUAL_EVENTS = [
