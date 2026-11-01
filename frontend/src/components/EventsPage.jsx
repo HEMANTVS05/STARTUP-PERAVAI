@@ -60,7 +60,7 @@ const GROUP_EVENTS = [
     ],
     coverImage: pitchPoster, // Placeholder
     posters: [pitchRulesPoster], // Placeholder
-    fee: 500,
+    fee: 1,
   },
 
   {
