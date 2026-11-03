@@ -2275,13 +2275,17 @@ const MainLayout = () => {
 
       <AnimatePresence>
         {activeGroupEventId && (() => {
-          const isRupees = activeGroupEventId === 'rupees-to-reality';
+          const groupEventNames = {
+            'rupees-to-reality': 'Rupees to Reality',
+            'scale-up-studio': 'ScaleUp Studio',
+            'pitch-perfect': 'Pitch Perfect',
+          };
           return (
             <GroupEventModal
               isOpen={!!activeGroupEventId}
               onClose={() => setActiveGroupEventId(null)}
               eventId={activeGroupEventId}
-              eventName={isRupees ? 'Rupees to Reality' : 'ScaleUp Studio'}
+              eventName={groupEventNames[activeGroupEventId] || activeGroupEventId}
               eventAccent={'#0b2140'}
               eventFee={1}
             />
