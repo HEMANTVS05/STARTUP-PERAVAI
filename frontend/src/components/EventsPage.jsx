@@ -96,7 +96,7 @@ const GROUP_EVENTS = [
 
     coverImage: scaleupPoster,
     posters: [scaleupRulesPoster],
-    fee: 600,
+    fee: 1,
   },
 
   {
