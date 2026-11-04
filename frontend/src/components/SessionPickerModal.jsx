@@ -3,6 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mic, Users, ChevronRight, SkipForward } from 'lucide-react';
 import poster1 from '../assets/ippopay.png';
 import poster2 from '../assets/tender_cuts.png';
+import poster3 from '../assets/ajmal.png';
+import panel1 from '../assets/1.png';
+import panel2 from '../assets/2.png';
+import panel3 from '../assets/3.png';
+import panel4 from '../assets/4.png';
 
 // ── Session Data ────────────────────────────────────────────────────────────────
 const SESSIONS = {
@@ -19,29 +24,22 @@ const SESSIONS = {
         desc: 'Are you fascinated by FinTech and curious about how UPI, digital payments and merchant transactions actually work in India? Join Mohan K, Co-Founder & CEO of IppoPay, for a live podcast on the technology, innovation and business transforming the way India pays. Perfect for students, aspiring FinTech founders and anyone curious about the future of digital payments in India.',
         poster: poster1,
       },
-      {/*
-        id: 'd1-p2', type: 'podcast',
-        title: '',
-        time: '',
-        titleColor: '',
-        desc: '',
-        poster: null,
-      }*/},
-      {
-        id: 'd1-panel1', type: 'panel',
-        title: 'From Participation to Power',
-        time: 'Reimagining the Role of Women in India’s Entrepreneurial Economy',
-        titleColor: '#92400e',   // amber-brown — industrial / manufacturing
-        desc: 'A conversation on how women are moving beyond participation to leadership, ownership, and decision-making across India’s startup ecosystem. The session explores the barriers, opportunities, networks, and support systems shaping the next generation of women entrepreneurs.',
-        poster: null,
-      },
       {
         id: 'd1-panel2', type: 'panel',
         title: 'The New Industrial Revolution',
         time: 'Where Startups, Manufacturing & EmergingTechnologies Converge',
-        titleColor: '#5b21b6',   // violet — emerging cities / next-gen
+        titleColor: '#850504',   // violet — emerging cities / next-gen
         desc: 'A deep dive into how AI, robotics, semiconductors, automation, and advanced manufacturing are transforming India’s industrial landscape. Industry leaders and founders explore how technology-driven startups can build globally competitive products and reshape the future of manufacturing',
-        poster: null,
+        poster: panel1,
+      },
+
+      {
+        id: 'd1-panel1', type: 'panel',
+        title: "Beyond the Metros",
+        time: 'Building Companies, Capabilities & Capital Across the Next Generation of Indian Cities',
+        titleColor: '#49006c',   // emerald — investors / growth
+        desc: 'A conversation on the rise of entrepreneurial ecosystems beyond India’s traditional startup hubs, where regional talent, MSMEs, and emerging founders are building ambitious companies. The session explores how access to capital, incubation, infrastructure, and local networks can unlock the potential of Tier-2 and Tier-3 cities.',
+        poster: panel2,
       },
     ],
   },
@@ -58,29 +56,29 @@ const SESSIONS = {
         desc: 'Are you fascinated by fresh food and curious about how quality meat and seafood reach everyday households? Join Sasikumar Kallani, Founder & CEO of TenderCuts, for a live podcast on the entrepreneurship, innovation and vision transforming how India buys fresh meat and seafood. Perfect for students, aspiring founders and anyone curious about building trusted brands that solve real everyday problems.',
         poster: poster2,
       },
-      {/*
-        id: 'd2-p2', type: 'podcast',
-        title: 'Funding in the New Economy',
-        time: '12:00 PM',
-        titleColor: '#b45309',   // warm orange — economy / finance
-        desc: '',
-        poster: null,
-        }*/},
+      {
+        id: 'd1-p2', type: 'podcast',
+        title: 'Ajmal Dastagir',
+        time: 'Founder - Mimi Bow Bow',
+        titleColor: '#ffcc00',
+        desc: 'Are you fascinated by AI in pet care and curious about how smart technology is transforming animal health? Join the Founder of Mimi Bow Bow for a live podcast on AI-powered health scanning, IoT innovation and the future of pet wellness. Perfect for students, aspiring entrepreneurs and anyone curious about the future of technology-driven pet care.',
+        poster: poster3,
+      },
       {
         id: 'd2-panel1', type: 'panel',
-        title: "Beyond the Metros",
-        time: 'Building Companies, Capabilities & Capital Across the Next Generation of Indian Cities',
-        titleColor: '#065f46',   // emerald — investors / growth
-        desc: 'A conversation on the rise of entrepreneurial ecosystems beyond India’s traditional startup hubs, where regional talent, MSMEs, and emerging founders are building ambitious companies. The session explores how access to capital, incubation, infrastructure, and local networks can unlock the potential of Tier-2 and Tier-3 cities.',
-        poster: null,
+        title: 'From Participation to Power',
+        time: 'Reimagining the Role of Women in India’s Entrepreneurial Economy',
+        titleColor: '#4d0f38',   // amber-brown — industrial / manufacturing
+        desc: 'A conversation on how women are moving beyond participation to leadership, ownership, and decision-making across India’s startup ecosystem. The session explores the barriers, opportunities, networks, and support systems shaping the next generation of women entrepreneurs.',
+        poster: panel3,
       },
       {
         id: 'd2-panel2', type: 'panel',
         title: 'The Road to Investment',
         time: 'How Investor Interest Becomes Conviction, Commitment & Capital',
-        titleColor: '#a80d11',   // red — Tamil Nadu flagship brand color
+        titleColor: '#670947',   // red — Tamil Nadu flagship brand color
         desc: 'What makes an investor move from noticing a startup to believing in its potential and committing capital? Founders and investors unpack the journey from first conversation to due diligence, conviction, deal-making, and long-term partnership.',
-        poster: null,
+        poster: panel4,
       },
     ],
   },
