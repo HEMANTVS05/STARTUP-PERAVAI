@@ -721,6 +721,57 @@ const EventRegistrationModal = ({ event, onClose }) => {
             <AlreadyRegisteredScreen event={event} user={user} registration={registration} onClose={onClose} />
           ) : submitted ? (
             <SuccessScreen event={event} onClose={onClose} />
+          ) : !isAlreadyPaid ? (
+            <>
+              {/* Header — always visible */}
+              <div className="flex justify-between items-start mb-5">
+                <div>
+                  <span
+                    className="inline-block px-2 py-0.5 font-black text-xs uppercase tracking-widest border-2 mb-2"
+                    style={{ background: catStyle.bg, borderColor: catStyle.border, color: catStyle.text }}
+                  >
+                    {event.category}
+                  </span>
+                  <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight leading-tight">
+                    {event.name}
+                  </h2>
+                </div>
+                <button onClick={onClose} className="text-gray-400 hover:text-black transition-colors mt-1">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Closed Message */}
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
+                <div className="border-4 border-black p-4 bg-[#f0f9ff] flex items-center gap-4">
+                  <div className="w-12 h-12 bg-[#0b2140] border-2 border-black flex items-center justify-center shrink-0">
+                    <User className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-black uppercase tracking-[0.2em] text-xs text-[#0b2140] mb-0.5">Attendee</p>
+                    <p className="font-black text-base text-black">{userName}</p>
+                    <p className="font-bold text-xs text-gray-500">{userEmail}</p>
+                  </div>
+                </div>
+
+                <div className="border-4 border-black p-6 bg-[#fff5f5] text-center">
+                  <p className="font-black uppercase tracking-[0.25em] text-xs text-[#a80d11] mb-2">Registration Closed</p>
+                  <p className="font-black text-2xl text-black mb-1">Registrations are Closed</p>
+                  <p className="font-bold text-xs text-gray-500 uppercase tracking-wider">{event.name}</p>
+                </div>
+
+                <p className="text-center text-xs font-bold text-gray-500">
+                  Registrations for this event have now closed.
+                </p>
+
+                <button
+                  onClick={onClose}
+                  className="w-full py-4 border-4 border-black bg-black text-white font-black uppercase tracking-[0.15em] text-sm shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
+                >
+                  Close
+                </button>
+              </motion.div>
+            </>
           ) : (
             <>
               {/* Header — always visible */}

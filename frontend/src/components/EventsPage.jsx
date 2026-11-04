@@ -1239,7 +1239,7 @@ const RiseHerLearnMoreModal = ({ evt, onClose, onRegister }) => {
           {/* Footer — only shown when not yet registered */}
           {!isRegistered && (
             <div className="flex items-center justify-between px-7 py-5" style={{ borderTop: '3px solid #111', background: '#fafafa', flexShrink: 0 }}>
-              <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">Spots are limited — secure yours now</p>
+              <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">Registrations are now closed</p>
               <motion.button onClick={() => { onClose(); onRegister(evt); }} whileTap={{ scale: 0.96 }} whileHover={{ y: -2 }}
                 className="flex items-center gap-2.5 font-black uppercase text-[11px] tracking-widest px-8 py-3 text-white transition-all"
                 style={{ background: accent, border: `2.5px solid ${accent}`, boxShadow: '4px 4px 0 #111' }}
@@ -1255,7 +1255,7 @@ const RiseHerLearnMoreModal = ({ evt, onClose, onRegister }) => {
 };
 
 /* ── Learn More Modal ─────────────────────────────────────────────────── */
-const LearnMoreModal = ({ evt, isGroup, onClose, onRegister, onJoinHackathon }) => {
+const LearnMoreModal = ({ evt, isGroup, onClose, onRegister, onJoinHackathon, onJoinTeam }) => {
   if (evt.id === 'riseher') {
     return <RiseHerLearnMoreModal evt={evt} onClose={onClose} onRegister={onRegister} />;
   }
@@ -1397,9 +1397,9 @@ const LearnMoreModal = ({ evt, isGroup, onClose, onRegister, onJoinHackathon }) 
             style={{ borderTop: '3px solid #111', background: '#fafafa', flexShrink: 0 }}
           >
             <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">
-              {evt.id === 'hackathon' ? 'Registrations are now closed' : 'Spots are limited — secure yours now'}
+              Registrations are now closed
             </p>
-            {evt.id === 'hackathon' ? (
+            {isGroup || evt.id === 'hackathon' || GROUP_EVENTS.some(g => g.id === evt.id) ? (
               <div className="flex flex-wrap items-center gap-3">
                 <span
                   className="flex items-center gap-2 font-black uppercase text-[11px] tracking-widest px-5 py-3 text-white cursor-default select-none"
@@ -1412,7 +1412,7 @@ const LearnMoreModal = ({ evt, isGroup, onClose, onRegister, onJoinHackathon }) 
                   Registration Closed
                 </span>
                 <button
-                  onClick={() => { onClose(); onJoinHackathon && onJoinHackathon(); }}
+                  onClick={() => { onClose(); if (onJoinTeam) onJoinTeam(evt); else if (onJoinHackathon) onJoinHackathon(); }}
                   className="flex items-center gap-2 font-black uppercase text-[11px] tracking-widest px-5 py-3 bg-black text-white hover:bg-gray-800 transition-all shadow-[4px_4px_0 #111] active:translate-x-1 active:translate-y-1"
                   style={{ border: '2.5px solid #111' }}
                 >
@@ -1420,19 +1420,16 @@ const LearnMoreModal = ({ evt, isGroup, onClose, onRegister, onJoinHackathon }) 
                 </button>
               </div>
             ) : (
-              <motion.button
-                onClick={() => { onClose(); onRegister(evt); }}
-                whileTap={{ scale: 0.96 }}
-                whileHover={{ y: -2 }}
-                className="flex items-center gap-2.5 font-black uppercase text-[11px] tracking-widest px-8 py-3 text-white transition-all"
+              <span
+                className="flex items-center gap-2 font-black uppercase text-[11px] tracking-widest px-5 py-3 text-white cursor-default select-none"
                 style={{
-                  background: evt.accent,
-                  border: `2.5px solid ${evt.accent}`,
-                  boxShadow: `4px 4px 0 #111`,
+                  background: '#dc2626',
+                  border: '2.5px solid #991b1b',
+                  boxShadow: '4px 4px 0 #111',
                 }}
               >
-                Register <ArrowRight size={13} />
-              </motion.button>
+                Registration Closed
+              </span>
             )}
           </div>
         </motion.div>
@@ -1554,7 +1551,7 @@ const SectionHeader = ({ icon: Icon, label, accent, className = "mb-8" }) => (
   </div>
 );
 
-const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister, onJoinHackathon, isGroup }) => {
+const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister, onJoinHackathon, onJoinTeam, isGroup }) => {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const navigate = useNavigate();
@@ -1722,7 +1719,7 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
                         </span>
                       );
                     }
-                    if (event.id === 'hackathon') {
+                    if (isGroup || event.id === 'hackathon' || GROUP_EVENTS.some(g => g.id === event.id)) {
                       return (
                         <div className="flex flex-wrap items-center gap-2.5">
                           <span
@@ -1732,7 +1729,7 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
                             Registration Closed
                           </span>
                           <button
-                            onClick={(e) => { e.stopPropagation(); onJoinHackathon ? onJoinHackathon() : onRegister(event); }}
+                            onClick={(e) => { e.stopPropagation(); onJoinTeam ? onJoinTeam(event) : (onJoinHackathon ? onJoinHackathon() : onRegister(event)); }}
                             className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-4 py-2.5 bg-black text-white border-4 border-black hover:bg-gray-800 transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1"
                           >
                             <Users size={13} /> Already have a team code?
@@ -1741,13 +1738,12 @@ const EventCategorySlideshow = ({ events, label, icon: Icon, accent, onRegister,
                       );
                     }
                     return (
-                      <button
-                        onClick={(e) => { e.stopPropagation(); onRegister(event); }}
-                        className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-5 py-2.5 text-white border-4 transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1"
-                        style={{ background: event.accent, borderColor: '#111' }}
+                      <span
+                        className="flex items-center gap-1.5 font-black uppercase text-[11px] tracking-widest px-4 py-2.5 text-white border-4 cursor-default select-none"
+                        style={{ background: '#dc2626', borderColor: '#991b1b' }}
                       >
-                        Register <ArrowRight size={14} />
-                      </button>
+                        Registration Closed
+                      </span>
                     );
                   })()}
                 </div>
@@ -1772,6 +1768,7 @@ const EventsPage = () => {
 
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [hackathonInitialView, setHackathonInitialView] = useState('');
+  const [groupInitialView, setGroupInitialView] = useState('');
   const [showGroupModal, setShowGroupModal] = useState(false);
   const [selectedGroupEvent, setSelectedGroupEvent] = useState(null);
   const [showPaymentAlert, setShowPaymentAlert] = useState(false);
@@ -1782,20 +1779,29 @@ const EventsPage = () => {
   const [showMultipleEventWarning, setShowMultipleEventWarning] = useState(false);
   const [pendingEventAfterWarning, setPendingEventAfterWarning] = useState(null);
 
-  const handleOpenHackathonJoin = () => {
+  const handleOpenTeamJoin = (event) => {
     if (!user) {
-      setAuthModal({ open: true, pass: 'EVENT PASS', source: 'hackathon-join' });
+      setAuthModal({ open: true, pass: 'EVENT PASS', source: `${event.id}-join` });
       return;
     }
     if (!registration) {
-      const hackathonEvt = GROUP_EVENTS.find(e => e.id === 'hackathon');
-      setPendingEventAfterProfile(hackathonEvt);
+      setPendingEventAfterProfile(event);
       setShowProfileForm(true);
       return;
     }
+    if (event.id === 'hackathon') {
+      setHackathonInitialView('join');
+      setSelectedEvent(event);
+    } else {
+      setGroupInitialView('join');
+      setSelectedGroupEvent(event);
+      setShowGroupModal(true);
+    }
+  };
+
+  const handleOpenHackathonJoin = () => {
     const hackathonEvt = GROUP_EVENTS.find(e => e.id === 'hackathon');
-    setHackathonInitialView('join');
-    setSelectedEvent(hackathonEvt);
+    if (hackathonEvt) handleOpenTeamJoin(hackathonEvt);
   };
 
   const handleRegisterClick = (event) => {
@@ -1840,17 +1846,29 @@ const EventsPage = () => {
     setShowGroupModal(false);
     setSelectedGroupEvent(null);
     setHackathonInitialView('');
+    setGroupInitialView('');
   };
 
   useEffect(() => {
     if (location.state?.joinHackathon) {
       setTimeout(() => handleOpenHackathonJoin(), 100);
       navigate(location.pathname, { replace: true, state: {} });
+    } else if (location.state?.joinTeamEventId) {
+      const allEvents = [...GROUP_EVENTS, ...INDIVIDUAL_EVENTS];
+      const eventToJoin = allEvents.find(e => e.id === location.state.joinTeamEventId);
+      if (eventToJoin) {
+        setTimeout(() => handleOpenTeamJoin(eventToJoin), 100);
+      }
+      navigate(location.pathname, { replace: true, state: {} });
     } else if (location.state?.registerEventId) {
       const allEvents = [...GROUP_EVENTS, ...INDIVIDUAL_EVENTS];
       const eventToRegister = allEvents.find(e => e.id === location.state.registerEventId);
       if (eventToRegister) {
-        setTimeout(() => handleRegisterClick(eventToRegister), 100);
+        if (GROUP_EVENTS.some(g => g.id === eventToRegister.id)) {
+          setTimeout(() => handleOpenTeamJoin(eventToRegister), 100);
+        } else {
+          setTimeout(() => handleRegisterClick(eventToRegister), 100);
+        }
       }
       navigate(location.pathname, { replace: true, state: {} });
     }

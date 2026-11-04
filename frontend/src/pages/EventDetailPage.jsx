@@ -655,7 +655,7 @@ const EventDetailPage = () => {
                       >
                         <CheckCircle2 size={15} /> Registered
                       </div>
-                    ) : event.id === 'hackathon' ? (
+                    ) : ['hackathon', 'pitch-perfect', 'scale-up-studio', 'rupees-to-reality'].includes(event.id) ? (
                       <div className="space-y-3">
                         <div
                           className="w-full flex items-center justify-center gap-2 font-black uppercase text-[11px] tracking-widest py-3.5 text-white cursor-default select-none"
@@ -668,7 +668,7 @@ const EventDetailPage = () => {
                           Registration Closed
                         </div>
                         <motion.button
-                          onClick={() => navigate('/events', { state: { joinHackathon: true } })}
+                          onClick={() => navigate('/events', { state: event.id === 'hackathon' ? { joinHackathon: true } : { joinTeamEventId: event.id } })}
                           whileTap={{ scale: 0.97 }}
                           whileHover={{ y: -2, boxShadow: '7px 7px 0 #111' }}
                           className="w-full flex items-center justify-center gap-2 font-black uppercase text-[11px] tracking-widest py-3.5 bg-black text-white transition-all shadow-[5px_5px_0 #111]"
@@ -678,19 +678,16 @@ const EventDetailPage = () => {
                         </motion.button>
                       </div>
                     ) : (
-                      <motion.button
-                        onClick={() => navigate('/events', { state: { registerEventId: event.id } })}
-                        whileTap={{ scale: 0.97 }}
-                        className="w-full flex items-center justify-center gap-2.5 font-black uppercase text-[11px] tracking-widest py-4 text-white transition-all"
+                      <div
+                        className="w-full flex items-center justify-center gap-2 font-black uppercase text-[11px] tracking-widest py-3.5 text-white cursor-default select-none"
                         style={{
-                          background: accent,
-                          border: '3px solid #111',
+                          background: '#dc2626',
+                          border: '3px solid #991b1b',
                           boxShadow: '5px 5px 0 #111',
                         }}
-                        whileHover={{ y: -2, boxShadow: '7px 7px 0 #111' }}
                       >
-                        Register Now <ArrowRight size={14} />
-                      </motion.button>
+                        Registration Closed
+                      </div>
                     )}
 
                     <button
@@ -727,10 +724,10 @@ const EventDetailPage = () => {
           <div className="relative z-10 px-6 md:px-24 py-14 flex flex-col md:flex-row items-center justify-between gap-8 max-w-7xl mx-auto">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60 mb-2">
-                Don't miss out
+                Event Information
               </p>
               <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-white leading-none">
-                Ready to join<br />{event.name}?
+                {event.name}
               </h2>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -741,7 +738,7 @@ const EventDetailPage = () => {
                 >
                   <CheckCircle2 size={14} /> Registered
                 </div>
-              ) : event.id === 'hackathon' ? (
+              ) : ['hackathon', 'pitch-perfect', 'scale-up-studio', 'rupees-to-reality'].includes(event.id) ? (
                 <div className="flex flex-col sm:flex-row items-center gap-3">
                   <div
                     className="flex items-center gap-3 font-black uppercase text-[11px] tracking-widest px-8 py-4 bg-[#dc2626] text-white border-4 border-[#991b1b] cursor-default select-none"
@@ -750,7 +747,7 @@ const EventDetailPage = () => {
                     Registration Closed
                   </div>
                   <motion.button
-                    onClick={() => navigate('/events', { state: { joinHackathon: true } })}
+                    onClick={() => navigate('/events', { state: event.id === 'hackathon' ? { joinHackathon: true } : { joinTeamEventId: event.id } })}
                     className="flex items-center gap-2 font-black uppercase text-[11px] tracking-widest px-8 py-4 bg-white text-black border-4 border-black hover:bg-gray-100 transition-all shadow-[6px_6px_0_rgba(0,0,0,0.4)]"
                     whileHover={{ y: -2, boxShadow: '8px 8px 0 rgba(0,0,0,0.4)' }}
                     whileTap={{ scale: 0.97 }}
@@ -759,15 +756,12 @@ const EventDetailPage = () => {
                   </motion.button>
                 </div>
               ) : (
-                <motion.button
-                  onClick={() => navigate('/events', { state: { registerEventId: event.id } })}
-                  className="flex items-center gap-3 font-black uppercase text-[11px] tracking-widest px-10 py-4 bg-white text-black border-4 border-black"
+                <div
+                  className="flex items-center gap-3 font-black uppercase text-[11px] tracking-widest px-8 py-4 bg-[#dc2626] text-white border-4 border-[#991b1b] cursor-default select-none"
                   style={{ boxShadow: '6px 6px 0 rgba(0,0,0,0.4)' }}
-                  whileHover={{ y: -2, boxShadow: '8px 8px 0 rgba(0,0,0,0.4)' }}
-                  whileTap={{ scale: 0.97 }}
                 >
-                  Register Now <ArrowRight size={14} />
-                </motion.button>
+                  Registration Closed
+                </div>
               )}
               <motion.button
                 onClick={() => navigate('/events')}
