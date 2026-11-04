@@ -131,7 +131,7 @@ const GROUP_EVENTS = [
 
     coverImage: rupeesPoster,
     posters: [rupeesRulesPoster],
-    fee: 1,
+    fee: 600,
   },
 
   {
